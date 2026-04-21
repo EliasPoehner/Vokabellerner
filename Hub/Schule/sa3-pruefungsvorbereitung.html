@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SA3 – Prüfungsvorbereitung</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --sch-bg: #f5f6fa;
+      --sch-surface: #ffffff;
+      --sch-blue: #2563eb;
+      --sch-blue-lt: #eff6ff;
+      --sch-blue-md: #bfdbfe;
+      --sch-text: #1e1b4b;
+      --sch-muted: #64748b;
+      --sch-border: #e2e8f0;
+      --sch-radius: 14px;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sch-bg);
+      color: var(--sch-text);
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--sch-border);
+      box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--sch-blue);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.35rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      color: var(--sch-muted);
+      border: 1px solid transparent;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      color: var(--sch-text);
+      background: var(--sch-blue-lt);
+    }
+
+    .nav-btn.cur {
+      color: var(--sch-blue);
+      background: var(--sch-blue-lt);
+      border-color: var(--sch-blue-md);
+      font-weight: 600;
+    }
+
+    /* PAGE BODY */
+    .sch-body {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2rem 2rem 5rem;
+    }
+
+    /* HERO */
+    .sch-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+
+    .sch-hero-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      line-height: 1.2;
+      margin-bottom: 0.4rem;
+    }
+
+    .sch-hero-text p {
+      color: var(--sch-muted);
+      font-size: 0.95rem;
+    }
+
+    .sch-badge-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .sch-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.7rem;
+      border-radius: 100px;
+      background: var(--sch-blue-lt);
+      color: var(--sch-blue);
+      border: 1px solid var(--sch-blue-md);
+    }
+
+    .sch-badge.green {
+      background: #f0fdf4;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .sch-badge.amber {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .sch-badge.purple {
+      background: #faf5ff;
+      color: #7c3aed;
+      border-color: #ddd6fe;
+    }
+
+    /* TOPIC CHIPS (quick nav) */
+    .topic-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .topic-chip {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.3rem 0.9rem;
+      border-radius: 100px;
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--sch-text);
+      text-decoration: none;
+    }
+
+    .topic-chip:hover {
+      background: var(--sch-blue-lt);
+      border-color: var(--sch-blue-md);
+      color: var(--sch-blue);
+    }
+
+    /* SECTION SEPARATOR */
+    .sch-sep {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--sch-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sch-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--sch-border);
+    }
+
+    .sch-sep .sep-icon {
+      font-size: 1rem;
+    }
+
+    /* TOPIC SECTION */
+    .topic-section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 70px;
+    }
+
+    /* CARD */
+    .info-card {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      border-radius: var(--sch-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: sch-in 0.4s ease forwards;
+    }
+
+    @keyframes sch-in {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info-card:nth-child(1) {
+      animation-delay: .04s
+    }
+
+    .info-card:nth-child(2) {
+      animation-delay: .09s
+    }
+
+    .info-card:nth-child(3) {
+      animation-delay: .14s
+    }
+
+    .info-card:nth-child(4) {
+      animation-delay: .19s
+    }
+
+    .info-card:nth-child(5) {
+      animation-delay: .24s
+    }
+
+    .info-card:nth-child(6) {
+      animation-delay: .29s
+    }
+
+    .card-header {
+      padding: 0.85rem 1.3rem;
+      background: var(--sch-blue-lt);
+      border-bottom: 1px solid var(--sch-blue-md);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .card-header.green {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .card-header.amber {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .card-header.purple {
+      background: #faf5ff;
+      border-color: #ddd6fe;
+    }
+
+    .card-header.teal {
+      background: #f0fdfa;
+      border-color: #99f6e4;
+    }
+
+    .card-header-icon {
+      font-size: 1.1rem;
+    }
+
+    .card-header-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--sch-text);
+      flex: 1;
+    }
+
+    .card-header.green .card-header-title {
+      color: #15803d;
+    }
+
+    .card-header.amber .card-header-title {
+      color: #b45309;
+    }
+
+    .card-header.purple .card-header-title {
+      color: #6d28d9;
+    }
+
+    .card-header.teal .card-header-title {
+      color: #0f766e;
+    }
+
+    .card-toggle {
+      font-size: 0.7rem;
+      color: var(--sch-muted);
+      transition: transform 0.25s;
+    }
+
+    .card-toggle.open {
+      transform: rotate(180deg);
+    }
+
+    .card-body {
+      padding: 1.3rem;
+      display: none;
+    }
+
+    .card-body.open {
+      display: block;
+    }
+
+    /* Q&A PAIRS */
+    .qa-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .qa-item {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--sch-border);
+    }
+
+    .qa-q {
+      padding: 0.65rem 1rem;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--sch-text);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+    }
+
+    .qa-q .q-label {
+      background: var(--sch-blue);
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .qa-a {
+      padding: 0.65rem 1rem;
+      background: #fff;
+      font-size: 0.8rem;
+      color: var(--sch-muted);
+      line-height: 1.6;
+      border-top: 1px solid var(--sch-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+    }
+
+    .qa-a .a-label {
+      background: #10b981;
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .qa-a code,
+    .qa-q code {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 0.05rem 0.4rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #1e1b4b;
+    }
+
+    /* CONFIG BLOCK */
+    .config-block {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-top: 0.8rem;
+      overflow-x: auto;
+    }
+
+    .config-block pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .config-block .c-comment {
+      color: #64748b;
+    }
+
+    .config-block .c-key {
+      color: #7dd3fc;
+    }
+
+    .config-block .c-val {
+      color: #86efac;
+    }
+
+    .config-block .c-path {
+      color: #fbbf24;
+    }
+
+    .config-block .c-cmd {
+      color: #f472b6;
+    }
+
+    /* TAG ROW */
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 0.18rem 0.6rem;
+      border-radius: 6px;
+      background: var(--sch-blue-lt);
+      border: 1px solid var(--sch-blue-md);
+      color: var(--sch-blue);
+    }
+
+    .tag.green {
+      background: #f0fdf4;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .tag.amber {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .tag.red {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+
+    .tag.purple {
+      background: #faf5ff;
+      color: #7c3aed;
+      border-color: #ddd6fe;
+    }
+
+    .tag.teal {
+      background: #f0fdfa;
+      color: #0f766e;
+      border-color: #99f6e4;
+    }
+
+    /* FLOW DIAGRAM (Mailing) */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin: 0.8rem 0;
+    }
+
+    .flow-node {
+      background: var(--sch-blue-lt);
+      border: 1px solid var(--sch-blue-md);
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--sch-blue);
+    }
+
+    .flow-node.green {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #15803d;
+    }
+
+    .flow-node.amber {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #b45309;
+    }
+
+    .flow-node.purple {
+      background: #faf5ff;
+      border-color: #ddd6fe;
+      color: #7c3aed;
+    }
+
+    .flow-arrow {
+      font-size: 0.85rem;
+      color: var(--sch-muted);
+    }
+
+    .flow-label {
+      font-size: 0.65rem;
+      color: var(--sch-muted);
+      font-style: italic;
+    }
+
+    /* 2-col info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    @media (max-width: 600px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sch-hero {
+        flex-direction: column;
+      }
+    }
+
+    .info-box {
+      background: #f8fafc;
+      border: 1px solid var(--sch-border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+
+    .info-box-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--sch-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .info-box ul li {
+      font-size: 0.78rem;
+      color: var(--sch-text);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .info-box ul li::before {
+      content: '›';
+      color: var(--sch-blue);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* IMPORTANT NOTE */
+    .note-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      margin-top: 0.8rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .note-box .note-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .note-box p {
+      font-size: 0.78rem;
+      color: #92400e;
+      line-height: 1.5;
+    }
+
+    .note-box strong {
+      color: #78350f;
+    }
+
+    /* ACL TABLE */
+    .acl-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+    }
+
+    .acl-table th {
+      background: var(--sch-blue-lt);
+      color: var(--sch-blue);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--sch-blue-md);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .acl-table td {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--sch-border);
+      color: var(--sch-text);
+      vertical-align: top;
+    }
+
+    .acl-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .acl-table code {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 0.05rem 0.35rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.73rem;
+    }
+
+    /* FOOTER */
+    .sch-footer {
+      text-align: center;
+      color: var(--sch-muted);
+      font-size: 0.75rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--sch-border);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="O:\work\Allgemein\Hub.html">🎓 F11 HUB</a>
+    <div class="nav-links">
+      <a class="nav-btn" href="O:\work\Allgemein\Hub.html">← Hub</a>
+      <a class="nav-btn cur" href="#">SA3 Vorbereitung</a>
+    </div>
+  </nav>
+
+  <div class="sch-body">
+
+    <!-- HERO -->
+    <div class="sch-hero">
+      <div class="sch-hero-text">
+        <h1>SA3 – Prüfungsvorbereitung</h1>
+        <p>Mailing · IPTables · Squid Proxy – alle Themen kompakt aufbereitet</p>
+        <div class="sch-badge-row">
+          <span class="sch-badge">📧 Postfix &amp; Dovecot</span>
+          <span class="sch-badge green">🔥 IPTables</span>
+          <span class="sch-badge amber">🦑 Squid Proxy</span>
+          <span class="sch-badge purple">🌐 DNS / nslookup</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK NAV CHIPS -->
+    <div class="topic-chips">
+      <a class="topic-chip" href="#mailing">📧 Mailing</a>
+      <a class="topic-chip" href="#protokolle">🔌 Protokolle &amp; Ports</a>
+      <a class="topic-chip" href="#dovecot">⚙️ Dovecot-Konfig</a>
+      <a class="topic-chip" href="#postfix">⚙️ Postfix-Konfig</a>
+      <a class="topic-chip" href="#dns">🌐 DNS &amp; MX</a>
+      <a class="topic-chip" href="#iptables">🔥 IPTables</a>
+      <a class="topic-chip" href="#squid">🦑 Squid Proxy</a>
+      <a class="topic-chip" href="#acl">📋 ACL-Syntax</a>
+    </div>
+
+    <!-- ═══════════════════════════════════ MAILING ═══════════════════ -->
+    <div class="topic-section" id="mailing">
+      <div class="sch-sep"><span class="sep-icon">📧</span> Mailing – Überblick</div>
+
+      <!-- Ablauf -->
+      <div class="info-card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="card-header-icon">🔄</span>
+          <span class="card-header-title">Mail-Fluss: Vom Sender zum Empfänger</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="flow-row">
+            <div class="flow-node">Mail-Client<br><small style="font-weight:400;font-size:0.65rem">(Thunderbird,
+                Outlook…)</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node amber">Postfix<br><small style="font-weight:400;font-size:0.65rem">SMTP senden</small>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node purple">DNS / MX<br><small
+                style="font-weight:400;font-size:0.65rem">Empfänger-Server?</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node amber">Postfix<br><small
+                style="font-weight:400;font-size:0.65rem">Empfänger-Server</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node green">Dovecot<br><small style="font-weight:400;font-size:0.65rem">IMAP
+                abrufen</small></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Mail-Client<br><small style="font-weight:400;font-size:0.65rem">liest Mail</small>
+            </div>
+          </div>
+          <div class="tag-row">
+            <span class="tag amber">Postfix = MTA (Mail Transfer Agent)</span>
+            <span class="tag green">Dovecot = MDA / IMAP-Server</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Server-Dienste -->
+      <div class="info-card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="card-header-icon">🖥️</span>
+          <span class="card-header-title">Benötigte Server-Dienste</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">📤 Postfix</div>
+              <ul>
+                <li>Zuständig für das <strong>Versenden</strong> von E-Mails</li>
+                <li>Protokoll: <code>SMTP</code> (Port 25 / 587)</li>
+                <li>Konfiguration: <code>/etc/postfix/main.cf</code></li>
+                <li>Setup-Assistent: <code>dpkg-reconfigure postfix</code></li>
+              </ul>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">📥 Dovecot</div>
+              <ul>
+                <li>Zuständig für das <strong>Abrufen</strong> von E-Mails</li>
+                <li>Protokoll: <code>IMAP</code> (Port 143 / 993)</li>
+                <li>Konfiguration: <code>/etc/dovecot/conf.d/</code></li>
+                <li>Postfach-Pfad: <code>/var/mail/%u</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clients -->
+      <div class="info-card">
+        <div class="card-header green" onclick="toggle(this)">
+          <span class="card-header-icon">💻</span>
+          <span class="card-header-title">Mail-Clients &amp; Einstellungen</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="qa-list">
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Clients</span>Welche Mail-Clients wurden verwendet?</div>
+              <div class="qa-a"><span class="a-label">A</span><span><strong>Thunderbird</strong> (funktioniert
+                  einwandfrei), <strong>Evolution</strong> (kam mit veralteten Einstellungen / Debian 12-Problem mit
+                  <code>/var/spool/mail/username</code> statt Maildir), <strong>Outlook</strong>, Webinterfaces</span>
+              </div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Thunderbird</span>Was braucht ein Client zur Konfiguration?</div>
+              <div class="qa-a"><span class="a-label">A</span>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.3rem">
+                  <li>🔹 <strong>SMTP-Port</strong> (Outgoing) + <strong>IMAP-Port</strong> (Incoming)</li>
+                  <li>🔹 <strong>IP oder Hostname</strong> des SMTP-Servers (Outgoing) und IMAP-Servers (Incoming)</li>
+                  <li>🔹 <strong>Benutzername</strong> – z.B. <code>lweikl</code> aus
+                    <code>lweikl@edvschule-plattling.de</code>
+                  </li>
+                  <li>🔹 <strong>Passwort</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ PROTOKOLLE ══════════════════ -->
+    <div class="topic-section" id="protokolle">
+      <div class="sch-sep"><span class="sep-icon">🔌</span> Protokolle &amp; Ports</div>
+      <div class="info-card">
+        <div class="card-header amber" onclick="toggle(this)">
+          <span class="card-header-icon">📡</span>
+          <span class="card-header-title">SMTP, IMAP, SSL/TLS – auf einen Blick</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <table class="acl-table">
+            <thead>
+              <tr>
+                <th>Protokoll</th>
+                <th>Dienst</th>
+                <th>Port</th>
+                <th>Beschreibung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>SMTP</code></td>
+                <td>Postfix</td>
+                <td>25 / 587</td>
+                <td>Simple Mail Transfer Protocol – E-Mail <strong>versenden</strong></td>
+              </tr>
+              <tr>
+                <td><code>IMAP</code></td>
+                <td>Dovecot</td>
+                <td>143 / 993</td>
+                <td>Internet Message Access Protocol – E-Mail <strong>abrufen &amp; verwalten</strong></td>
+              </tr>
+              <tr>
+                <td><code>SSL</code></td>
+                <td>Beide</td>
+                <td>–</td>
+                <td>Secure Socket Layer – <em>alt</em>, verschlüsselte Verbindung (public/private Key)</td>
+              </tr>
+              <tr>
+                <td><code>TLS</code></td>
+                <td>Beide</td>
+                <td>–</td>
+                <td>Transport Layer Security – <em>neu/moderner</em>, funktioniert ebenfalls mit public/private Keys
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="note-box" style="margin-top:0.8rem">
+            <span class="note-icon">💡</span>
+            <p><strong>tls_security_level = may</strong> bedeutet: Verschlüsselung <em>kann</em> genutzt werden, ist
+              aber nicht zwingend. Bei <code>must</code> wäre sie verpflichtend. Wir haben <strong>plaintext</strong>
+              verwendet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ DOVECOT ══════════════════════ -->
+    <div class="topic-section" id="dovecot">
+      <div class="sch-sep"><span class="sep-icon">⚙️</span> Dovecot – Konfiguration</div>
+      <div class="info-card">
+        <div class="card-header purple" onclick="toggle(this)">
+          <span class="card-header-icon">📂</span>
+          <span class="card-header-title">Wichtige Konfig-Dateien unter <code>/etc/dovecot/conf.d/</code></span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="qa-list">
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Datei</span><code>10-auth.conf</code></div>
+              <div class="qa-a"><span class="a-label">A</span>Authentifizierungs-Einstellungen. Wichtigste Zeile:
+                <code>disable_plaintext_auth = no</code> (Plaintext erlauben). Bei <code>yes</code> (Standard) werden
+                SSL/TLS-Schlüssel benötigt – ohne Verschlüsselung würde die Anmeldung verweigert.
+              </div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Datei</span><code>10-mail.conf</code></div>
+              <div class="qa-a"><span class="a-label">A</span>Pfad zur Inbox des Benutzers. Wichtige Zeile:
+                <code>mail_location = maildir:/var/mail/%u</code> – gibt an, wo die E-Mails gespeichert werden.
+                (<code>%u</code> = vollständiger Benutzername)
+              </div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Datei</span><code>10-ssl.conf</code></div>
+              <div class="qa-a"><span class="a-label">A</span>SSL/TLS-Konfiguration: Pfade zu <code>ssl_cert</code>
+                (Zertifikat / öffentlich) und <code>ssl_key</code> (privater Schlüssel) sowie das verwendete
+                Verschlüsselungsverfahren.</div>
+            </div>
+          </div>
+          <div class="config-block" style="margin-top:1rem">
+            <pre><span class="c-comment"># Weg zu den Konfig-Dateien</span>
+<span class="c-cmd">cd /etc/dovecot/</span>
+<span class="c-cmd">ls -la</span>
+<span class="c-cmd">cd conf.d/</span>
+<span class="c-cmd">nano 10-auth.conf</span>   <span class="c-comment"># → disable_plaintext_auth = no</span>
+<span class="c-cmd">nano 10-mail.conf</span>   <span class="c-comment"># → mail_location = maildir:/var/mail/%u</span>
+<span class="c-cmd">nano 10-ssl.conf</span>    <span class="c-comment"># → ssl_cert/ssl_key Pfade</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ POSTFIX ══════════════════════ -->
+    <div class="topic-section" id="postfix">
+      <div class="sch-sep"><span class="sep-icon">⚙️</span> Postfix – Konfiguration</div>
+      <div class="info-card">
+        <div class="card-header amber" onclick="toggle(this)">
+          <span class="card-header-icon">📄</span>
+          <span class="card-header-title"><code>/etc/postfix/main.cf</code> – Wichtige Einstellungen</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="note-box">
+            <span class="note-icon">🛠️</span>
+            <p>Konfiguration wird meist über <strong><code>dpkg-reconfigure postfix</code></strong> eingerichtet (graue
+              Menü-Fenster, schrittweise Eingabe). Kann auch direkt in <code>main.cf</code> geändert werden.</p>
+          </div>
+          <div class="config-block" style="margin-top:0.8rem">
+            <pre><span class="c-comment"># Wichtige Zeilen in /etc/postfix/main.cf</span>
+
+<span class="c-key">inet_protocols</span>        = <span class="c-val">ipv4</span>
+<span class="c-key">mynetworks</span>            = <span class="c-val">10.5.252.0/24</span>      <span class="c-comment"># vertrauenswürdige Netze (gegen Spam!)</span>
+<span class="c-key">myorigin</span>              = <span class="c-val">mx.nachname-plattling.de</span>  <span class="c-comment"># Name des Mailservers</span>
+<span class="c-key">mydestination</span>         = <span class="c-val">mx-lweikl-plattling.de</span>    <span class="c-comment"># Domains, für die dieser Server zuständig ist</span>
+<span class="c-key">smtpd_tls_security_level</span>  = <span class="c-val">may</span>              <span class="c-comment"># TLS optional (nicht erzwungen)</span>
+<span class="c-key">smtp_tls_security_level</span>   = <span class="c-val">may</span></pre>
+          </div>
+          <table class="acl-table" style="margin-top:0.9rem">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Bedeutung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>mynetworks</code></td>
+                <td>Vertrauenswürdige Netzwerke – nur diese dürfen den Mailserver als Relay nutzen (Spam-Schutz!)</td>
+              </tr>
+              <tr>
+                <td><code>mydestination</code></td>
+                <td>Domains, für die dieser Mailserver zuständig ist – E-Mails an diese Adressen werden lokal zugestellt
+                </td>
+              </tr>
+              <tr>
+                <td><code>myorigin</code></td>
+                <td>Name/Hostname des Mailservers – erscheint im „From"-Header</td>
+              </tr>
+              <tr>
+                <td><code>tls_security_level = may</code></td>
+                <td>TLS kann genutzt werden, ist aber nicht Pflicht</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ DNS / MX ══════════════════════ -->
+    <div class="topic-section" id="dns">
+      <div class="sch-sep"><span class="sep-icon">🌐</span> DNS &amp; MX-Records</div>
+      <div class="info-card">
+        <div class="card-header teal" onclick="toggle(this)">
+          <span class="card-header-icon">🔍</span>
+          <span class="card-header-title">Wie findet der Mailserver den Empfänger? – nslookup &amp; MX</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="qa-list">
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Frage</span>Wie findet Postfix den Mailserver des Empfängers?
+              </div>
+              <div class="qa-a"><span class="a-label">A</span>Über das <strong>DNS-System</strong> (verteiltes System).
+                Postfix fragt: <em>„Wer ist der Mail-Exchanger für diese Domain?"</em>. Der eigene DNS fragt rekursiv
+                weiter, bis eine Antwort kommt.</div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Befehl</span>Wie fragt man per Kommandozeile nach dem MX-Eintrag?
+              </div>
+              <div class="qa-a"><span class="a-label">A</span><code>nslookup -type=MX dachs-plattling.de</code></div>
+            </div>
+          </div>
+          <div class="config-block" style="margin-top:0.8rem">
+            <pre><span class="c-cmd">nslookup -type=MX weikl-plattling.de</span>
+
+<span class="c-comment"># Beispiel-Antwort:</span>
+Server:    127.0.0.1
+Address:   127.0.0.1#53
+
+<span class="c-val">weikl-plattling.de  mail exchanger = 5  mx.weikl-plattling.de.</span>
+<span class="c-val">weikl-plattling.de  mail exchanger = 10 mail.weikl-plattling.de.</span>
+<span class="c-comment"># Niedrigere Zahl = höhere Priorität!</span></pre>
+          </div>
+          <div class="tag-row">
+            <span class="tag teal">Niedrigere MX-Zahl = höhere Priorität</span>
+            <span class="tag">DNS läuft auf Port 53</span>
+            <span class="tag purple">ARP = Address Resolution Protocol</span>
+          </div>
+          <div class="note-box" style="margin-top:0.8rem">
+            <span class="note-icon">📡</span>
+            <p><strong>ARP</strong> (Address Resolution Protocol): Fragt ins Netz „Wer hat die MAC-Adresse zur IP
+              10.5.252.5?" → Antwort enthält die MAC. Sichtbar machen mit: <code>arp -a</code> (ARP-Cache anzeigen)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ IPTABLES ══════════════════════ -->
+    <div class="topic-section" id="iptables">
+      <div class="sch-sep"><span class="sep-icon">🔥</span> IPTables – Firewall</div>
+
+      <div class="info-card">
+        <div class="card-header green" onclick="toggle(this)">
+          <span class="card-header-icon">📖</span>
+          <span class="card-header-title">Grundprinzip &amp; wichtige Konzepte</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="qa-list">
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Was</span>Was ist IPTables?</div>
+              <div class="qa-a"><span class="a-label">A</span>Ein <strong>IP-Filter / Firewall</strong> unter Linux.
+                Erlaubt und sperrt Protokolle und Dienste von/zu einzelnen Rechnern.</div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">⚠️</span>Was ist das wichtigste Prinzip bei IPTables-Regeln?</div>
+              <div class="qa-a"><span class="a-label">A</span><strong>Reihenfolge ist entscheidend!</strong> Die Regeln
+                werden von oben nach unten abgearbeitet – die erste passende Regel gewinnt. Steht ganz unten ein
+                „Erlaube alles", zählen spezifische Regeln darüber nicht mehr.</div>
+            </div>
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Prüfung</span>Wie fragt die Lehrerin in der Prüfung?</div>
+              <div class="qa-a"><span class="a-label">A</span>Sie gibt einen <strong>Befehl vor</strong> und ihr müsst
+                ihn mit den richtigen Parametern bestücken <em>oder</em> die richtige Reihenfolge von Regeln bestimmen.
+                Die exakte Syntax muss bekannt sein!</div>
+            </div>
+          </div>
+          <div class="note-box" style="margin-top:0.8rem">
+            <span class="note-icon">⚠️</span>
+            <p><strong>Reihenfolge-Beispiel:</strong> Eine Regel „IP sperren" muss <em>vor</em> der Regel „Web erlauben"
+              in der Chain stehen. Sonst greift die Web-Erlaubnis zuerst und die IP-Sperre hat keine Wirkung.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-header green" onclick="toggle(this)">
+          <span class="card-header-icon">🌐</span>
+          <span class="card-header-title">DNS-Regeln mit IPTables – TCP vs. UDP</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+
+          <!-- TCP vs UDP Erklärung -->
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">🔗 TCP – Transmission Control Protocol</div>
+              <ul>
+                <li><strong>Verbindungsorientiert</strong> – baut zuerst eine Verbindung auf</li>
+                <li>Verwendet den <strong>3-Wege-Handshake</strong>: SYN → SYN-ACK → ACK</li>
+                <li>Jedes Paket wird <strong>bestätigt</strong> (zuverlässig)</li>
+                <li>DNS nutzt TCP bei <strong>großen Antworten</strong> (&gt; 512 Byte, z. B. Zonentransfer)</li>
+              </ul>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">📦 UDP – User Datagram Protocol</div>
+              <ul>
+                <li><strong>Verbindungslos</strong> – keine Verbindung, einfach losschicken</li>
+                <li><strong>Kein Handshake</strong>, keine Bestätigung</li>
+                <li>Schneller, aber unzuverlässiger als TCP</li>
+                <li>DNS nutzt <strong>normalerweise UDP</strong> (Port 53) für normale Anfragen</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note-box" style="margin-top:0.8rem">
+            <span class="note-icon">💡</span>
+            <p><strong>Merksatz:</strong> DNS macht <em>normalerweise</em> UDP – schnell und ohne Verbindungsaufbau. TCP
+              kommt bei DNS nur in Ausnahmefällen zum Einsatz (z. B. Zonentransfer oder Antwort &gt; 512 Byte). Deshalb
+              müssen in IPTables <strong>beide Protokolle</strong> für Port 53 erlaubt werden!</p>
+          </div>
+
+          <!-- Erklärung dport / sport -->
+          <div class="info-grid" style="margin-top:0.8rem">
+            <div class="info-box">
+              <div class="info-box-title">📥 --dport (destination port)</div>
+              <ul>
+                <li>Ziel-Port des Pakets</li>
+                <li>„Das Paket <em>geht an</em> Port 53"</li>
+                <li>Eingehend: Client fragt <em>meinen</em> DNS → <code>INPUT --dport 53</code></li>
+                <li>Ausgehend: Ich frage <em>fremden</em> DNS → <code>OUTPUT --dport 53</code></li>
+              </ul>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">📤 --sport (source port)</div>
+              <ul>
+                <li>Quell-Port des Pakets</li>
+                <li>„Das Paket <em>kommt von</em> Port 53"</li>
+                <li>Eingehend: Antwort des fremden DNS → <code>INPUT --sport 53</code></li>
+                <li>Ausgehend: Mein DNS antwortet → <code>OUTPUT --sport 53</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Die 4 Fälle als Tabelle -->
+          <table class="acl-table" style="margin-top:0.9rem">
+            <thead>
+              <tr>
+                <th>Richtung</th>
+                <th>Bedeutung</th>
+                <th>Regel (TCP &amp; UDP)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🟢 Anfrage <em>empfangen</em></td>
+                <td>Ein Client fragt <strong>meinen</strong> DNS-Server</td>
+                <td><code>INPUT --dport 53</code></td>
+              </tr>
+              <tr>
+                <td>🟢 Antwort <em>zurückschicken</em></td>
+                <td>Mein DNS antwortet dem Client</td>
+                <td><code>OUTPUT --sport 53</code></td>
+              </tr>
+              <tr>
+                <td>🔵 Anfrage <em>wegschicken</em></td>
+                <td>Ich frage einen <strong>fremden</strong> DNS-Server</td>
+                <td><code>OUTPUT --dport 53</code></td>
+              </tr>
+              <tr>
+                <td>🔵 Antwort <em>hereinlassen</em></td>
+                <td>Der fremde DNS antwortet mir</td>
+                <td><code>INPUT --sport 53</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Config Block mit allen Regeln -->
+          <div class="config-block" style="margin-top:0.9rem">
+            <pre><span class="c-comment"># ── TCP: Verbindungsaufbau mit 3-Wege-Handshake ──────────────────────────</span>
+<span class="c-comment"># DNS macht das normalerweise NICHT – hier nur für Vollständigkeit / Ausnahmefälle</span>
+
+<span class="c-comment"># Anfragen AUF meinen DNS-Server erlauben (jemand fragt mich)</span>
+<span class="c-cmd">iptables -A INPUT  -p tcp --dport 53 -j ACCEPT</span>
+<span class="c-cmd">iptables -A OUTPUT -p tcp --sport 53 -j ACCEPT</span>
+
+<span class="c-comment"># Anfragen VON mir WEGschicken (ich frage einen fremden DNS)</span>
+<span class="c-cmd">iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT</span>
+<span class="c-cmd">iptables -A INPUT  -p tcp --sport 53 -j ACCEPT</span>
+
+<span class="c-comment"># ── UDP: User Datagram Protocol ──────────────────────────────────────────</span>
+<span class="c-comment"># Verbindungslos, keine Bestätigung – DNS nutzt NORMALERWEISE UDP!</span>
+
+<span class="c-comment"># Anfragen AUF meinen DNS-Server erlauben (jemand fragt mich)</span>
+<span class="c-cmd">iptables -A INPUT  -p udp --dport 53 -j ACCEPT</span>
+<span class="c-cmd">iptables -A OUTPUT -p udp --sport 53 -j ACCEPT</span>
+
+<span class="c-comment"># Anfragen VON mir WEGschicken (ich frage einen fremden DNS)</span>
+<span class="c-cmd">iptables -A OUTPUT -p udp --dport 53 -j ACCEPT</span>
+<span class="c-cmd">iptables -A INPUT  -p udp --sport 53 -j ACCEPT</span>
+
+<span class="c-comment"># Aktuelle Regeln anzeigen (numerisch, ohne DNS-Auflösung)</span>
+<span class="c-cmd">iptables -L -n</span></pre>
+          </div>
+          <div class="tag-row">
+            <span class="tag green">UDP Port 53 = normaler DNS</span>
+            <span class="tag amber">TCP Port 53 = Zonentransfer / große Antworten</span>
+            <span class="tag">INPUT --dport = Anfrage kommt an</span>
+            <span class="tag purple">OUTPUT --dport = Anfrage geht raus</span>
+            <span class="tag teal">iptables -L -n = Regeln anzeigen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-header green" onclick="toggle(this)">
+          <span class="card-header-icon">📡</span>
+          <span class="card-header-title">tcpdump – Netzwerk-Traffic beobachten</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="config-block">
+            <pre><span class="c-comment"># Beobachte Traffic auf Interface enp0s8 von/zu Host 10.5.252.15</span>
+<span class="c-cmd">tcpdump -i enp0s8 host 10.5.252.15</span>
+
+<span class="c-comment"># Port 80  = unverschlüsselt (HTTP)</span>
+<span class="c-comment"># Port 443 = verschlüsselt  (HTTPS)</span>
+<span class="c-comment"># → 3-Wege-Handshake sichtbar (SYN / SYN-ACK / ACK)</span></pre>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Port 80 = HTTP (unverschlüsselt)</span>
+            <span class="tag green">Port 443 = HTTPS (verschlüsselt)</span>
+            <span class="tag amber">3-Wege-Handshake: SYN → SYN-ACK → ACK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ SQUID ══════════════════════════ -->
+    <div class="topic-section" id="squid">
+      <div class="sch-sep"><span class="sep-icon">🦑</span> Squid – Forward Proxy</div>
+
+      <div class="info-card">
+        <div class="card-header amber" onclick="toggle(this)">
+          <span class="card-header-icon">📖</span>
+          <span class="card-header-title">Grundlagen &amp; 3 Aufgaben des Forward-Proxys</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="qa-list">
+            <div class="qa-item">
+              <div class="qa-q"><span class="q-label">Was</span>Was ist Squid und welcher Typ ist es?</div>
+              <div class="qa-a"><span class="a-label">A</span>Squid ist der <strong>Forward-Proxy</strong> unter Linux
+                (kein Reverse Proxy). Läuft auf <strong>Schicht 7</strong> (Anwendungsschicht).</div>
+            </div>
+          </div>
+          <div class="info-grid" style="margin-top:0.8rem">
+            <div class="info-box">
+              <div class="info-box-title" style="color:#b45309">1️⃣ Caching</div>
+              <ul>
+                <li>Speichert <strong>statische Web-Inhalte</strong> zwischen</li>
+                <li>Bedient Anfragen schneller aus dem Cache</li>
+                <li>Beispiel: oft aufgerufene KFZ-Kleinteile in der Automobilbranche</li>
+              </ul>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title" style="color:#b45309">2️⃣ Eine IP für alle</div>
+              <ul>
+                <li>Nur <strong>eine IP nach außen</strong> für das gesamte Netz</li>
+                <li>Proxy = <em>Stellvertreter</em> – besorgt Seiten im Namen der Clients</li>
+                <li>Empfängt Antworten und verteilt sie intern</li>
+              </ul>
+            </div>
+            <div class="info-box" style="grid-column: 1 / -1">
+              <div class="info-box-title" style="color:#b45309">3️⃣ Zugriffskontrolle (ACL)</div>
+              <ul>
+                <li>Bestimmt, <strong>welche Seiten erlaubt oder gesperrt</strong> sind</li>
+                <li>Regeln über ACL-Listen in der <code>squid.conf</code></li>
+                <li>Reihenfolge der Regeln ist entscheidend!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-header amber" onclick="toggle(this)">
+          <span class="card-header-icon">📄</span>
+          <span class="card-header-title">squid.conf – Konfiguration &amp; Setup</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="config-block">
+            <pre><span class="c-comment"># Konfigurationsdatei ist sehr groß (fast ein Handbuch)</span>
+<span class="c-comment"># → nur aktive Zeilen anzeigen:</span>
+<span class="c-cmd">cat squid.conf | grep -v "^#" | grep -v "^$"</span>
+
+<span class="c-comment"># Sicherungskopie anlegen (IMMER zuerst!):</span>
+<span class="c-cmd">cp squid.conf squid.conf.orig</span>
+
+<span class="c-comment"># Bereinigte Version als neue Config:</span>
+<span class="c-cmd">cat squid.conf | grep -v "^#" | grep -v "^$" > squid2.conf</span>
+<span class="c-cmd">cp squid2.conf squid.conf</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════ ACL ══════════════════════════ -->
+    <div class="topic-section" id="acl">
+      <div class="sch-sep"><span class="sep-icon">📋</span> Squid ACL – Syntax &amp; Regeln</div>
+
+      <div class="info-card">
+        <div class="card-header amber" onclick="toggle(this)">
+          <span class="card-header-icon">⚖️</span>
+          <span class="card-header-title">ACL-Typen &amp; Syntax</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <table class="acl-table">
+            <thead>
+              <tr>
+                <th>ACL-Typ</th>
+                <th>Beschreibung</th>
+                <th>Beispiel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>src</code></td>
+                <td>Quell-IP oder Netz</td>
+                <td><code>acl tobias src 10.11.111.7</code></td>
+              </tr>
+              <tr>
+                <td><code>url_regex</code></td>
+                <td>URL-Muster (regulärer Ausdruck, case-insensitive mit <code>-i</code>)</td>
+                <td><code>acl shopping url_regex -i amazon ebay</code></td>
+              </tr>
+              <tr>
+                <td><code>dstdomain</code></td>
+                <td>Ziel-Domain</td>
+                <td><code>acl social dstdomain facebook.com</code></td>
+              </tr>
+              <tr>
+                <td><code>port</code></td>
+                <td>Ziel-Port</td>
+                <td><code>acl SSL_ports port 443</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="config-block" style="margin-top:0.9rem">
+            <pre><span class="c-comment"># Beispiel aus der Stunde:</span>
+<span class="c-cmd">acl shopping url_regex -i amazon ebay</span>   <span class="c-comment"># Shopping-Seiten</span>
+<span class="c-cmd">acl tobias src 10.11.111.7</span>              <span class="c-comment"># Tobias' Rechner</span>
+
+<span class="c-comment"># → Regeln (Reihenfolge entscheidend!):</span>
+<span class="c-val">http_access deny tobias</span>                  <span class="c-comment"># Tobias blockieren</span>
+<span class="c-val">http_access deny shopping</span>               <span class="c-comment"># Shopping-Seiten sperren</span>
+<span class="c-val">http_access allow localnet</span>              <span class="c-comment"># Rest erlauben</span></pre>
+          </div>
+          <div class="note-box" style="margin-top:0.8rem">
+            <span class="note-icon">⚠️</span>
+            <p><strong>Syntax muss sitzen!</strong> Die Lehrerin gibt die Struktur vor – ihr müsst die richtigen
+              ACL-Namen, Typen und <code>http_access</code>-Regeln eintragen. Die <strong>Reihenfolge</strong> (deny vor
+              allow) ist der häufigste Fehler!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="card-header-icon">🔄</span>
+          <span class="card-header-title">Reihenfolgen-Prinzip – Vergleich IPTables vs. Squid ACL</span>
+          <span class="card-toggle">▼</span>
+        </div>
+        <div class="card-body open">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-box-title">🔥 IPTables</div>
+              <ul>
+                <li>Regeln werden von <strong>oben nach unten</strong> verarbeitet</li>
+                <li>Erste passende Regel greift</li>
+                <li><strong>Spezifisches vor Allgemeinem</strong></li>
+                <li>IP-Sperren <em>vor</em> globalen Erlaubnissen</li>
+              </ul>
+            </div>
+            <div class="info-box">
+              <div class="info-box-title">🦑 Squid ACL</div>
+              <ul>
+                <li>Regeln werden von <strong>oben nach unten</strong> verarbeitet</li>
+                <li>Erste passende <code>http_access</code>-Regel greift</li>
+                <li><strong>deny</strong> vor <strong>allow</strong> für Sperren</li>
+                <li>ACL-Definition ≠ Regel – erst <code>http_access</code> wirkt!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="sch-footer">
+      SA3 Prüfungsvorbereitung · F11 HUB · Viel Erfolg! 🎓
+    </div>
+
+  </div><!-- end sch-body -->
+
+  <script>
+    function toggle(header) {
+      const body = header.nextElementSibling;
+      const arrow = header.querySelector('.card-toggle');
+      if (body.classList.contains('open')) {
+        body.classList.remove('open');
+        arrow.classList.remove('open');
+      } else {
+        body.classList.add('open');
+        arrow.classList.add('open');
+      }
+    }
+  </script>
+</body>
+
+</html>

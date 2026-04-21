@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dorfchronik – Tutorial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --bg:     #1a1510;
+  --bg2:    #231c14;
+  --bg3:    #2d2318;
+  --border: #5a4a30;
+  --border2:#7a6040;
+  --gold:   #d4a840;
+  --gold2:  #f0c060;
+  --cream:  #e8d8b0;
+  --muted:  #8a7a60;
+  --green:  #5a8a40;
+  --green2: #7ab060;
+  --red2:   #c05040;
+  --amber2: #e09050;
+  --blue2:  #5a88a8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'Crimson Text', Georgia, serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Hintergrund-Textur */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 15% 15%, rgba(90,70,30,0.1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(60,40,10,0.1) 0%, transparent 55%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ---- PROGRESS DOTS ---- */
+#progress {
+  position: fixed;
+  top: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; z-index: 50;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 1px solid var(--border2);
+  transition: all 0.4s;
+  cursor: pointer;
+}
+.dot.active { background: var(--gold); border-color: var(--gold2); transform: scale(1.4); }
+.dot.done   { background: var(--green); border-color: var(--green2); }
+
+/* ---- SLIDE WRAPPER ---- */
+#stage {
+  position: relative; z-index: 1;
+  width: 860px; max-width: 98vw;
+  min-height: 480px;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; gap: 32px;
+  align-items: center;
+  opacity: 0; pointer-events: none;
+  transform: translateY(18px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.slide.active {
+  opacity: 1; pointer-events: all;
+  transform: translateY(0);
+}
+.slide.out {
+  opacity: 0;
+  transform: translateY(-18px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ---- VISUAL PANEL ---- */
+.visual {
+  flex: 0 0 340px;
+  height: 340px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.visual::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(212,168,64,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ---- TEXT PANEL ---- */
+.info {
+  flex: 1;
+  display: flex; flex-direction: column;
+  gap: 16px;
+}
+
+.step-num {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.slide-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: var(--gold2);
+  line-height: 1.3;
+  text-shadow: 0 0 30px rgba(212,168,64,0.25);
+}
+
+.slide-body {
+  font-size: 15px;
+  color: var(--cream);
+  line-height: 1.65;
+  opacity: 0.9;
+}
+
+.slide-body b { color: var(--gold); font-weight: 600; }
+.slide-body .tag {
+  display: inline-block;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 7px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--amber2);
+  margin: 0 2px;
+}
+
+.chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 4px;
+}
+.chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 13px;
+  display: flex; align-items: center; gap: 6px;
+}
+.chip .clabel { font-family: 'Cinzel', serif; font-size: 11px; color: var(--muted); }
+.chip .cval   { color: var(--gold2); font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600; }
+.chip .crate  { font-size: 11px; color: var(--green2); }
+
+/* ---- NAV ---- */
+#nav {
+  position: fixed;
+  bottom: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 14px; align-items: center;
+  z-index: 50;
+}
+
+.nav-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--cream);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  padding: 9px 22px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.nav-btn:hover { border-color: var(--gold); color: var(--gold2); }
+.nav-btn.primary {
+  background: rgba(212,168,64,0.12);
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+.nav-btn.primary:hover { background: rgba(212,168,64,0.22); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ---- SLIDE-SPECIFIC VISUALS ---- */
+
+/* --- Slide 0: Überblick --- */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 18px;
+  height: 100%;
+}
+.ov-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: border-color 0.2s;
+}
+.ov-card:hover { border-color: var(--border2); }
+.ov-icon { font-size: 20px; }
+.ov-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--gold); }
+.ov-desc { font-size: 11px; color: var(--muted); font-style: italic; line-height: 1.35; }
+
+/* --- Slide 1: Ressourcen --- */
+.res-bar-demo {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  justify-content: center; height: 100%;
+}
+.rbd-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.rbd-icon { font-size: 18px; width: 24px; text-align: center; }
+.rbd-label { font-family: 'Cinzel', serif; font-size: 11px; color: var(--muted); width: 60px; }
+.rbd-bar-wrap { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+.rbd-bar { height: 100%; border-radius: 4px; }
+.rbd-val { font-family: 'Cinzel', serif; font-size: 12px; color: var(--gold2); width: 36px; text-align: right; }
+.rbd-rate { font-size: 11px; width: 44px; text-align: right; }
+.rbd-rate.pos { color: var(--green2); }
+.rbd-rate.neg { color: var(--red2); }
+
+/* animate bars on slide-active */
+.rbd-bar { width: 0; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.slide.active .rbd-bar { }
+
+/* --- Slide 2: Gebäude kaufen --- */
+.buy-demo {
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  justify-content: center; height: 100%;
+}
+.bd-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  position: relative;
+  cursor: default;
+}
+.bd-card.highlight {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(212,168,64,0.15);
+}
+.bd-card.blocked { opacity: 0.45; }
+.bd-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.bd-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--gold); }
+.bd-cnt  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--muted); background: var(--bg); padding: 1px 6px; border-radius: 2px; border: 1px solid var(--border); }
+.bd-prod { font-size: 11px; color: var(--green2); margin-bottom: 5px; }
+.bd-costs { display: flex; gap: 5px; flex-wrap: wrap; }
+.bd-cost-tag { background: var(--bg); border: 1px solid var(--border); padding: 2px 6px; border-radius: 2px; font-size: 11px; color: var(--cream); }
+.bd-cost-tag.miss { border-color: var(--red2); color: var(--red2); }
+.bd-workers { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.bd-lock { font-size: 11px; color: var(--red2); margin-top: 4px; }
+
+/* --- Slide 3: Bevölkerung --- */
+.pop-demo {
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  justify-content: center; height: 100%;
+}
+.pd-pop-bar {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pd-label { font-family: 'Cinzel', serif; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+.pd-bar-wrap { height: 10px; background: var(--bg3); border-radius: 5px; border: 1px solid var(--border); overflow: hidden; }
+.pd-bar-fill { height: 100%; background: var(--green); border-radius: 5px; transition: width 1.4s cubic-bezier(.4,0,.2,1); width: 0; }
+.slide.active .pd-bar-fill { }
+.pd-txt { font-family: 'Cinzel', serif; font-size: 12px; color: var(--gold2); }
+.pd-chain {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.pd-node {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  text-align: center;
+}
+.pd-node .pdn-top { font-size: 18px; margin-bottom: 2px; }
+.pd-node .pdn-label { font-family: 'Cinzel', serif; font-size: 10px; color: var(--muted); }
+.pd-arrow { color: var(--border2); font-size: 16px; }
+
+/* --- Slide 4: Moral --- */
+.moral-demo {
+  padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  justify-content: center; height: 100%;
+}
+.md-meter {
+  position: relative; height: 28px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  overflow: hidden;
+}
+.md-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 1.5s cubic-bezier(.4,0,.2,1);
+  width: 0;
+}
+.md-fill.high { background: linear-gradient(90deg, var(--green), var(--green2)); }
+.md-fill.mid  { background: linear-gradient(90deg, #c07030, #e09050); }
+.md-fill.low  { background: linear-gradient(90deg, #a04030, #c05040); }
+.md-label {
+  position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+  font-family: 'Cinzel', serif; font-size: 11px; color: rgba(255,255,255,0.7);
+}
+.md-effects {
+  display: flex; flex-direction: column; gap: 7px;
+}
+.md-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px;
+}
+.md-icon { font-size: 16px; width: 22px; text-align: center; }
+.md-text { color: var(--cream); flex: 1; }
+.md-tag { font-family: 'Cinzel', serif; font-size: 11px; padding: 2px 8px; border-radius: 3px; border: 1px solid; }
+.md-tag.good  { color: var(--green2); border-color: var(--green); }
+.md-tag.bad   { color: var(--red2);   border-color: var(--red2); }
+.md-tag.warn  { color: var(--amber2); border-color: var(--amber2); }
+
+/* --- Slide 5: Forschung --- */
+.research-demo {
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  justify-content: center; height: 100%;
+}
+.rd-branch { display: flex; align-items: center; gap: 6px; }
+.rd-node {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 7px 8px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.rd-node.done  { border-color: var(--green); background: rgba(90,138,64,0.12); }
+.rd-node.avail { border-color: var(--gold); background: rgba(212,168,64,0.08); }
+.rd-node.lock  { opacity: 0.4; }
+.rd-node .rdn-name  { font-family: 'Cinzel', serif; font-size: 10px; color: var(--gold); }
+.rd-node .rdn-eff   { font-size: 10px; color: var(--muted); font-style: italic; margin-top: 2px; }
+.rd-node.done .rdn-name { color: var(--green2); }
+.rd-arrow { color: var(--border2); font-size: 13px; flex-shrink: 0; }
+.rd-branch-label { font-family: 'Cinzel', serif; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; width: 68px; flex-shrink: 0; }
+
+/* --- Slide 6: Ereignisse --- */
+.event-demo {
+  padding: 18px; display: flex; flex-direction: column; gap: 10px;
+  justify-content: center; height: 100%;
+}
+.ed-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 14px;
+}
+.ed-title { font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold2); margin-bottom: 5px; }
+.ed-text  { font-size: 12px; color: var(--cream); font-style: italic; line-height: 1.45; margin-bottom: 10px; }
+.ed-btns  { display: flex; flex-direction: column; gap: 5px; }
+.ed-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--cream);
+  padding: 7px 10px;
+  font-family: 'Crimson Text', serif;
+  font-size: 12px;
+  cursor: default;
+  border-radius: 2px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.ed-btn.chosen { border-color: var(--gold); color: var(--gold2); }
+.ed-tip { font-size: 12px; color: var(--muted); font-style: italic; }
+
+/* ---- TITLE SCREEN ---- */
+#title-screen {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.6s ease;
+}
+#title-screen.hidden { opacity: 0; pointer-events: none; }
+.ts-title {
+  font-family: 'Cinzel', serif;
+  font-size: 36px; font-weight: 700;
+  color: var(--gold2);
+  text-shadow: 0 0 40px rgba(212,168,64,0.4);
+  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+}
+.ts-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 13px; color: var(--muted);
+  letter-spacing: 0.2em;
+  margin-bottom: 40px;
+}
+.ts-btn {
+  background: rgba(212,168,64,0.12);
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  font-family: 'Cinzel', serif;
+  font-size: 13px; letter-spacing: 0.15em;
+  padding: 12px 36px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.ts-btn:hover { background: rgba(212,168,64,0.22); }
+.ts-deco {
+  font-size: 42px; margin-bottom: 20px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 0.9; }
+  50%      { transform: scale(1.06); opacity: 1; }
+}
+
+/* ---- FINISH SCREEN ---- */
+#finish-screen {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+#finish-screen.visible { opacity: 1; pointer-events: all; }
+.fs-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 2.5s ease-in-out infinite; }
+.fs-title { font-family: 'Cinzel', serif; font-size: 28px; color: var(--gold2); margin-bottom: 10px; text-shadow: 0 0 30px rgba(212,168,64,0.3); }
+.fs-sub   { font-size: 15px; color: var(--muted); font-style: italic; margin-bottom: 32px; }
+.fs-grid  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 36px; }
+.fs-item  { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; text-align: center; }
+.fs-item .fsi-icon  { font-size: 20px; margin-bottom: 4px; }
+.fs-item .fsi-label { font-family: 'Cinzel', serif; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+.fs-btn {
+  background: rgba(212,168,64,0.12);
+  border: 1px solid var(--gold); color: var(--gold2);
+  font-family: 'Cinzel', serif; font-size: 13px;
+  padding: 12px 36px; cursor: pointer; border-radius: 3px;
+  letter-spacing: 0.12em; transition: all 0.2s;
+}
+.fs-btn:hover { background: rgba(212,168,64,0.25); }
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<div id="title-screen">
+  <div class="ts-deco">⚔</div>
+  <div class="ts-title">Dorfchronik</div>
+  <div class="ts-sub">SCHNELLSTART · TUTORIAL</div>
+  <button class="ts-btn" onclick="startTutorial()">Tutorial beginnen</button>
+</div>
+
+<!-- FINISH -->
+<div id="finish-screen">
+  <div class="fs-icon">🏰</div>
+  <div class="fs-title">Bereit zu herrschen</div>
+  <div class="fs-sub">Du kennst nun die Grundlagen. Viel Erfolg, Herrscher!</div>
+  <div class="fs-grid">
+    <div class="fs-item"><div class="fsi-icon">🪵</div><div class="fsi-label">Ressourcen ernten</div></div>
+    <div class="fs-item"><div class="fsi-icon">🏗</div><div class="fsi-label">Gebäude bauen</div></div>
+    <div class="fs-item"><div class="fsi-icon">👷</div><div class="fsi-label">Arbeiter verwalten</div></div>
+    <div class="fs-item"><div class="fsi-icon">😊</div><div class="fsi-label">Moral hoch halten</div></div>
+    <div class="fs-item"><div class="fsi-icon">🔬</div><div class="fsi-label">Forschen</div></div>
+    <div class="fs-item"><div class="fsi-icon">⚠</div><div class="fsi-label">Ereignisse meistern</div></div>
+  </div>
+  <button class="fs-btn" onclick="restart()">↺ Nochmal ansehen</button>
+</div>
+
+<!-- PROGRESS -->
+<div id="progress"></div>
+
+<!-- SLIDES -->
+<div id="stage">
+
+  <!-- SLIDE 0: Überblick -->
+  <div class="slide" id="slide-0">
+    <div class="visual">
+      <div class="overview-grid">
+        <div class="ov-card">
+          <span class="ov-icon">🪵</span>
+          <span class="ov-name">Ressourcen</span>
+          <span class="ov-desc">Holz, Stein, Nahrung, Gold & Eisen – dein Fundament</span>
+        </div>
+        <div class="ov-card">
+          <span class="ov-icon">🏗</span>
+          <span class="ov-name">Gebäude</span>
+          <span class="ov-desc">Produzieren Ressourcen & schalten Neues frei</span>
+        </div>
+        <div class="ov-card">
+          <span class="ov-icon">👷</span>
+          <span class="ov-name">Bevölkerung</span>
+          <span class="ov-desc">Arbeiter betreiben Gebäude – mehr Volk = mehr Kraft</span>
+        </div>
+        <div class="ov-card">
+          <span class="ov-icon">😊</span>
+          <span class="ov-name">Moral</span>
+          <span class="ov-desc">Zufriedenes Volk arbeitet effizienter</span>
+        </div>
+        <div class="ov-card">
+          <span class="ov-icon">🔬</span>
+          <span class="ov-name">Forschung</span>
+          <span class="ov-desc">Permanente Boni & neue Gebäude freischalten</span>
+        </div>
+        <div class="ov-card">
+          <span class="ov-icon">⚠</span>
+          <span class="ov-name">Ereignisse</span>
+          <span class="ov-desc">Zufällige Herausforderungen – reagiere klug!</span>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 1 von 7</div>
+      <div class="slide-title">Das große Bild</div>
+      <div class="slide-body">
+        Dorfchronik ist ein <b>Aufbauspiel</b> – du führst ein kleines Dorf von einer Siedlung zu einem Königreich.<br><br>
+        Sechs Systeme greifen ineinander. Lerne sie, und dein Dorf blüht auf.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: Ressourcen -->
+  <div class="slide" id="slide-1">
+    <div class="visual">
+      <div class="res-bar-demo">
+        <div class="rbd-row">
+          <span class="rbd-icon">🪵</span>
+          <span class="rbd-label">Holz</span>
+          <div class="rbd-bar-wrap"><div class="rbd-bar" style="background:#7a5a30;" data-w="65"></div></div>
+          <span class="rbd-val">52</span>
+          <span class="rbd-rate pos">+1.2/s</span>
+        </div>
+        <div class="rbd-row">
+          <span class="rbd-icon">🪨</span>
+          <span class="rbd-label">Stein</span>
+          <div class="rbd-bar-wrap"><div class="rbd-bar" style="background:#6a6a7a;" data-w="40"></div></div>
+          <span class="rbd-val">24</span>
+          <span class="rbd-rate pos">+0.9/s</span>
+        </div>
+        <div class="rbd-row">
+          <span class="rbd-icon">🌾</span>
+          <span class="rbd-label">Nahrung</span>
+          <div class="rbd-bar-wrap"><div class="rbd-bar" style="background:#5a8a40;" data-w="30"></div></div>
+          <span class="rbd-val">15</span>
+          <span class="rbd-rate neg">−0.2/s</span>
+        </div>
+        <div class="rbd-row">
+          <span class="rbd-icon">🪙</span>
+          <span class="rbd-label">Gold</span>
+          <div class="rbd-bar-wrap"><div class="rbd-bar" style="background:#d4a840;" data-w="80"></div></div>
+          <span class="rbd-val">320</span>
+          <span class="rbd-rate pos">+0.6/s</span>
+        </div>
+        <div class="rbd-row">
+          <span class="rbd-icon">⚙️</span>
+          <span class="rbd-label">Eisen</span>
+          <div class="rbd-bar-wrap"><div class="rbd-bar" style="background:#5a88a8;" data-w="20"></div></div>
+          <span class="rbd-val">6</span>
+          <span class="rbd-rate pos">+0.3/s</span>
+        </div>
+        <div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);font-style:italic">
+          ⚠ Nahrung sinkt → Volk hungert → Moral bricht ein
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 2 von 7</div>
+      <div class="slide-title">Ressourcen im Überblick</div>
+      <div class="slide-body">
+        Oben siehst du immer deine <b>5 Ressourcen</b> mit aktueller Rate.<br><br>
+        <b>Grün</b> = wächst · <b>Rot</b> = schwindet<br><br>
+        Besonders wichtig: <b>Nahrung</b> wird ständig verbraucht. Sinkt sie auf 0, stirbt dein Volk und die Moral kollabiert.
+      </div>
+      <div class="chips">
+        <div class="chip"><span>🪵</span><span class="clabel">Holz</span><span class="cval">Waldarbeiter</span></div>
+        <div class="chip"><span>🪨</span><span class="clabel">Stein</span><span class="cval">Steinbruch</span></div>
+        <div class="chip"><span>🌾</span><span class="clabel">Nahrung</span><span class="cval">Feld · Jäger</span></div>
+        <div class="chip"><span>🪙</span><span class="clabel">Gold</span><span class="cval">Markt · Handel</span></div>
+        <div class="chip"><span>⚙️</span><span class="clabel">Eisen</span><span class="cval">Schmelze</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Gebäude -->
+  <div class="slide" id="slide-2">
+    <div class="visual">
+      <div class="buy-demo">
+        <div class="bd-card highlight">
+          <div class="bd-top">
+            <span class="bd-name">🌾 Feld</span>
+            <span class="bd-cnt">2×</span>
+          </div>
+          <div class="bd-workers">👷 1 Arbeiter</div>
+          <div class="bd-prod">+🌾0.70/s  +🪙0.04/s</div>
+          <div class="bd-costs">
+            <span class="bd-cost-tag">🪵 4</span>
+          </div>
+        </div>
+        <div class="bd-card">
+          <div class="bd-top">
+            <span class="bd-name">⚙️ Schmiede</span>
+            <span class="bd-cnt">—</span>
+          </div>
+          <div class="bd-workers">👷 2 Arbeiter</div>
+          <div class="bd-prod">+🪙0.35/s</div>
+          <div class="bd-costs">
+            <span class="bd-cost-tag">🪵 12</span>
+            <span class="bd-cost-tag miss">🪨 18 ✗</span>
+            <span class="bd-cost-tag">🪙 8</span>
+          </div>
+        </div>
+        <div class="bd-card blocked">
+          <div class="bd-top">
+            <span class="bd-name">🔥 Schmelze</span>
+            <span class="bd-cnt">—</span>
+          </div>
+          <div class="bd-workers">👷 3 Arbeiter</div>
+          <div class="bd-lock">🔒 Benötigt: Metallurgie-Forschung</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-style:italic;padding-top:4px">
+          ↑ Klicke ein Gebäude um es zu kaufen
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 3 von 7</div>
+      <div class="slide-title">Gebäude bauen</div>
+      <div class="slide-body">
+        Im <span class="tag">Bauen</span>-Tab siehst du alle verfügbaren Gebäude.<br><br>
+        <b>Rote Kosten</b> = zu wenig davon · <b>Schloss</b> = Voraussetzung fehlt<br><br>
+        Jedes Gebäude braucht <b>Arbeiter</b> – hast du keine freien, kannst du nicht bauen!
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Bevölkerung -->
+  <div class="slide" id="slide-3">
+    <div class="visual">
+      <div class="pop-demo">
+        <div class="pd-pop-bar">
+          <div class="pd-label">BEVÖLKERUNG</div>
+          <div class="pd-bar-wrap">
+            <div class="pd-bar-fill" data-w="60"></div>
+          </div>
+          <div class="pd-txt">12 / 20 Einwohner  ·  <span style="color:var(--green2)">4 frei</span>  ·  8 beschäftigt</div>
+        </div>
+        <div style="height:1px;background:var(--border);"></div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:0.12em;">WIE WÄCHST DIE BEVÖLKERUNG?</div>
+        <div class="pd-chain">
+          <div class="pd-node">
+            <div class="pdn-top">🏠</div>
+            <div class="pdn-label">Wohnhaus</div>
+          </div>
+          <div class="pd-arrow">→</div>
+          <div class="pd-node">
+            <div class="pdn-top">+3</div>
+            <div class="pdn-label">Einwohner</div>
+          </div>
+          <div class="pd-arrow">→</div>
+          <div class="pd-node">
+            <div class="pdn-top">👷</div>
+            <div class="pdn-label">Mehr Arbeiter</div>
+          </div>
+          <div class="pd-arrow">→</div>
+          <div class="pd-node">
+            <div class="pdn-top">🏗</div>
+            <div class="pdn-label">Mehr Gebäude</div>
+          </div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 12px;font-size:11px;color:var(--amber2)">
+          💡 Zu wenig Nahrung → Bevölkerung stirbt → Gebäude verlieren Arbeiter
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 4 von 7</div>
+      <div class="slide-title">Bevölkerung & Arbeiter</div>
+      <div class="slide-body">
+        Jeder Einwohner ist ein potenzieller <b>Arbeiter</b>. Gebäude belegen Arbeiter – ohne freie Arbeiter stockt alles.<br><br>
+        <b>Wohnhäuser</b> sind dein wichtigstes Wachstumswerkzeug: +3 Einwohner pro Bau, keine Arbeiter nötig.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Moral -->
+  <div class="slide" id="slide-4">
+    <div class="visual">
+      <div class="moral-demo">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:0.12em;margin-bottom:4px">MORAL-METER</div>
+        <div class="md-meter">
+          <div class="md-fill high" data-w="72"></div>
+          <div class="md-label">72 / 100</div>
+        </div>
+        <div class="md-effects">
+          <div class="md-row">
+            <span class="md-icon">⚡</span>
+            <span class="md-text">Produktions-Multiplikator</span>
+            <span class="md-tag good">×1.08</span>
+          </div>
+          <div class="md-row">
+            <span class="md-icon">⛪</span>
+            <span class="md-text">Kirche / Kathedrale</span>
+            <span class="md-tag good">Moral +15/+20</span>
+          </div>
+          <div class="md-row">
+            <span class="md-icon">🍽</span>
+            <span class="md-text">Hunger / Nahrung = 0</span>
+            <span class="md-tag bad">Moral sinkt</span>
+          </div>
+          <div class="md-row">
+            <span class="md-icon">⚠</span>
+            <span class="md-text">Moral unter 45</span>
+            <span class="md-tag warn">Aufstand möglich!</span>
+          </div>
+          <div class="md-row">
+            <span class="md-icon">🛡</span>
+            <span class="md-text">Gute Verteidigung</span>
+            <span class="md-tag good">Moral steigt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 5 von 7</div>
+      <div class="slide-title">Moral des Volkes</div>
+      <div class="slide-body">
+        Moral ist dein <b>Produktionsmultiplikator</b>: Hohes Volk = alles läuft schneller.<br><br>
+        Fällt Moral unter <b>45</b>, drohen Aufstände. Unter <b>0</b> bricht dein Dorf zusammen.<br><br>
+        Baue Kirchen und halte das Volk satt!
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Forschung -->
+  <div class="slide" id="slide-5">
+    <div class="visual">
+      <div class="research-demo">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:0.12em;margin-bottom:4px">FORSCHUNGSBÄUME</div>
+        <div class="rd-branch">
+          <div class="rd-branch-label" style="color:var(--green2)">Wirtschaft</div>
+          <div class="rd-node done"><div class="rdn-name">✓ Bewässerung</div><div class="rdn-eff">+50% Nahrung</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node avail"><div class="rdn-name">Gewürzhandel</div><div class="rdn-eff">+60% Gold</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node lock"><div class="rdn-name">Zünfte</div><div class="rdn-eff">Alle +20%</div></div>
+        </div>
+        <div class="rd-branch">
+          <div class="rd-branch-label" style="color:var(--blue2)">Technik</div>
+          <div class="rd-node done"><div class="rdn-name">✓ Metallurgie</div><div class="rdn-eff">Schmelze</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node lock"><div class="rdn-name">Architektur</div><div class="rdn-eff">Kathedrale</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node lock"><div class="rdn-name">Ingenieure</div><div class="rdn-eff">+40% Stein</div></div>
+        </div>
+        <div class="rd-branch">
+          <div class="rd-branch-label" style="color:var(--amber2)">Militär</div>
+          <div class="rd-node avail"><div class="rdn-name">Taktik</div><div class="rdn-eff">Mauer</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node lock"><div class="rdn-name">Ritter</div><div class="rdn-eff">+5 Verteidigung</div></div>
+          <div class="rd-arrow">→</div>
+          <div class="rd-node lock"><div class="rdn-name">Feudalrecht</div><div class="rdn-eff">+50% Gold</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-style:italic;padding-top:4px">
+          Benötigt: Bibliothek im Dorf
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 6 von 7</div>
+      <div class="slide-title">Forschung & Technologie</div>
+      <div class="slide-body">
+        Im <span class="tag">Forschung</span>-Tab schaltest du permanente Boni frei – aber erst nachdem du eine <b>Bibliothek</b> gebaut hast.<br><br>
+        3 Bäume: <b style="color:var(--green2)">Wirtschaft</b> · <b style="color:var(--blue2)">Technik</b> · <b style="color:var(--amber2)">Militär</b><br><br>
+        Forschungen müssen der Reihe nach freigeschaltet werden.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Ereignisse -->
+  <div class="slide" id="slide-6">
+    <div class="visual">
+      <div class="event-demo">
+        <div class="ed-box">
+          <div class="ed-title">⚠ Räuberangriff!</div>
+          <div class="ed-text">Ein gut organisierter Räubertrupp greift an! Eure Verteidigung wird auf die Probe gestellt.</div>
+          <div class="ed-btns">
+            <div class="ed-btn chosen">⚔ Verteidigen (hängt von Verteidigung ab)</div>
+            <div class="ed-btn">🤲 Kapitulieren (−30% Gold, Moral −15)</div>
+          </div>
+        </div>
+        <div class="ed-tip">→ Starke Verteidigung = Räuber werden geschlagen + Beute!</div>
+        <div class="ed-tip">→ Schwache Verteidigung = Verluste an Gold & Nahrung</div>
+        <div style="margin-top:4px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;font-size:11px;color:var(--muted)">
+          Weitere Ereignisse: Dürre · Seuche · Händlerkarawane · Ernte · Feuer · Wanderer
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <div class="step-num">Schritt 7 von 7</div>
+      <div class="slide-title">Ereignisse & Entscheidungen</div>
+      <div class="slide-body">
+        Alle paar Minuten erscheint ein <b>Ereignis</b> – du musst entscheiden!<br><br>
+        Jede Option hat Konsequenzen. Investiere in <b>Verteidigung</b> (Wachposten, Mauer), um Räuberangriffe zu gewinnen statt zu verlieren.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn" id="btn-back" onclick="go(-1)" disabled>← Zurück</button>
+  <button class="nav-btn primary" id="btn-next" onclick="go(1)">Weiter →</button>
+</div>
+
+<script>
+const TOTAL = 7;
+let current = 0;
+
+function buildDots() {
+  const prog = document.getElementById('progress');
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.title = 'Schritt ' + (i+1);
+    d.onclick = () => goTo(i);
+    prog.appendChild(d);
+  }
+  updateDots();
+}
+
+function updateDots() {
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.className = 'dot' + (i === current ? ' active' : i < current ? ' done' : '');
+  });
+}
+
+function animateBars(slideEl) {
+  slideEl.querySelectorAll('.rbd-bar[data-w]').forEach(b => {
+    b.style.width = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      b.style.width = b.dataset.w + '%';
+    }));
+  });
+  slideEl.querySelectorAll('.pd-bar-fill[data-w]').forEach(b => {
+    b.style.width = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      b.style.width = b.dataset.w + '%';
+    }));
+  });
+  slideEl.querySelectorAll('.md-fill[data-w]').forEach(b => {
+    b.style.width = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      b.style.width = b.dataset.w + '%';
+    }));
+  });
+}
+
+function goTo(n) {
+  const prev = document.getElementById('slide-' + current);
+  prev.classList.remove('active');
+  prev.classList.add('out');
+  setTimeout(() => prev.classList.remove('out'), 350);
+
+  current = n;
+  const next = document.getElementById('slide-' + current);
+  next.classList.add('active');
+  animateBars(next);
+  updateDots();
+
+  document.getElementById('btn-back').disabled = current === 0;
+  document.getElementById('btn-next').textContent = current === TOTAL - 1 ? 'Fertig ✓' : 'Weiter →';
+}
+
+function go(dir) {
+  const n = current + dir;
+  if (n < 0) return;
+  if (n >= TOTAL) {
+    document.getElementById('finish-screen').classList.add('visible');
+    return;
+  }
+  goTo(n);
+}
+
+function startTutorial() {
+  const ts = document.getElementById('title-screen');
+  ts.classList.add('hidden');
+  setTimeout(() => ts.style.display = 'none', 650);
+  const first = document.getElementById('slide-0');
+  first.classList.add('active');
+  animateBars(first);
+}
+
+function restart() {
+  document.getElementById('finish-screen').classList.remove('visible');
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active','out'));
+  current = 0;
+  updateDots();
+  const first = document.getElementById('slide-0');
+  first.classList.add('active');
+  animateBars(first);
+  document.getElementById('btn-back').disabled = true;
+  document.getElementById('btn-next').textContent = 'Weiter →';
+}
+
+buildDots();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+- Platzieren ermöglichen
+- Bevölkerung zuwachs überarbeiten -> muss relativ lange warten
+- max Platz anzeigen von ressource 
+- Mitteilung als Popup Zeichen, sonst kann mans igoneiren
+- Warum kann man zum teil nur Upgrade wenn man anderes Objekt upgradet -> ist nicht ersichtlich
+- Feld zeigt + 0.0 Gold an dies anpassen

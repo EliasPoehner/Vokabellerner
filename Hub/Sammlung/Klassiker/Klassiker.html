@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="comfort">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCADE ZONE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── THEME SYSTEM ── */
+    :root,
+    [data-theme="neon"] {
+      --bg: #0c0c18;
+      --panel: #080810;
+      --border: #28284a;
+      --cyan: #00f5ff;
+      --pink: #ff006e;
+      --yellow: #ffe600;
+      --green: #39ff14;
+      --purple: #bc13fe;
+      --orange: #ff6b35;
+      --text: #d8d8f0;
+      --dim: #3a3a58;
+      --glow-cyan: 0 0 8px #00f5ffaa, 0 0 24px #00f5ff44;
+      --glow-pink: 0 0 8px #ff006eaa, 0 0 24px #ff006e44;
+      --glow-green: 0 0 8px #39ff14aa, 0 0 24px #39ff1444;
+      --glow-yellow: 0 0 8px #ffe600aa, 0 0 24px #ffe60044;
+    }
+
+    [data-theme="comfort"] {
+      --bg: #1e1f2e;
+      --panel: #161724;
+      --border: #2e2f45;
+      --cyan: #5ecfdf;
+      --pink: #e06090;
+      --yellow: #d4b44a;
+      --green: #5dbf6a;
+      --purple: #9b6fd4;
+      --orange: #d4845a;
+      --text: #c8c8e0;
+      --dim: #5a5a7a;
+      --glow-cyan: 0 0 6px #5ecfdf44, 0 0 14px #5ecfdf1a;
+      --glow-pink: 0 0 6px #e0609044, 0 0 14px #e060901a;
+      --glow-green: 0 0 6px #5dbf6a44, 0 0 14px #5dbf6a1a;
+      --glow-yellow: 0 0 6px #d4b44a44, 0 0 14px #d4b44a1a;
+    }
+
+    [data-theme="light"] {
+      --bg: #f0ede8;
+      --panel: #fafaf8;
+      --border: #d8d4cc;
+      --cyan: #1a7fa0;
+      --pink: #c03060;
+      --yellow: #b07a10;
+      --green: #2a7a40;
+      --purple: #6040b0;
+      --orange: #b05020;
+      --text: #2a2830;
+      --dim: #888090;
+      --glow-cyan: 0 0 4px #1a7fa022;
+      --glow-pink: 0 0 4px #c0306022;
+      --glow-green: 0 0 4px #2a7a4022;
+      --glow-yellow: 0 0 4px #b07a1022;
+    }
+
+    [data-theme="forest"] {
+      --bg: #141c14;
+      --panel: #0e150e;
+      --border: #223022;
+      --cyan: #52c882;
+      --pink: #d4805a;
+      --yellow: #c8a84a;
+      --green: #78d060;
+      --purple: #8878c8;
+      --orange: #d09050;
+      --text: #c0d4b8;
+      --dim: #4a6040;
+      --glow-cyan: 0 0 6px #52c88244, 0 0 14px #52c8821a;
+      --glow-pink: 0 0 6px #d4805a44, 0 0 14px #d4805a1a;
+      --glow-green: 0 0 6px #78d06044, 0 0 14px #78d0601a;
+      --glow-yellow: 0 0 6px #c8a84a44, 0 0 14px #c8a84a1a;
+    }
+
+    [data-theme="sunset"] {
+      --bg: #1e1410;
+      --panel: #160f0c;
+      --border: #382218;
+      --cyan: #e0904a;
+      --pink: #e05060;
+      --yellow: #e8b840;
+      --green: #78b860;
+      --purple: #b878c8;
+      --orange: #e07040;
+      --text: #e0cfc0;
+      --dim: #7a5a48;
+      --glow-cyan: 0 0 6px #e0904a44, 0 0 14px #e0904a1a;
+      --glow-pink: 0 0 6px #e0506044, 0 0 14px #e050601a;
+      --glow-green: 0 0 6px #78b86044, 0 0 14px #78b8601a;
+      --glow-yellow: 0 0 6px #e8b84044, 0 0 14px #e8b8401a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.02) 3px, rgba(0, 0, 0, 0.02) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.35) 100%);
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    header {
+      text-align: center;
+      padding: 28px 20px 12px;
+    }
+
+    .logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(18px, 4.5vw, 38px);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      letter-spacing: 6px;
+      animation: flicker 6s infinite;
+      display: inline-block;
+    }
+
+    .logo span {
+      color: var(--pink);
+      text-shadow: var(--glow-pink);
+    }
+
+    header p {
+      color: var(--dim);
+      font-size: 10px;
+      margin-top: 8px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    @keyframes flicker {
+
+      0%,
+      93%,
+      95%,
+      97%,
+      100% {
+        opacity: 1
+      }
+
+      94% {
+        opacity: .5
+      }
+
+      96% {
+        opacity: .8
+      }
+
+      98% {
+        opacity: .3
+      }
+    }
+
+    .game-nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 20px 20px 8px;
+      flex-wrap: wrap;
+    }
+
+    .game-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      padding: 10px 18px;
+      border: 2px solid var(--dim);
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: color .2s, border-color .2s, box-shadow .2s;
+      position: relative;
+      text-transform: uppercase;
+    }
+
+    .game-btn:hover {
+      border-color: #555577;
+      color: var(--text);
+    }
+
+    .game-btn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      box-shadow: var(--glow-cyan), inset 0 0 18px rgba(0, 245, 255, 0.06);
+    }
+
+    .game-btn.active::after {
+      content: '▼';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--cyan);
+      font-size: 7px;
+    }
+
+    .game-wrapper {
+      max-width: 860px;
+      margin: 28px auto 0;
+      padding: 0 16px 40px;
+    }
+
+    .game-screen {
+      display: none;
+      border: 2px solid var(--cyan);
+      box-shadow: var(--glow-cyan), inset 0 0 50px rgba(0, 245, 255, 0.02);
+      padding: 22px;
+      background: var(--panel);
+      position: relative;
+      animation: screenIn .25s ease;
+    }
+
+    @keyframes screenIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .game-screen.active {
+      display: block;
+    }
+
+    .game-screen::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -11px;
+      left: 18px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--cyan);
+      background: var(--bg);
+      padding: 0 8px;
+      text-shadow: var(--glow-cyan);
+      letter-spacing: 1px;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hud-item {
+      text-align: center;
+    }
+
+    .hud-label {
+      font-size: 7px;
+      color: var(--dim);
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .hud-value {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 15px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      transition: transform .1s;
+    }
+
+    .hud-value.pop {
+      animation: hudPop .15s ease;
+    }
+
+    @keyframes hudPop {
+      0% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.35)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      padding: 9px 18px;
+      border: 2px solid;
+      background: transparent;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: background .15s, box-shadow .15s;
+    }
+
+    .btn-cyan {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .btn-cyan:hover {
+      background: rgba(0, 245, 255, 0.08);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .btn-pink {
+      color: var(--pink);
+      border-color: var(--pink);
+    }
+
+    .btn-pink:hover {
+      background: rgba(255, 0, 110, 0.08);
+      box-shadow: var(--glow-pink);
+    }
+
+    .btn-green {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .btn-green:hover {
+      background: rgba(57, 255, 20, 0.08);
+      box-shadow: var(--glow-green);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 14, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      z-index: 20;
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3.5vw, 26px);
+      color: var(--pink);
+      text-shadow: var(--glow-pink);
+      animation: pulse .9s infinite;
+    }
+
+    .overlay.win h2 {
+      color: var(--green);
+      text-shadow: var(--glow-green);
+    }
+
+    .overlay .sub {
+      font-size: 11px;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+
+    .overlay .sub b {
+      font-family: 'Press Start 2P', monospace;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      font-size: 14px;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1
+      }
+
+      50% {
+        transform: scale(1.04);
+        opacity: .85
+      }
+    }
+
+    /* MINESWEEPER */
+    #mine-grid {
+      display: inline-grid;
+      gap: 2px;
+      border: 2px solid var(--dim);
+      padding: 4px;
+      background: var(--border);
+      user-select: none;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .mine-cell {
+      width: 26px;
+      height: 26px;
+      background: #151528;
+      border: 1px solid #222240;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      transition: background .08s, transform .08s;
+      position: relative;
+    }
+
+    .mine-cell:not(.revealed):not(.flagged):hover {
+      background: #20203a;
+      transform: scale(1.06);
+      z-index: 1;
+    }
+
+    .mine-cell.revealed {
+      background: #0a0a18;
+      border-color: #181830;
+      cursor: default;
+      transform: none;
+    }
+
+    .mine-cell.flagged {
+      color: var(--pink);
+      text-shadow: var(--glow-pink);
+    }
+
+    .mine-cell.mine-hit {
+      background: #2a0010 !important;
+      animation: shake .3s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20% {
+        transform: translateX(-3px)
+      }
+
+      40% {
+        transform: translateX(3px)
+      }
+
+      60% {
+        transform: translateX(-2px)
+      }
+
+      80% {
+        transform: translateX(2px)
+      }
+    }
+
+    .mine-cell.revealed[data-n="1"] {
+      color: var(--cyan)
+    }
+
+    .mine-cell.revealed[data-n="2"] {
+      color: var(--green)
+    }
+
+    .mine-cell.revealed[data-n="3"] {
+      color: var(--pink)
+    }
+
+    .mine-cell.revealed[data-n="4"] {
+      color: var(--purple)
+    }
+
+    .mine-cell.revealed[data-n="5"] {
+      color: var(--orange)
+    }
+
+    .mine-cell.revealed[data-n="6"] {
+      color: var(--yellow)
+    }
+
+    .mine-cell.revealed[data-n="7"] {
+      color: #fff
+    }
+
+    .mine-cell.revealed[data-n="8"] {
+      color: var(--dim)
+    }
+
+    #mine-status {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      margin-top: 14px;
+      min-height: 18px;
+      letter-spacing: 1px;
+    }
+
+    /* TETRIS */
+    #tetris-area {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    #tetris-canvas {
+      border: 2px solid var(--dim);
+      image-rendering: pixelated;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    #tetris-side {
+      min-width: 130px;
+      flex: 1;
+    }
+
+    #next-canvas {
+      border: 1px solid var(--dim);
+      display: block;
+      margin-top: 6px;
+      background: var(--border);
+    }
+
+    .side-label {
+      font-size: 7px;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .tetris-tips {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .tetris-tips .tip {
+      font-size: 9px;
+      color: var(--dim);
+      display: flex;
+      gap: 8px;
+    }
+
+    .tetris-tips .tip kbd {
+      color: var(--cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      min-width: 50px;
+      display: inline-block;
+    }
+
+    .level-flash {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .level-flash span {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 20px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      opacity: 0;
+      animation: levelFlash 1.2s ease forwards;
+    }
+
+    @keyframes levelFlash {
+      0% {
+        opacity: 0;
+        transform: scale(.6)
+      }
+
+      20% {
+        opacity: 1;
+        transform: scale(1.1)
+      }
+
+      70% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.2)
+      }
+    }
+
+    /* SNAKE */
+    #snake-canvas {
+      border: 2px solid var(--dim);
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .dpad {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      margin-top: 14px;
+    }
+
+    .dpad-row {
+      display: flex;
+      gap: 3px;
+    }
+
+    .dpad-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      width: 46px;
+      height: 46px;
+      border: 2px solid var(--dim);
+      background: var(--border);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      touch-action: manipulation;
+      transition: background .1s, border-color .1s;
+    }
+
+    .dpad-btn:active {
+      background: #1a1a30;
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    @media(max-width:600px) {
+      .dpad {
+        display: flex
+      }
+
+      .kb-hint {
+        display: none
+      }
+    }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      color: var(--dim);
+      font-size: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* 2048 */
+    :root {
+      --cs: 70px;
+      --cg: 10px;
+      --cp: 10px;
+    }
+
+    @media(max-width:480px) {
+      :root {
+        --cs: 54px;
+        --cg: 7px;
+        --cp: 7px;
+      }
+    }
+
+    #g2048-board {
+      position: relative;
+      width: calc(4 * var(--cs) + 3 * var(--cg) + 2 * var(--cp));
+      height: calc(4 * var(--cs) + 3 * var(--cg) + 2 * var(--cp));
+      background: #1a1a2e;
+      border: 2px solid var(--purple);
+      box-shadow: 0 0 8px #bc13fe55, 0 0 24px #bc13fe22;
+      padding: var(--cp);
+      border-radius: 4px;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .g2048-bg-cell {
+      position: absolute;
+      width: var(--cs);
+      height: var(--cs);
+      background: #0d0d1a;
+      border-radius: 4px;
+    }
+
+    .g2048-tile {
+      position: absolute;
+      width: var(--cs);
+      height: var(--cs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      border-radius: 4px;
+      transition: transform 0.12s ease, left 0.12s ease, top 0.12s ease;
+      z-index: 2;
+    }
+
+    @media(max-width:480px) {
+      .g2048-tile {
+        font-size: 10px;
+      }
+    }
+
+    .t2 {
+      background: #1e1e38;
+      color: #d8d8f0;
+    }
+
+    .t4 {
+      background: #252545;
+      color: #d8d8f0;
+    }
+
+    .t8 {
+      background: #0f3f5c;
+      color: #00f5ff;
+      text-shadow: 0 0 8px #00f5ff88;
+    }
+
+    .t16 {
+      background: #0a4a2a;
+      color: #39ff14;
+      text-shadow: 0 0 8px #39ff1488;
+    }
+
+    .t32 {
+      background: #4a0a2a;
+      color: #ff006e;
+      text-shadow: 0 0 8px #ff006e88;
+    }
+
+    .t64 {
+      background: #5c1a00;
+      color: #ff6b35;
+      text-shadow: 0 0 8px #ff6b3588;
+    }
+
+    .t128 {
+      background: #3a006e;
+      color: #bc13fe;
+      text-shadow: 0 0 10px #bc13feaa;
+      font-size: 12px;
+    }
+
+    .t256 {
+      background: #004466;
+      color: #00f5ff;
+      text-shadow: 0 0 12px #00f5ffaa;
+      font-size: 11px;
+    }
+
+    .t512 {
+      background: #005533;
+      color: #39ff14;
+      text-shadow: 0 0 12px #39ff14aa;
+      font-size: 11px;
+    }
+
+    .t1024 {
+      background: #550055;
+      color: #ff006e;
+      text-shadow: 0 0 14px #ff006ecc;
+      font-size: 9px;
+    }
+
+    .t2048 {
+      background: #ffe600;
+      color: #07070f;
+      text-shadow: none;
+      font-size: 9px;
+    }
+
+    .thigh {
+      background: #222;
+      color: #ffe600;
+      text-shadow: 0 0 10px #ffe60088;
+      font-size: 8px;
+    }
+
+    .tile-new {
+      animation: tileAppear 0.18s ease backwards;
+    }
+
+    .tile-merge {
+      animation: tileMerge 0.2s ease;
+    }
+
+    @keyframes tileAppear {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes tileMerge {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.2);
+      }
+
+      70% {
+        transform: scale(0.95);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    #g2048-wrap {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    #g2048-side {
+      min-width: 120px;
+    }
+
+    #g2048-gameover {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 14, 0.92);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      z-index: 20;
+      backdrop-filter: blur(2px);
+    }
+
+    #g2048-gameover h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3.5vw, 24px);
+      color: var(--pink);
+      text-shadow: var(--glow-pink);
+      animation: pulse .9s infinite;
+    }
+
+    #g2048-win {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 14, 0.92);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      z-index: 20;
+      backdrop-filter: blur(2px);
+    }
+
+    #g2048-win h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(14px, 3.5vw, 24px);
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      animation: pulse .9s infinite;
+    }
+
+    /* ── THEME SWITCHER UI ── */
+    [data-theme="light"] body::before {
+      background: none;
+    }
+
+    [data-theme="light"] body::after {
+      background: none;
+    }
+
+    [data-theme="light"] .mine-cell {
+      background: #e8e4de !important;
+      border-color: #c8c4bc !important;
+    }
+
+    [data-theme="light"] .mine-cell:not(.revealed):not(.flagged):hover {
+      background: #dedad4 !important;
+    }
+
+    [data-theme="light"] .mine-cell.revealed {
+      background: #d0ccc4 !important;
+      border-color: #bcb8b0 !important;
+    }
+
+    [data-theme="light"] .mine-cell.mine-hit {
+      background: #f0c0b8 !important;
+    }
+
+    [data-theme="light"] #mine-grid {
+      background: #c8c4bc;
+    }
+
+    [data-theme="light"] #g2048-board {
+      background: #e0dbd4 !important;
+    }
+
+    [data-theme="light"] .g2048-bg-cell {
+      background: #ccc8c0 !important;
+    }
+
+    [data-theme="light"] .t2 {
+      background: #dedad4 !important;
+      color: #3a3850 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t4 {
+      background: #d4cfc8 !important;
+      color: #3a3850 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t8 {
+      background: #b8d8e8 !important;
+      color: #105070 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t16 {
+      background: #b8e0c0 !important;
+      color: #1a5a30 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t32 {
+      background: #f0c0c8 !important;
+      color: #801830 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t64 {
+      background: #f4c8a8 !important;
+      color: #803010 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t128 {
+      background: #d8c0f0 !important;
+      color: #501888 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t256 {
+      background: #a8d8f0 !important;
+      color: #104870 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t512 {
+      background: #a8e8b8 !important;
+      color: #106030 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t1024 {
+      background: #e8a8d0 !important;
+      color: #701040 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .t2048 {
+      background: #e8c840 !important;
+      color: #3a2800 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] .thigh {
+      background: #d0c880 !important;
+      color: #402800 !important;
+      text-shadow: none !important;
+    }
+
+    [data-theme="light"] #g2048-gameover,
+    [data-theme="light"] #g2048-win,
+    [data-theme="light"] .overlay {
+      background: rgba(240, 237, 232, 0.94) !important;
+    }
+
+    [data-theme="light"] #next-canvas {
+      background: #e0dbd4;
+    }
+
+    [data-theme="light"] .dpad-btn {
+      background: #e8e4de;
+      border-color: var(--dim);
+    }
+
+    /* Theme switcher bar */
+    .theme-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px 0;
+    }
+
+    .theme-bar-label {
+      font-size: 7px;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Press Start 2P', monospace;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    .theme-pill {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--dim);
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color .15s, border-color .15s, background .15s;
+      white-space: nowrap;
+    }
+
+    .theme-pill:hover {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .theme-pill.active {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .theme-pill .pip {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    .theme-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── PONG ── */
+    #pong-arena {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #pong-canvas {
+      border: 2px solid var(--dim);
+      display: block;
+      image-rendering: pixelated;
+      max-width: 100%;
+    }
+
+    #pong-scoreboard {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+
+    .pong-player-label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .pong-player-label .hud-label {
+      font-size: 7px;
+    }
+
+    .pong-player-label .hud-value {
+      font-size: 20px;
+    }
+
+    .p1-color {
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+    }
+
+    .p2-color {
+      color: var(--pink);
+      text-shadow: var(--glow-pink);
+    }
+
+    #pong-vs {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--dim);
+      padding: 0 16px;
+    }
+
+    #pong-controls-hint {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      margin-top: 2px;
+    }
+
+    .pong-hint-block {
+      font-size: 9px;
+      color: var(--dim);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .pong-hint-block .pk {
+      font-family: 'Share Tech Mono', monospace;
+      display: inline-block;
+      border: 1px solid var(--dim);
+      padding: 1px 5px;
+      font-size: 9px;
+      margin: 0 2px;
+    }
+
+    .pong-hint-block.p1-hint .pk {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .pong-hint-block.p2-hint .pk {
+      color: var(--pink);
+      border-color: var(--pink);
+    }
+
+    #pong-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 14, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 20;
+      backdrop-filter: blur(2px);
+    }
+
+    #pong-overlay h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(13px, 3vw, 22px);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      animation: pulse .9s infinite;
+    }
+
+    #pong-overlay .sub {
+      font-size: 10px;
+      color: var(--text);
+      letter-spacing: 1px;
+      text-align: center;
+      line-height: 2;
+    }
+
+    #pong-overlay .key-summary {
+      display: flex;
+      gap: 28px;
+      margin-top: 4px;
+    }
+
+    #pong-overlay .key-col {
+      text-align: center;
+      font-size: 8px;
+      color: var(--dim);
+      line-height: 2;
+    }
+
+    #pong-overlay .key-col b {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    #pong-overlay .key-col b.p1b {
+      color: var(--cyan);
+    }
+
+    #pong-overlay .key-col b.p2b {
+      color: var(--pink);
+    }
+
+    #pong-win-msg {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(11px, 2.5vw, 18px);
+      animation: pulse .9s infinite;
+    }
+
+    /* ── HUB BACK BUTTON ── */
+    .hub-back-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px 0;
+    }
+
+    .hub-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--cyan);
+      padding: 7px 14px;
+      transition: color .2s, border-color .2s, box-shadow .2s;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .hub-back-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .hub-back-arrow {
+      font-size: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hub-back-bar">
+    <a class="hub-back-btn" href="O:\work\Allgemein\Hub.html"
+      onclick="if(window.history.length>1){history.back();return false;}">
+      <span class="hub-back-arrow">←</span> F11 HUB · Arcade
+    </a>
+  </div>
+
+  <header>
+    <div class="logo">◈ ARCADE <span>ZONE</span> ◈</div>
+    <p>— Insert Coin to Continue —</p>
+  </header>
+
+
+  <div class="theme-bar">
+    <span class="theme-bar-label">Theme</span>
+    <button class="theme-pill active" data-t="comfort" onclick="setTheme('comfort',this)"><span class="pip"
+        style="background:#5ecfdf"></span>Komfort</button>
+    <button class="theme-pill" data-t="neon" onclick="setTheme('neon',this)"><span class="pip"
+        style="background:#00f5ff"></span>Neon</button>
+    <button class="theme-pill" data-t="light" onclick="setTheme('light',this)"><span class="pip"
+        style="background:#f0ede8;border:1px solid #888"></span>Hell</button>
+    <button class="theme-pill" data-t="forest" onclick="setTheme('forest',this)"><span class="pip"
+        style="background:#52c882"></span>Forest</button>
+    <button class="theme-pill" data-t="sunset" onclick="setTheme('sunset',this)"><span class="pip"
+        style="background:#e0904a"></span>Sunset</button>
+  </div>
+  <div class="game-nav">
+    <button class="game-btn active" onclick="showGame('minesweeper',this)">💣 Minesweeper</button>
+    <button class="game-btn" onclick="showGame('tetris',this)">🧱 Tetris</button>
+    <button class="game-btn" onclick="showGame('snake',this)">🐍 Snake</button>
+    <button class="game-btn" onclick="showGame('2048',this)">🔢 2048</button>
+    <button class="game-btn" onclick="showGame('pong',this)">🏓 Pong</button>
+  </div>
+
+  <div class="game-wrapper">
+
+    <!-- MINESWEEPER -->
+    <div class="game-screen active" id="screen-minesweeper" data-label="MINESWEEPER.EXE">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="hud-label">💣 Minen</div>
+          <div class="hud-value" id="mine-count">0</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select id="mine-difficulty" onchange="initMinesweeper()"
+            style="font-family:'Share Tech Mono';font-size:12px;background:var(--border);color:var(--cyan);border:1px solid var(--dim);padding:7px 10px;cursor:pointer;">
+            <option value="easy">Einfach (9×9)</option>
+            <option value="medium" selected>Mittel (16×16)</option>
+            <option value="hard">Schwer (16×30)</option>
+          </select>
+          <button class="btn btn-cyan" onclick="initMinesweeper()">↺ Neu</button>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">⏱ Zeit</div>
+          <div class="hud-value" id="mine-timer">0</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <div id="mine-grid"></div>
+      </div>
+      <div id="mine-status"></div>
+    </div>
+
+    <!-- TETRIS -->
+    <div class="game-screen" id="screen-tetris" data-label="TETRIS.EXE" style="position:relative;">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="hud-label">Punkte</div>
+          <div class="hud-value" id="tetris-score">0</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-cyan" id="tetris-start-btn" onclick="tetrisToggle()">Start</button>
+          <button class="btn btn-pink" onclick="initTetris()">↺ Reset</button>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Level</div>
+          <div class="hud-value" id="tetris-level">1</div>
+        </div>
+      </div>
+      <div id="tetris-area">
+        <canvas id="tetris-canvas" width="200" height="400"></canvas>
+        <div id="tetris-side">
+          <div class="side-label">Nächstes</div>
+          <canvas id="next-canvas" width="84" height="84"></canvas>
+          <div style="margin-top:16px;">
+            <div class="side-label">Linien</div>
+            <div
+              style="font-family:'Press Start 2P',monospace;font-size:13px;color:var(--cyan);text-shadow:var(--glow-cyan);margin-top:4px;"
+              id="tetris-lines">0</div>
+          </div>
+          <div class="tetris-tips">
+            <div class="tip"><kbd>← →</kbd><span>Bewegen</span></div>
+            <div class="tip"><kbd>↑ / Z</kbd><span>Drehen</span></div>
+            <div class="tip"><kbd>↓</kbd><span>Soft Drop</span></div>
+            <div class="tip"><kbd>Space</kbd><span>Hard Drop</span></div>
+            <div class="tip"><kbd>P / Esc</kbd><span>Pause</span></div>
+          </div>
+        </div>
+      </div>
+      <div id="tetris-overlay" class="overlay" style="display:none;">
+        <h2>GAME OVER</h2>
+        <div class="sub">Punkte: <b id="tetris-final-score"></b></div>
+        <button class="btn btn-cyan" onclick="initTetris()">Nochmal</button>
+      </div>
+    </div>
+
+    <!-- SNAKE -->
+    <div class="game-screen" id="screen-snake" data-label="SNAKE.EXE" style="position:relative;">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="hud-label">Punkte</div>
+          <div class="hud-value" id="snake-score">0</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-green" id="snake-start-btn" onclick="snakeToggle()">Start</button>
+          <button class="btn btn-pink" onclick="initSnake()">↺ Reset</button>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Highscore</div>
+          <div class="hud-value" id="snake-hi">0</div>
+        </div>
+      </div>
+      <canvas id="snake-canvas" width="400" height="400"></canvas>
+      <div style="margin-top:10px;font-size:10px;color:var(--dim);" class="kb-hint">WASD / Pfeiltasten &nbsp;·&nbsp;
+        Space = Pause</div>
+      <div class="dpad">
+        <div class="dpad-row"><button class="dpad-btn" id="dpad-up">▲</button></div>
+        <div class="dpad-row">
+          <button class="dpad-btn" id="dpad-left">◄</button>
+          <button class="dpad-btn" id="dpad-down">▼</button>
+          <button class="dpad-btn" id="dpad-right">►</button>
+        </div>
+      </div>
+      <div id="snake-overlay" class="overlay" style="display:none;">
+        <h2>GAME OVER</h2>
+        <div class="sub">Punkte: <b id="snake-final"></b></div>
+        <button class="btn btn-green" onclick="initSnake();snakeToggle()">Nochmal</button>
+      </div>
+    </div>
+    <!-- 2048 -->
+    <div class="game-screen" id="screen-2048" data-label="2048.EXE" style="position:relative;">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="hud-label">Punkte</div>
+          <div class="hud-value" id="g2048-score">0</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-cyan" onclick="init2048()">↺ Neu</button>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">Highscore</div>
+          <div class="hud-value" id="g2048-hi">0</div>
+        </div>
+      </div>
+      <div id="g2048-wrap">
+        <div>
+          <div id="g2048-board"></div>
+          <div style="margin-top:10px;font-size:10px;color:var(--dim);" class="kb-hint">Pfeiltasten / WASD zum Schieben
+          </div>
+        </div>
+        <div id="g2048-side">
+          <div class="side-label">Bestes Feld</div>
+          <div
+            style="font-family:'Press Start 2P',monospace;font-size:18px;color:var(--purple);text-shadow:0 0 8px #bc13fe99;margin-top:4px;"
+            id="g2048-best">–</div>
+          <div class="tetris-tips" style="margin-top:20px;">
+            <div class="tip"><kbd style="color:var(--purple);">← →</kbd><span>Schieben</span></div>
+            <div class="tip"><kbd style="color:var(--purple);">↑ ↓</kbd><span>Schieben</span></div>
+            <div class="tip"><kbd style="color:var(--purple);">WASD</kbd><span>Alternativ</span></div>
+          </div>
+          <div style="margin-top:18px;font-size:9px;color:var(--dim);line-height:1.8;">
+            Gleiche Zahlen<br>zusammenschieben<br>→ Ziel: <span style="color:var(--yellow);">2048!</span>
+          </div>
+        </div>
+      </div>
+      <div id="g2048-gameover">
+        <h2>GAME OVER</h2>
+        <div class="sub">Punkte: <b id="g2048-final"></b></div>
+        <button class="btn btn-cyan" onclick="init2048()">Nochmal</button>
+      </div>
+      <div id="g2048-win">
+        <h2>2048!</h2>
+        <div class="sub">Punkte: <b id="g2048-winscore"></b></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <button class="btn btn-yellow" style="color:var(--yellow);border-color:var(--yellow);"
+            onclick="g2048Continue()">Weiter spielen</button>
+          <button class="btn btn-cyan" onclick="init2048()">Neu starten</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PONG -->
+    <div class="game-screen" id="screen-pong" data-label="PONG.EXE" style="position:relative;">
+      <div id="pong-scoreboard">
+        <div class="pong-player-label">
+          <div class="hud-label p1-color">◄ Spieler 1</div>
+          <div class="hud-value p1-color" id="pong-score-p1">0</div>
+        </div>
+        <div id="pong-vs">VS</div>
+        <div class="pong-player-label">
+          <div class="hud-label p2-color">Spieler 2 ►</div>
+          <div class="hud-value p2-color" id="pong-score-p2">0</div>
+        </div>
+      </div>
+      <div id="pong-arena">
+        <canvas id="pong-canvas" width="600" height="380"></canvas>
+        <div id="pong-controls-hint">
+          <div class="pong-hint-block p1-hint">
+            <span class="pk">W</span> Hoch &nbsp;·&nbsp; <span class="pk">S</span> Runter
+          </div>
+          <div class="pong-hint-block" style="font-size:9px;">
+            <span class="pk" style="border-color:var(--dim);color:var(--dim);">Space</span> Start / Pause
+          </div>
+          <div class="pong-hint-block p2-hint">
+            <span class="pk">↑</span> Hoch &nbsp;·&nbsp; <span class="pk">↓</span> Runter
+          </div>
+        </div>
+      </div>
+      <div id="pong-overlay">
+        <h2>🏓 PONG</h2>
+        <div class="sub">Erster bis <b
+            style="font-family:'Press Start 2P',monospace;color:var(--yellow);text-shadow:var(--glow-yellow);">7</b>
+          Punkte gewinnt</div>
+        <div class="key-summary">
+          <div class="key-col">
+            <b class="p1b">SPIELER 1</b>
+            <span
+              style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 6px;font-size:9px;">W</span>
+            Hoch<br>
+            <span
+              style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 6px;font-size:9px;">S</span>
+            Runter
+          </div>
+          <div class="key-col">
+            <b class="p2b">SPIELER 2</b>
+            <span
+              style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 6px;font-size:9px;">↑</span>
+            Hoch<br>
+            <span
+              style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 6px;font-size:9px;">↓</span>
+            Runter
+          </div>
+        </div>
+        <button class="btn btn-cyan" onclick="pongStart()">▶ Spiel starten</button>
+      </div>
+    </div>
+
+
+  </div>
+  <footer>◈ ARCADE ZONE ◈ &nbsp;·&nbsp; Alle Spiele laufen direkt im Browser</footer>
+
+  <script>
+    'use strict';
+
+    // ── NAVIGATOR ──
+    // ── THEME-AWARE CANVAS BACKGROUND ──
+    function getCanvasBg() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--panel').trim() || '#08080f';
+    }
+
+    let activeGame = 'minesweeper';
+    function showGame(name, btn) {
+      document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('screen-' + name).classList.add('active');
+      btn.classList.add('active');
+      activeGame = name;
+      if (name === 'pong') {
+        // Canvas jetzt sichtbar – Idle-Bild zeichnen
+        setTimeout(() => pongDrawIdle(), 10);
+      }
+    }
+    function popHud(id) {
+      const el = document.getElementById(id);
+      el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+    }
+
+    // ════════════════════════════════════════════════
+    // MINESWEEPER
+    // ════════════════════════════════════════════════
+    const MINE_CFG = {
+      easy: { rows: 9, cols: 9, mines: 10 },
+      medium: { rows: 16, cols: 16, mines: 40 },
+      hard: { rows: 16, cols: 30, mines: 99 },
+    };
+    let mBoard, mRows, mCols, mTotal, mRevealed, mFlags, mFirstClick, mTimerID, mSecs, mDead;
+
+    function initMinesweeper() {
+      clearInterval(mTimerID);
+      const cfg = MINE_CFG[document.getElementById('mine-difficulty').value];
+      mRows = cfg.rows; mCols = cfg.cols; mTotal = cfg.mines;
+      mRevealed = 0; mFlags = 0; mFirstClick = true; mSecs = 0; mDead = false;
+      document.getElementById('mine-count').textContent = mTotal;
+      document.getElementById('mine-timer').textContent = '0';
+      document.getElementById('mine-status').textContent = '';
+      document.getElementById('mine-status').style.color = '';
+      mBoard = Array.from({ length: mRows }, () => Array.from({ length: mCols }, () => ({ mine: false, revealed: false, flagged: false, n: 0 })));
+      renderMineGrid();
+    }
+
+    function placeMines(sr, sc) {
+      let p = 0;
+      while (p < mTotal) {
+        const r = Math.floor(Math.random() * mRows), c = Math.floor(Math.random() * mCols);
+        if (!mBoard[r][c].mine && !(Math.abs(r - sr) <= 1 && Math.abs(c - sc) <= 1)) { mBoard[r][c].mine = true; p++; }
+      }
+      for (let r = 0; r < mRows; r++) for (let c = 0; c < mCols; c++) {
+        if (mBoard[r][c].mine) continue;
+        let n = 0;
+        for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < mRows && nc >= 0 && nc < mCols && mBoard[nr][nc].mine) n++;
+        }
+        mBoard[r][c].n = n;
+      }
+    }
+
+    function renderMineGrid() {
+      const grid = document.getElementById('mine-grid');
+      grid.style.gridTemplateColumns = `repeat(${mCols},26px)`;
+      grid.innerHTML = '';
+      for (let r = 0; r < mRows; r++) for (let c = 0; c < mCols; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'mine-cell';
+        const d = mBoard[r][c];
+        if (d.revealed) {
+          cell.classList.add('revealed');
+          if (d.mine) { cell.classList.add('mine-hit'); cell.textContent = '💣'; }
+          else if (d.n > 0) { cell.textContent = d.n; cell.dataset.n = d.n; }
+        } else if (d.flagged) { cell.classList.add('flagged'); cell.textContent = '🚩'; }
+        cell.addEventListener('click', () => mClick(r, c));
+        cell.addEventListener('contextmenu', e => { e.preventDefault(); mFlag(r, c); });
+        grid.appendChild(cell);
+      }
+    }
+
+    function mClick(r, c) {
+      if (mDead) return;
+      const d = mBoard[r][c];
+      if (d.revealed || d.flagged) return;
+      if (mFirstClick) {
+        mFirstClick = false;
+        placeMines(r, c);
+        mTimerID = setInterval(() => { mSecs++; document.getElementById('mine-timer').textContent = mSecs; }, 1000);
+      }
+      if (d.mine) {
+        d.revealed = true; mDead = true; clearInterval(mTimerID);
+        for (let i = 0; i < mRows; i++) for (let j = 0; j < mCols; j++) if (mBoard[i][j].mine) mBoard[i][j].revealed = true;
+        renderMineGrid();
+        const s = document.getElementById('mine-status');
+        s.textContent = '💥  BOOM! Spiel vorbei!'; s.style.color = 'var(--pink)';
+        return;
+      }
+      mReveal(r, c); renderMineGrid(); checkMineWin();
+    }
+
+    function mReveal(r, c) {
+      if (r < 0 || r >= mRows || c < 0 || c >= mCols) return;
+      const d = mBoard[r][c];
+      if (d.revealed || d.flagged || d.mine) return;
+      d.revealed = true; mRevealed++;
+      if (d.n === 0) for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) mReveal(r + dr, c + dc);
+    }
+
+    function mFlag(r, c) {
+      if (mDead) return;
+      const d = mBoard[r][c];
+      if (d.revealed) return;
+      d.flagged = !d.flagged; mFlags += d.flagged ? 1 : -1;
+      document.getElementById('mine-count').textContent = mTotal - mFlags;
+      renderMineGrid();
+    }
+
+    function checkMineWin() {
+      if (mRevealed === mRows * mCols - mTotal) {
+        mDead = true; clearInterval(mTimerID);
+        const s = document.getElementById('mine-status');
+        s.textContent = `🏆  Gewonnen! Zeit: ${mSecs}s`; s.style.color = 'var(--green)';
+      }
+    }
+
+    // ════════════════════════════════════════════════
+    // TETRIS  — requestAnimationFrame + delta-time
+    // ════════════════════════════════════════════════
+    const TW = 10, TH = 20, BS = 20;
+    const PIECES = [
+      { shape: [[1, 1, 1, 1]], color: '#00f5ff' },
+      { shape: [[1, 1], [1, 1]], color: '#ffe600' },
+      { shape: [[0, 1, 0], [1, 1, 1]], color: '#bc13fe' },
+      { shape: [[1, 0, 0], [1, 1, 1]], color: '#ff6b35' },
+      { shape: [[0, 0, 1], [1, 1, 1]], color: '#1e90ff' },
+      { shape: [[0, 1, 1], [1, 1, 0]], color: '#39ff14' },
+      { shape: [[1, 1, 0], [0, 1, 1]], color: '#ff006e' },
+    ];
+    const KICKS_NORM = [[0, 0], [-1, 0], [1, 0], [0, -1], [-1, -1], [1, -1]];
+    const KICKS_I = [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]];
+
+    // ms per row-drop per level (classic exponential curve)
+    // Level 1=800ms, 2=580, 3=420, 5=220, 8=90, 10+=48ms
+    function levelSpeed(lvl) { return Math.max(48, 800 * Math.pow(0.73, lvl - 1)); }
+
+    let tBoard, tPiece, tNext, tBag;
+    let tScore, tLevel, tLines;
+    let tRunning = false, tRafId, tLastTime, tAccum;
+    let tSoftDrop = false, tLockTimer;
+    let tCanvas, tCtx, tNextCtx;
+    let tKeys = {};
+    let dasLeft = 0, dasRight = 0;
+    const DAS_DELAY = 160, DAS_REPEAT = 45;
+
+    function makeBag() {
+      const b = [...PIECES.keys()];
+      for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[b[i], b[j]] = [b[j], b[i]]; }
+      return b;
+    }
+
+    function nextFromBag() {
+      if (!tBag || tBag.length === 0) tBag = makeBag();
+      const idx = tBag.pop(), p = PIECES[idx];
+      return {
+        shape: p.shape.map(r => [...r]), color: p.color,
+        x: Math.floor(TW / 2) - Math.floor(p.shape[0].length / 2), y: 0
+      };
+    }
+
+    function initTetris() {
+      tCanvas = document.getElementById('tetris-canvas');
+      tCtx = tCanvas.getContext('2d');
+      tNextCtx = document.getElementById('next-canvas').getContext('2d');
+      cancelAnimationFrame(tRafId);
+      tRunning = false;
+      document.getElementById('tetris-start-btn').textContent = 'Start';
+      document.getElementById('tetris-overlay').style.display = 'none';
+      tBoard = Array.from({ length: TH }, () => Array(TW).fill(0));
+      tScore = 0; tLevel = 1; tLines = 0; tBag = makeBag();
+      tNext = nextFromBag(); tPiece = null;
+      tKeys = {}; dasLeft = 0; dasRight = 0; tAccum = 0; tSoftDrop = false; tLockTimer = 0;
+      updateTetrisHUD(); drawTetris(); drawNextPiece();
+    }
+
+    function tSpawn() {
+      tPiece = { ...tNext, shape: tNext.shape.map(r => [...r]) };
+      tNext = nextFromBag(); tLockTimer = 0;
+      drawNextPiece();
+      if (tCollides(tPiece, 0, 0)) {
+        tRunning = false; cancelAnimationFrame(tRafId);
+        document.getElementById('tetris-final-score').textContent = tScore;
+        document.getElementById('tetris-overlay').style.display = 'flex';
+        drawTetris();
+      }
+    }
+
+    function tCollides(piece, dx, dy, shape) {
+      const s = shape || piece.shape;
+      for (let r = 0; r < s.length; r++) for (let c = 0; c < s[r].length; c++) {
+        if (!s[r][c]) continue;
+        const nx = piece.x + c + dx, ny = piece.y + r + dy;
+        if (nx < 0 || nx >= TW || ny >= TH) return true;
+        if (ny >= 0 && tBoard[ny][nx]) return true;
+      }
+      return false;
+    }
+
+    function tRotShape(s) { return s[0].map((_, i) => s.map(r => r[i]).reverse()); }
+
+    function tryRotate(piece) {
+      const rot = tRotShape(piece.shape);
+      const isI = rot.length === 1 || rot[0].length === 4;
+      for (const [kx, ky] of (isI ? KICKS_I : KICKS_NORM)) {
+        if (!tCollides(piece, kx, ky, rot)) { piece.shape = rot; piece.x += kx; piece.y += ky; return true; }
+      }
+      return false;
+    }
+
+    function tLock() {
+      tPiece.shape.forEach((row, r) => row.forEach((v, c) => {
+        if (v && tPiece.y + r >= 0) tBoard[tPiece.y + r][tPiece.x + c] = tPiece.color;
+      }));
+      let cleared = 0;
+      for (let r = TH - 1; r >= 0; r--) {
+        if (tBoard[r].every(v => v)) { tBoard.splice(r, 1); tBoard.unshift(Array(TW).fill(0)); cleared++; r++; }
+      }
+      const PTS = [0, 100, 300, 500, 800];
+      const gain = (PTS[cleared] || 0) * tLevel;
+      if (gain) { tScore += gain; popHud('tetris-score'); }
+      const prevLvl = tLevel;
+      tLines += cleared;
+      tLevel = Math.floor(tLines / 10) + 1;
+      if (tLevel !== prevLvl) {
+        popHud('tetris-level');
+        const flash = document.createElement('div');
+        flash.className = 'level-flash';
+        flash.innerHTML = `<span>LEVEL ${tLevel}!</span>`;
+        document.getElementById('screen-tetris').appendChild(flash);
+        setTimeout(() => flash.remove(), 1300);
+      }
+      updateTetrisHUD();
+      tPiece = null; tAccum = 0; tLockTimer = 0;
+      tSpawn();
+    }
+
+    function tetrisToggle() {
+      if (!tRunning) {
+        tRunning = true;
+        document.getElementById('tetris-start-btn').textContent = 'Pause';
+        if (!tPiece) tSpawn();
+        tLastTime = performance.now();
+        tRafId = requestAnimationFrame(tetrisLoop);
+      } else {
+        tRunning = false; cancelAnimationFrame(tRafId);
+        document.getElementById('tetris-start-btn').textContent = 'Weiter';
+      }
+    }
+
+    function tetrisLoop(now) {
+      if (!tRunning) return;
+      const dt = Math.min(now - tLastTime, 100);
+      tLastTime = now;
+      // Soft drop = 10× faster than current level, but never faster than 50ms
+      const normalSpeed = levelSpeed(tLevel);
+      const speed = tSoftDrop ? Math.max(50, normalSpeed / 10) : normalSpeed;
+      tAccum += dt;
+      // Only drop ONE row per frame — prevents the "teleport to bottom" bug
+      if (tAccum >= speed && tPiece) {
+        tAccum -= speed;
+        if (!tCollides(tPiece, 0, 1)) {
+          tPiece.y++;
+          tLockTimer = 0;
+        } else {
+          tLockTimer += speed;
+          if (tLockTimer >= 500) { tLock(); }
+        }
+      }
+      // DAS
+      if (tPiece) {
+        if (tKeys['ArrowLeft'] || tKeys['a']) {
+          dasLeft += dt;
+          if (dasLeft >= DAS_DELAY && Math.floor((dasLeft - DAS_DELAY) / DAS_REPEAT) > Math.floor((dasLeft - DAS_DELAY - dt) / DAS_REPEAT))
+            if (!tCollides(tPiece, -1, 0)) { tPiece.x--; tLockTimer = 0; }
+        } else dasLeft = 0;
+        if (tKeys['ArrowRight'] || tKeys['d']) {
+          dasRight += dt;
+          if (dasRight >= DAS_DELAY && Math.floor((dasRight - DAS_DELAY) / DAS_REPEAT) > Math.floor((dasRight - DAS_DELAY - dt) / DAS_REPEAT))
+            if (!tCollides(tPiece, 1, 0)) { tPiece.x++; tLockTimer = 0; }
+        } else dasRight = 0;
+      }
+      drawTetris();
+      tRafId = requestAnimationFrame(tetrisLoop);
+    }
+
+    function ghostRow() {
+      if (!tPiece) return 0;
+      let gy = tPiece.y;
+      while (!tCollides(tPiece, 0, gy - tPiece.y + 1)) gy++;
+      return gy;
+    }
+
+    function drawTetris() {
+      const ctx = tCtx;
+      ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, tCanvas.width, tCanvas.height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+      for (let r = 0; r < TH; r++) for (let c = 0; c < TW; c++) ctx.strokeRect(c * BS, r * BS, BS, BS);
+      for (let r = 0; r < TH; r++) for (let c = 0; c < TW; c++) if (tBoard[r][c]) drawBlock(ctx, c, r, tBoard[r][c]);
+      if (tPiece && tRunning) {
+        const gy = ghostRow();
+        tPiece.shape.forEach((row, r) => row.forEach((v, c) => {
+          if (v) {
+            ctx.fillStyle = tPiece.color + '28';
+            ctx.fillRect((tPiece.x + c) * BS + 1, (gy + r) * BS + 1, BS - 2, BS - 2);
+          }
+        }));
+        tPiece.shape.forEach((row, r) => row.forEach((v, c) => { if (v) drawBlock(ctx, tPiece.x + c, tPiece.y + r, tPiece.color); }));
+      }
+    }
+
+    function drawBlock(ctx, x, y, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * BS + 1, y * BS + 1, BS - 2, BS - 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.fillRect(x * BS + 1, y * BS + 1, BS - 2, 3);
+      ctx.fillRect(x * BS + 1, y * BS + 1, 3, BS - 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(x * BS + 1, (y + 1) * BS - 4, BS - 2, 3);
+    }
+
+    function drawNextPiece() {
+      const ctx = tNextCtx;
+      ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, 84, 84);
+      const bs = 16, s = tNext.shape;
+      const ox = Math.floor((4 - s[0].length) / 2) * bs + 6;
+      const oy = Math.floor((4 - s.length) / 2) * bs + 6;
+      s.forEach((row, r) => row.forEach((v, c) => {
+        if (v) {
+          ctx.fillStyle = tNext.color; ctx.fillRect(ox + c * bs + 1, oy + r * bs + 1, bs - 2, bs - 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(ox + c * bs + 1, oy + r * bs + 1, bs - 2, 3);
+        }
+      }));
+    }
+
+    function updateTetrisHUD() {
+      document.getElementById('tetris-score').textContent = tScore;
+      document.getElementById('tetris-level').textContent = tLevel;
+      document.getElementById('tetris-lines').textContent = tLines;
+    }
+
+    document.addEventListener('keydown', e => {
+      if (activeGame !== 'tetris') return;
+      tKeys[e.key] = true;
+      if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { tetrisToggle(); return; }
+      if (!tRunning || !tPiece) return;
+      if (e.key === 'ArrowLeft' || e.key === 'a') { if (!tCollides(tPiece, -1, 0)) { tPiece.x--; tLockTimer = 0; dasLeft = 0; } e.preventDefault(); }
+      if (e.key === 'ArrowRight' || e.key === 'd') { if (!tCollides(tPiece, 1, 0)) { tPiece.x++; tLockTimer = 0; dasRight = 0; } e.preventDefault(); }
+      if (e.key === 'ArrowDown' || e.key === 's') { if (!tSoftDrop) { tSoftDrop = true; tAccum = 0; } e.preventDefault(); }
+      if (e.key === 'ArrowUp' || e.key === 'z' || e.key === 'Z') { tryRotate(tPiece); e.preventDefault(); }
+      if (e.key === ' ') {
+        e.preventDefault();
+        const gy = ghostRow();
+        tScore += 2 * (gy - tPiece.y);
+        tPiece.y = gy; tLock();
+      }
+      drawTetris();
+    });
+    document.addEventListener('keyup', e => {
+      tKeys[e.key] = false;
+      if (e.key === 'ArrowDown' || e.key === 's') tSoftDrop = false;
+    });
+
+    // ════════════════════════════════════════════════
+    // SNAKE  — requestAnimationFrame + delta-time
+    // ════════════════════════════════════════════════
+    const SC = 20, SR = 20, SB = 20;
+    let snake, sDir, sNextDir, sDirQueue, sFood, sRunning = false, sRafId, sLastTime, sAccum;
+    let sScore, sHi = 0, sCanvas, sCtx, foodAnim = 0;
+
+    function snakeInterval() { return Math.max(75, 160 - Math.floor(snake.length / 4) * 8); }
+
+    function initSnake() {
+      sCanvas = document.getElementById('snake-canvas');
+      sCtx = sCanvas.getContext('2d');
+      cancelAnimationFrame(sRafId);
+      sRunning = false;
+      document.getElementById('snake-start-btn').textContent = 'Start';
+      document.getElementById('snake-overlay').style.display = 'none';
+      snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+      sDir = { x: 1, y: 0 }; sNextDir = { x: 1, y: 0 }; sDirQueue = [];
+      sScore = 0; sAccum = 0; foodAnim = 0;
+      document.getElementById('snake-score').textContent = 0;
+      placeFood(); drawSnake(0);
+    }
+
+    function placeFood() {
+      do { sFood = { x: Math.floor(Math.random() * SC), y: Math.floor(Math.random() * SR) }; }
+      while (snake.some(s => s.x === sFood.x && s.y === sFood.y));
+    }
+
+    function snakeLoop(now) {
+      if (!sRunning) return;
+      const dt = Math.min(now - sLastTime, 100);
+      sLastTime = now;
+      sAccum += dt;
+      foodAnim = (foodAnim + dt * 0.005) % (Math.PI * 2);
+      if (sAccum >= snakeInterval()) {
+        sAccum -= snakeInterval();
+        while (sDirQueue.length) {
+          const nd = sDirQueue.shift();
+          if (!(nd.x === -sDir.x && nd.y === -sDir.y)) { sNextDir = nd; break; }
+        }
+        sDir = sNextDir;
+        const head = { x: snake[0].x + sDir.x, y: snake[0].y + sDir.y };
+        if (head.x < 0 || head.x >= SC || head.y < 0 || head.y >= SR) return snakeEnd();
+        if (snake.some(s => s.x === head.x && s.y === head.y)) return snakeEnd();
+        snake.unshift(head);
+        if (head.x === sFood.x && head.y === sFood.y) {
+          sScore += 10;
+          document.getElementById('snake-score').textContent = sScore;
+          popHud('snake-score'); placeFood();
+        } else snake.pop();
+      }
+      drawSnake(now);
+      sRafId = requestAnimationFrame(snakeLoop);
+    }
+
+    function snakeEnd() {
+      sRunning = false; cancelAnimationFrame(sRafId);
+      if (sScore > sHi) { sHi = sScore; document.getElementById('snake-hi').textContent = sHi; }
+      document.getElementById('snake-final').textContent = sScore;
+      drawSnake(0);
+      document.getElementById('snake-overlay').style.display = 'flex';
+    }
+
+    function snakeToggle() {
+      if (!sRunning) {
+        sRunning = true;
+        document.getElementById('snake-start-btn').textContent = 'Pause';
+        sLastTime = performance.now();
+        sRafId = requestAnimationFrame(snakeLoop);
+      } else {
+        sRunning = false; cancelAnimationFrame(sRafId);
+        document.getElementById('snake-start-btn').textContent = 'Weiter';
+      }
+    }
+
+    function drawSnake(now) {
+      const ctx = sCtx;
+      ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.025)'; ctx.lineWidth = 1;
+      for (let r = 0; r < SR; r++) for (let c = 0; c < SC; c++) ctx.strokeRect(c * SB, r * SB, SB, SB);
+      // Food
+      const pulse = 0.6 + 0.4 * Math.sin(foodAnim);
+      ctx.save();
+      ctx.shadowColor = '#ff006e'; ctx.shadowBlur = 10 + 8 * pulse;
+      ctx.fillStyle = `rgba(255,0,110,${0.7 + 0.3 * pulse})`;
+      ctx.beginPath(); ctx.arc(sFood.x * SB + SB / 2, sFood.y * SB + SB / 2, 5 + 2 * pulse, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Snake
+      snake.forEach((seg, i) => {
+        const t = i / snake.length;
+        ctx.save();
+        if (i === 0) { ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 10; }
+        ctx.fillStyle = i === 0 ? '#39ff14' : `hsl(${118 - t * 40},90%,${54 - t * 18}%)`;
+        ctx.fillRect(seg.x * SB + 1, seg.y * SB + 1, SB - 2, SB - 2);
+        if (i === 0) {
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+          ctx.fillRect(seg.x * SB + 2, seg.y * SB + 2, SB - 4, 3);
+        }
+        ctx.restore();
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (activeGame !== 'snake') return;
+      if (e.key === ' ') { e.preventDefault(); snakeToggle(); return; }
+      const map = {
+        ArrowUp: { x: 0, y: -1 }, w: { x: 0, y: -1 }, W: { x: 0, y: -1 },
+        ArrowDown: { x: 0, y: 1 }, s: { x: 0, y: 1 }, S: { x: 0, y: 1 },
+        ArrowLeft: { x: -1, y: 0 }, a: { x: -1, y: 0 }, A: { x: -1, y: 0 },
+        ArrowRight: { x: 1, y: 0 }, d: { x: 1, y: 0 }, D: { x: 1, y: 0 }
+      };
+      const dir = map[e.key];
+      if (dir) { sDirQueue.push(dir); e.preventDefault(); }
+    });
+
+    document.getElementById('dpad-up').addEventListener('click', () => sDirQueue.push({ x: 0, y: -1 }));
+    document.getElementById('dpad-down').addEventListener('click', () => sDirQueue.push({ x: 0, y: 1 }));
+    document.getElementById('dpad-left').addEventListener('click', () => sDirQueue.push({ x: -1, y: 0 }));
+    document.getElementById('dpad-right').addEventListener('click', () => sDirQueue.push({ x: 1, y: 0 }));
+
+    // ════════════════════════════════════════════════
+    // 2048  — smooth sliding tiles
+    // ════════════════════════════════════════════════
+    let g2048Grid, g2048Score = 0, g2048Hi = 0, g2048Won = false, g2048KeepPlaying = false;
+    let g2048Animating = false;
+
+    // Read actual CSS variable at runtime (handles responsive breakpoint)
+    function g2048CellSize() {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--cs').trim();
+      return parseInt(v) || 70;
+    }
+    function g2048CellGap() {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--cg').trim();
+      return parseInt(v) || 10;
+    }
+    function g2048CellPad() {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--cp').trim();
+      return parseInt(v) || 10;
+    }
+
+    function g2048Pos(idx) { // idx = row or col 0-3 → pixel offset inside board
+      return g2048CellPad() + idx * (g2048CellSize() + g2048CellGap());
+    }
+
+    function g2048TileClass(v) {
+      if (v <= 2048) return 't' + v;
+      return 'thigh';
+    }
+
+    function init2048() {
+      g2048Grid = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+      g2048Score = 0; g2048Won = false; g2048KeepPlaying = false; g2048Animating = false;
+      document.getElementById('g2048-score').textContent = 0;
+      document.getElementById('g2048-best').textContent = '–';
+      document.getElementById('g2048-gameover').style.display = 'none';
+      document.getElementById('g2048-win').style.display = 'none';
+      g2048Spawn(); g2048Spawn();
+      g2048RenderFull();
+    }
+
+    function g2048RenderFull() {
+      const board = document.getElementById('g2048-board');
+      board.innerHTML = '';
+      // background cells
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        const bg = document.createElement('div');
+        bg.className = 'g2048-bg-cell';
+        bg.style.left = g2048Pos(c) + 'px';
+        bg.style.top = g2048Pos(r) + 'px';
+        board.appendChild(bg);
+      }
+      // tiles
+      let best = 0;
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        const v = g2048Grid[r][c];
+        if (v > 0) {
+          const tile = document.createElement('div');
+          tile.className = 'g2048-tile ' + g2048TileClass(v);
+          tile.style.left = g2048Pos(c) + 'px';
+          tile.style.top = g2048Pos(r) + 'px';
+          tile.textContent = v;
+          board.appendChild(tile);
+          if (v > best) best = v;
+        }
+      }
+      if (best > 0) document.getElementById('g2048-best').textContent = best;
+    }
+
+    function g2048Spawn(animate = false) {
+      const empty = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Grid[r][c] === 0) empty.push([r, c]);
+      if (!empty.length) return false;
+      const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+      g2048Grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+      if (animate) {
+        // spawn tile with appear animation after slide settles
+        const board = document.getElementById('g2048-board');
+        const tile = document.createElement('div');
+        tile.className = 'g2048-tile tile-new ' + g2048TileClass(g2048Grid[r][c]);
+        tile.style.left = g2048Pos(c) + 'px';
+        tile.style.top = g2048Pos(r) + 'px';
+        tile.textContent = g2048Grid[r][c];
+        board.appendChild(tile);
+      }
+      return true;
+    }
+
+    // ── Move engine: tracks each tile's journey ──
+    function g2048Move(dir) {
+      if (g2048Animating) return;
+
+      const SLIDE_MS = 120; // must match CSS transition duration
+
+      // Snapshot: build tile objects with id, value, from-position
+      let tileId = 0;
+      const tiles = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        if (g2048Grid[r][c] !== 0) {
+          tiles.push({ id: tileId++, val: g2048Grid[r][c], r, c });
+        }
+      }
+
+      // Process logic for each row/col depending on direction
+      // Returns {newGrid, moves:[{id, toR, toC}], merges:[{id, toR, toC, newVal}]}
+      const result = g2048Compute(tiles, dir);
+      if (!result.changed) return;
+
+      g2048Animating = true;
+
+      // Build DOM tile map by current position (id → DOM element)
+      const board = document.getElementById('g2048-board');
+      // Remove old tiles, keep bg cells
+      board.querySelectorAll('.g2048-tile').forEach(el => el.remove());
+
+      // Render all tiles at their FROM positions first (no transition yet)
+      const domMap = {};
+      tiles.forEach(t => {
+        const el = document.createElement('div');
+        el.className = 'g2048-tile ' + g2048TileClass(t.val);
+        el.style.transition = 'none';
+        el.style.left = g2048Pos(t.c) + 'px';
+        el.style.top = g2048Pos(t.r) + 'px';
+        el.textContent = t.val;
+        board.appendChild(el);
+        domMap[t.id] = el;
+      });
+
+      // Force reflow so positions register before we add transitions
+      board.offsetHeight;
+
+      // Enable transitions and move to target positions
+      tiles.forEach(t => {
+        const el = domMap[t.id];
+        el.style.transition = `left ${SLIDE_MS}ms ease, top ${SLIDE_MS}ms ease`;
+        const move = result.moves.find(m => m.id === t.id);
+        if (move) {
+          el.style.left = g2048Pos(move.toC) + 'px';
+          el.style.top = g2048Pos(move.toR) + 'px';
+        }
+      });
+
+      // After slide completes: update grid, apply merges, spawn new tile
+      setTimeout(() => {
+        g2048Grid = result.newGrid;
+        g2048Score += result.scoreGain;
+        document.getElementById('g2048-score').textContent = g2048Score;
+        if (g2048Score > g2048Hi) {
+          g2048Hi = g2048Score;
+          document.getElementById('g2048-hi').textContent = g2048Hi;
+        }
+        popHud('g2048-score');
+
+        // Full re-render with merged values
+        g2048RenderFull();
+
+        // Animate merged tiles
+        result.merges.forEach(m => {
+          const tileEls = board.querySelectorAll('.g2048-tile');
+          tileEls.forEach(el => {
+            const elL = parseInt(el.style.left);
+            const elT = parseInt(el.style.top);
+            if (elL === g2048Pos(m.toC) && elT === g2048Pos(m.toR)) {
+              el.classList.add('tile-merge');
+            }
+          });
+        });
+
+        // Spawn new tile
+        let best = 0;
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Grid[r][c] > best) best = g2048Grid[r][c];
+        if (best > 0) document.getElementById('g2048-best').textContent = best;
+
+        g2048Spawn(true);
+        g2048Animating = false;
+
+        // Check win
+        if (!g2048Won && !g2048KeepPlaying) {
+          for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+            if (g2048Grid[r][c] === 2048) {
+              g2048Won = true;
+              document.getElementById('g2048-winscore').textContent = g2048Score;
+              setTimeout(() => { document.getElementById('g2048-win').style.display = 'flex'; }, 300);
+              return;
+            }
+          }
+        }
+        if (!g2048CanMove()) {
+          document.getElementById('g2048-final').textContent = g2048Score;
+          setTimeout(() => { document.getElementById('g2048-gameover').style.display = 'flex'; }, 300);
+        }
+      }, SLIDE_MS + 20);
+    }
+
+    // Pure logic: compute where each tile ends up
+    function g2048Compute(tiles, dir) {
+      const grid = Array.from({ length: 4 }, () => Array(4).fill(null));
+      tiles.forEach(t => { grid[t.r][t.c] = t; });
+
+      const moves = [];
+      const merges = [];
+      let scoreGain = 0;
+      let changed = false;
+      const newGrid = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+
+      for (let outer = 0; outer < 4; outer++) {
+        // Extract line in slide-order (tiles move toward index 0)
+        const line = [];
+        for (let inner = 0; inner < 4; inner++) {
+          let t;
+          if (dir === 'left') t = grid[outer][inner];
+          if (dir === 'right') t = grid[outer][3 - inner];
+          if (dir === 'up') t = grid[inner][outer];
+          if (dir === 'down') t = grid[3 - inner][outer];
+          if (t) line.push(t);
+        }
+
+        // Merge
+        const packed = [];
+        let i = 0;
+        while (i < line.length) {
+          if (i + 1 < line.length && line[i].val === line[i + 1].val) {
+            const newVal = line[i].val * 2;
+            packed.push({ survivor: line[i], eaten: line[i + 1], val: newVal });
+            scoreGain += newVal;
+            i += 2;
+          } else {
+            packed.push({ survivor: line[i], eaten: null, val: line[i].val });
+            i++;
+          }
+        }
+
+        // Map slot index back to board coordinates
+        packed.forEach((entry, slotIdx) => {
+          let toR, toC;
+          if (dir === 'left') { toR = outer; toC = slotIdx; }
+          if (dir === 'right') { toR = outer; toC = 3 - slotIdx; }
+          if (dir === 'up') { toR = slotIdx; toC = outer; }
+          if (dir === 'down') { toR = 3 - slotIdx; toC = outer; }
+
+          newGrid[toR][toC] = entry.val;
+
+          const s = entry.survivor;
+          if (s.r !== toR || s.c !== toC) changed = true;
+          moves.push({ id: s.id, toR, toC });
+
+          if (entry.eaten) {
+            const e = entry.eaten;
+            if (e.r !== toR || e.c !== toC) changed = true;
+            moves.push({ id: e.id, toR, toC });
+            merges.push({ toR, toC });
+          }
+        });
+      }
+
+      return { newGrid, moves, merges, scoreGain, changed };
+    }
+
+    function g2048CanMove() {
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+        if (g2048Grid[r][c] === 0) return true;
+        if (c < 3 && g2048Grid[r][c] === g2048Grid[r][c + 1]) return true;
+        if (r < 3 && g2048Grid[r][c] === g2048Grid[r + 1][c]) return true;
+      }
+      return false;
+    }
+
+    function g2048Continue() {
+      g2048KeepPlaying = true;
+      document.getElementById('g2048-win').style.display = 'none';
+    }
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+      if (activeGame !== '2048') return;
+      const map = {
+        ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down',
+        a: 'left', d: 'right', w: 'up', s: 'down',
+        A: 'left', D: 'right', W: 'up', S: 'down'
+      };
+      const dir = map[e.key];
+      if (dir) { e.preventDefault(); g2048Move(dir); }
+    });
+
+    // Touch/Swipe
+    (function () {
+      let tx = 0, ty = 0;
+      document.addEventListener('touchstart', e => {
+        if (activeGame !== '2048') return;
+        tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', e => {
+        if (activeGame !== '2048') return;
+        const dx = e.changedTouches[0].clientX - tx;
+        const dy = e.changedTouches[0].clientY - ty;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+        if (Math.abs(dx) > Math.abs(dy)) g2048Move(dx > 0 ? 'right' : 'left');
+        else g2048Move(dy > 0 ? 'down' : 'up');
+      }, { passive: true });
+    })();
+
+
+    // ── THEME SWITCHER ──
+    function setTheme(name, el) {
+      document.documentElement.setAttribute('data-theme', name);
+      document.querySelectorAll('.theme-pill').forEach(d => d.classList.remove('active'));
+      if (el) el.classList.add('active');
+      try { localStorage.setItem('arcade-theme', name); } catch (e) { }
+      // Redraw canvases with new theme bg
+      setTimeout(() => {
+        if (typeof drawTetris === 'function') drawTetris();
+        if (typeof drawSnake === 'function' && typeof snake !== 'undefined') drawSnake(0);
+        if (typeof drawNextPiece === 'function' && typeof tNext !== 'undefined') drawNextPiece();
+      }, 10);
+    }
+    (function () {
+      try {
+        var saved = localStorage.getItem('arcade-theme');
+        if (saved) {
+          document.documentElement.setAttribute('data-theme', saved);
+          var dot = document.querySelector('.theme-pill[data-t="' + saved + '"]');
+          document.querySelectorAll('.theme-pill').forEach(d => d.classList.remove('active'));
+          if (dot) dot.classList.add('active');
+        }
+      } catch (e) { }
+    })();
+    // ── INIT ──
+    initMinesweeper();
+    initTetris();
+    initSnake();
+    init2048();
+    // initPong() wird unten nach der Pong-Deklaration aufgerufen
+
+    // ════════════════════════════════════════════════
+    // PONG
+    // ════════════════════════════════════════════════
+    const PONG_W = 600, PONG_H = 380;
+    const PONG_PADDLE_W = 10, PONG_PADDLE_H = 70;
+    const PONG_BALL_SIZE = 9;
+    const PONG_SPEED_INIT = 4.5;
+    const PONG_SPEED_MAX = 11;
+    const PONG_WIN_SCORE = 7;
+    const PONG_PADDLE_SPEED = 5.5;
+
+    let pong = {};
+    let pongKeys = {};
+    let pongRaf = null;
+    let pongRunning = false;
+
+    function getCssVar(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function initPong() {
+      const canvas = document.getElementById('pong-canvas');
+      if (!canvas) return;
+      // Canvas ist im versteckten Screen – Größe erst beim ersten Öffnen setzen
+      pong = {
+        p1: { y: PONG_H / 2 - PONG_PADDLE_H / 2, score: 0 },
+        p2: { y: PONG_H / 2 - PONG_PADDLE_H / 2, score: 0 },
+        ball: resetBallState(1),
+        serving: 1,
+        state: 'menu',
+        winner: 0
+      };
+      pongKeys = {};
+      pongRunning = false;
+      if (pongRaf) { cancelAnimationFrame(pongRaf); pongRaf = null; }
+      document.getElementById('pong-score-p1').textContent = '0';
+      document.getElementById('pong-score-p2').textContent = '0';
+      // Overlay zurücksetzen
+      const ov = document.getElementById('pong-overlay');
+      ov.innerHTML = `
+        <h2 style="color:var(--cyan);text-shadow:var(--glow-cyan);">🏓 PONG</h2>
+        <div class="sub">Erster bis <b style="font-family:'Press Start 2P',monospace;color:var(--yellow);text-shadow:var(--glow-yellow);">7</b> Punkte gewinnt</div>
+        <div class="key-summary">
+          <div class="key-col">
+            <b class="p1b">SPIELER 1</b>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 6px;font-size:9px;">W</span> Hoch<br>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 6px;font-size:9px;">S</span> Runter
+          </div>
+          <div class="key-col">
+            <b class="p2b">SPIELER 2</b>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 6px;font-size:9px;">↑</span> Hoch<br>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 6px;font-size:9px;">↓</span> Runter
+          </div>
+        </div>
+        <button class="btn btn-cyan" onclick="pongStart()">▶ Spiel starten</button>
+      `;
+      ov.style.display = 'flex';
+    }
+
+    function resetBallState(server) {
+      const angle = (Math.random() * 40 - 20) * Math.PI / 180;
+      const dir = server === 1 ? 1 : -1;
+      return {
+        x: PONG_W / 2,
+        y: PONG_H / 2,
+        vx: Math.cos(angle) * PONG_SPEED_INIT * dir,
+        vy: Math.sin(angle) * PONG_SPEED_INIT
+      };
+    }
+
+    function pongStart() {
+      const canvas = document.getElementById('pong-canvas');
+      // Jetzt ist der Screen sichtbar – Canvas-Größe setzen
+      const parent = canvas.parentElement;
+      const maxW = Math.min(600, parent.clientWidth - 4);
+      if (maxW > 50) {
+        canvas.width = maxW;
+        canvas.height = Math.round(maxW * (380 / 600));
+      }
+      document.getElementById('pong-overlay').style.display = 'none';
+      pong.p1 = { y: PONG_H / 2 - PONG_PADDLE_H / 2, score: 0 };
+      pong.p2 = { y: PONG_H / 2 - PONG_PADDLE_H / 2, score: 0 };
+      pong.ball = resetBallState(1);
+      pong.serving = 1;
+      pong.state = 'playing';
+      pong.winner = 0;
+      document.getElementById('pong-score-p1').textContent = '0';
+      document.getElementById('pong-score-p2').textContent = '0';
+      pongRunning = true;
+      if (pongRaf) cancelAnimationFrame(pongRaf);
+      pongLoop();
+    }
+
+    function pongTogglePause() {
+      if (!pongRunning) return;
+      if (pong.state === 'playing') {
+        pong.state = 'paused';
+        const ov = document.getElementById('pong-overlay');
+        ov.innerHTML = `
+          <h2 style="color:var(--yellow);text-shadow:var(--glow-yellow);">PAUSE</h2>
+          <div class="sub">Space zum Weiterspielen</div>
+          <button class="btn btn-cyan" onclick="pongResume()">▶ Weiter</button>
+        `;
+        ov.style.display = 'flex';
+      } else if (pong.state === 'paused') {
+        pongResume();
+      }
+    }
+
+    function pongResume() {
+      document.getElementById('pong-overlay').style.display = 'none';
+      pong.state = 'playing';
+    }
+
+    function pongLoop() {
+      if (!pongRunning) return;
+      pongUpdate();
+      pongDraw();
+      pongRaf = requestAnimationFrame(pongLoop);
+    }
+
+    function pongUpdate() {
+      if (pong.state !== 'playing') return;
+      const canvas = document.getElementById('pong-canvas');
+      const scaleX = canvas.width / PONG_W;
+      const scaleY = canvas.height / PONG_H;
+
+      // Paddle movement
+      const spd = PONG_PADDLE_SPEED;
+      if (pongKeys['w'] || pongKeys['W']) pong.p1.y -= spd;
+      if (pongKeys['s'] || pongKeys['S']) pong.p1.y += spd;
+      if (pongKeys['ArrowUp']) pong.p2.y -= spd;
+      if (pongKeys['ArrowDown']) pong.p2.y += spd;
+
+      // Clamp paddles
+      pong.p1.y = Math.max(0, Math.min(PONG_H - PONG_PADDLE_H, pong.p1.y));
+      pong.p2.y = Math.max(0, Math.min(PONG_H - PONG_PADDLE_H, pong.p2.y));
+
+      // Ball movement
+      pong.ball.x += pong.ball.vx;
+      pong.ball.y += pong.ball.vy;
+
+      // Wall bounce (top/bottom)
+      if (pong.ball.y - PONG_BALL_SIZE / 2 <= 0) {
+        pong.ball.y = PONG_BALL_SIZE / 2;
+        pong.ball.vy = Math.abs(pong.ball.vy);
+      }
+      if (pong.ball.y + PONG_BALL_SIZE / 2 >= PONG_H) {
+        pong.ball.y = PONG_H - PONG_BALL_SIZE / 2;
+        pong.ball.vy = -Math.abs(pong.ball.vy);
+      }
+
+      // Paddle collision – P1 (left)
+      const p1x = 18;
+      if (pong.ball.vx < 0 &&
+        pong.ball.x - PONG_BALL_SIZE / 2 <= p1x + PONG_PADDLE_W &&
+        pong.ball.x + PONG_BALL_SIZE / 2 >= p1x &&
+        pong.ball.y >= pong.p1.y &&
+        pong.ball.y <= pong.p1.y + PONG_PADDLE_H) {
+        pong.ball.x = p1x + PONG_PADDLE_W + PONG_BALL_SIZE / 2;
+        const hitPos = (pong.ball.y - (pong.p1.y + PONG_PADDLE_H / 2)) / (PONG_PADDLE_H / 2);
+        const angle = hitPos * 60 * Math.PI / 180;
+        const speed = Math.min(Math.hypot(pong.ball.vx, pong.ball.vy) * 1.05, PONG_SPEED_MAX);
+        pong.ball.vx = Math.cos(angle) * speed;
+        pong.ball.vy = Math.sin(angle) * speed;
+      }
+
+      // Paddle collision – P2 (right)
+      const p2x = PONG_W - 18 - PONG_PADDLE_W;
+      if (pong.ball.vx > 0 &&
+        pong.ball.x + PONG_BALL_SIZE / 2 >= p2x &&
+        pong.ball.x - PONG_BALL_SIZE / 2 <= p2x + PONG_PADDLE_W &&
+        pong.ball.y >= pong.p2.y &&
+        pong.ball.y <= pong.p2.y + PONG_PADDLE_H) {
+        pong.ball.x = p2x - PONG_BALL_SIZE / 2;
+        const hitPos = (pong.ball.y - (pong.p2.y + PONG_PADDLE_H / 2)) / (PONG_PADDLE_H / 2);
+        const angle = hitPos * 60 * Math.PI / 180;
+        const speed = Math.min(Math.hypot(pong.ball.vx, pong.ball.vy) * 1.05, PONG_SPEED_MAX);
+        pong.ball.vx = -Math.cos(angle) * speed;
+        pong.ball.vy = Math.sin(angle) * speed;
+      }
+
+      // Score: ball leaves left
+      if (pong.ball.x < -PONG_BALL_SIZE) {
+        pong.p2.score++;
+        document.getElementById('pong-score-p2').textContent = pong.p2.score;
+        popHud('pong-score-p2');
+        pongCheckWin(2);
+        return;
+      }
+      // Score: ball leaves right
+      if (pong.ball.x > PONG_W + PONG_BALL_SIZE) {
+        pong.p1.score++;
+        document.getElementById('pong-score-p1').textContent = pong.p1.score;
+        popHud('pong-score-p1');
+        pongCheckWin(1);
+        return;
+      }
+    }
+
+    function pongCheckWin(scorer) {
+      if (pong.p1.score >= PONG_WIN_SCORE || pong.p2.score >= PONG_WIN_SCORE) {
+        pong.state = 'gameover';
+        pong.winner = scorer;
+        pongRunning = false;
+        const winColor = scorer === 1 ? 'var(--cyan)' : 'var(--pink)';
+        const winGlow = scorer === 1 ? 'var(--glow-cyan)' : 'var(--glow-pink)';
+        const ov = document.getElementById('pong-overlay');
+        ov.innerHTML = `
+          <h2 style="color:${winColor};text-shadow:${winGlow};">SPIELER ${scorer} GEWINNT!</h2>
+          <div class="sub">${pong.p1.score} : ${pong.p2.score}</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn btn-cyan" onclick="pongStart()">↺ Rematch</button>
+            <button class="btn btn-pink" onclick="initPong()">Menü</button>
+          </div>
+        `;
+        ov.style.display = 'flex';
+      } else {
+        // Next point: reset ball, opponent serves
+        pong.serving = scorer === 1 ? 2 : 1;
+        setTimeout(() => {
+          if (pong.state === 'gameover') return;
+          pong.ball = resetBallState(pong.serving);
+          pong.state = 'playing';
+        }, 800);
+        pong.state = 'point';
+      }
+    }
+
+    function pongDraw() {
+      const canvas = document.getElementById('pong-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const sx = W / PONG_W, sy = H / PONG_H;
+
+      const panelBg = getCssVar('--panel') || '#161724';
+      const cyan = getCssVar('--cyan') || '#5ecfdf';
+      const pink = getCssVar('--pink') || '#e06090';
+      const dim = getCssVar('--dim') || '#5a5a7a';
+      const textCol = getCssVar('--text') || '#c8c8e0';
+
+      // Background
+      ctx.fillStyle = panelBg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Center line
+      ctx.setLineDash([8 * sy, 10 * sy]);
+      ctx.strokeStyle = dim;
+      ctx.lineWidth = 2 * sx;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, 0);
+      ctx.lineTo(W / 2, H);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Center circle
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, 30 * sx, 0, Math.PI * 2);
+      ctx.strokeStyle = dim;
+      ctx.lineWidth = 1.5 * sx;
+      ctx.stroke();
+
+      // P1 paddle (left, cyan)
+      const p1x = 18 * sx;
+      ctx.fillStyle = cyan;
+      ctx.shadowColor = cyan;
+      ctx.shadowBlur = 12;
+      ctx.fillRect(p1x, pong.p1.y * sy, PONG_PADDLE_W * sx, PONG_PADDLE_H * sy);
+      ctx.shadowBlur = 0;
+
+      // P2 paddle (right, pink)
+      const p2x = (PONG_W - 18 - PONG_PADDLE_W) * sx;
+      ctx.fillStyle = pink;
+      ctx.shadowColor = pink;
+      ctx.shadowBlur = 12;
+      ctx.fillRect(p2x, pong.p2.y * sy, PONG_PADDLE_W * sx, PONG_PADDLE_H * sy);
+      ctx.shadowBlur = 0;
+
+      // Ball
+      if (pong.state === 'playing' || pong.state === 'point') {
+        const ballColor = getCssVar('--glow-yellow') || '#ffffff';
+        ctx.fillStyle = ballColor;
+        ctx.shadowColor = ballColor;
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(pong.ball.x * sx, pong.ball.y * sy, (PONG_BALL_SIZE / 2) * sx, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    function pongDrawIdle() {
+      const canvas = document.getElementById('pong-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const sx = W / PONG_W, sy = H / PONG_H;
+      const panelBg = getCssVar('--panel') || '#161724';
+      const cyan = getCssVar('--cyan') || '#5ecfdf';
+      const pink = getCssVar('--pink') || '#e06090';
+      const dim = getCssVar('--dim') || '#5a5a7a';
+      ctx.fillStyle = panelBg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.setLineDash([8 * sy, 10 * sy]);
+      ctx.strokeStyle = dim;
+      ctx.lineWidth = 2 * sx;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, 0);
+      ctx.lineTo(W / 2, H);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(W / 2, H / 2, 30 * sx, 0, Math.PI * 2);
+      ctx.strokeStyle = dim;
+      ctx.lineWidth = 1.5 * sx;
+      ctx.stroke();
+      // Draw paddles in idle position
+      ctx.fillStyle = cyan;
+      ctx.shadowColor = cyan;
+      ctx.shadowBlur = 12;
+      ctx.fillRect(18 * sx, (PONG_H / 2 - PONG_PADDLE_H / 2) * sy, PONG_PADDLE_W * sx, PONG_PADDLE_H * sy);
+      ctx.fillStyle = pink;
+      ctx.shadowColor = pink;
+      ctx.shadowBlur = 12;
+      ctx.fillRect((PONG_W - 18 - PONG_PADDLE_W) * sx, (PONG_H / 2 - PONG_PADDLE_H / 2) * sy, PONG_PADDLE_W * sx, PONG_PADDLE_H * sy);
+      ctx.shadowBlur = 0;
+    }
+
+    // Pong keyboard input
+    document.addEventListener('keydown', e => {
+      if (activeGame !== 'pong') return;
+      pongKeys[e.key] = true;
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (pong.state === 'playing' || pong.state === 'paused') pongTogglePause();
+      }
+      if (['ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
+    });
+    document.addEventListener('keyup', e => {
+      pongKeys[e.key] = false;
+    });
+
+    // Pong beim Theme-Wechsel neu zeichnen
+    const _origSetTheme = setTheme;
+    setTheme = function (name, el) {
+      _origSetTheme(name, el);
+      setTimeout(() => {
+        if (activeGame === 'pong' && !pongRunning) pongDrawIdle();
+      }, 15);
+    };
+
+    // Pong initialisieren (nach allen Deklarationen)
+    initPong();
+  </script>
+</body>
+
+</html>

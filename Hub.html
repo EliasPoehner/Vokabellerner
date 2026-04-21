@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F11 HUB</title>
+  <link rel="icon" type="image/svg+xml" href="O:\work\Allgemein\Hub\Sammlung\arcade-hub\HubConnection.jpg">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --arc-bg: #2e283a;
+      --arc-card: #12121e;
+      --arc-pink: #ff2d75;
+      --arc-cyan: #00f0ff;
+      --arc-yellow: #ffe156;
+      --arc-muted: #6b6880;
+      --arc-text: #e8e6f0;
+      --sch-bg: #f5f6fa;
+      --sch-surface: #ffffff;
+      --sch-blue: #2563eb;
+      --sch-blue-lt: #eff6ff;
+      --sch-blue-md: #bfdbfe;
+      --sch-text: #1e1b4b;
+      --sch-muted: #64748b;
+      --sch-border: #e2e8f0;
+      --sch-radius: 14px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Each page is a full-screen layer that scrolls independently */
+    .page {
+      position: fixed;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .page.active {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+    }
+
+    #landing nav {
+      background: rgba(15, 13, 22, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    #school nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--sch-border);
+      box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    #gaming nav {
+      background: rgba(15, 13, 22, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-logo {
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+    }
+
+    #landing .nav-logo,
+    #gaming .nav-logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem;
+      background: linear-gradient(135deg, var(--arc-cyan), var(--arc-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #school .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--sch-blue);
+      -webkit-text-fill-color: var(--sch-blue);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.35rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    /* Dark nav buttons */
+    #landing .nav-btn,
+    #gaming .nav-btn {
+      color: var(--arc-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #landing .nav-btn:hover,
+    #gaming .nav-btn:hover {
+      color: var(--arc-text);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    #landing .nav-btn.cur,
+    #gaming .nav-btn.cur {
+      color: var(--arc-pink);
+      border-color: var(--arc-pink);
+    }
+
+    /* Light nav buttons */
+    #school .nav-btn {
+      color: var(--sch-muted);
+      border: 1px solid transparent;
+    }
+
+    #school .nav-btn:hover {
+      color: var(--sch-text);
+      background: var(--sch-blue-lt);
+    }
+
+    #school .nav-btn.cur {
+      color: var(--sch-blue);
+      background: var(--sch-blue-lt);
+      border-color: var(--sch-blue-md);
+      font-weight: 600;
+    }
+
+    /* ========== LANDING ========== */
+    #landing {
+      background: #0f0d16;
+      color: var(--arc-text);
+    }
+
+    #landing::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 45, 117, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .land-body {
+      min-height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 2rem 2rem;
+      position: relative;
+      z-index: 1;
+      gap: 1.2rem;
+    }
+
+    /* Header row */
+    .land-header {
+      text-align: center;
+    }
+
+    .land-eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--arc-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .land-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      letter-spacing: 0.15em;
+      line-height: 1.4;
+      background: linear-gradient(135deg, var(--arc-cyan), var(--arc-pink), var(--arc-yellow));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: grad 5s ease infinite;
+      margin-bottom: 0.3rem;
+    }
+
+    /* NAV CARDS */
+    .land-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .land-card {
+      border-radius: 16px;
+      padding: 1.4rem 1.3rem;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .land-card-school {
+      background: linear-gradient(145deg, #1e3a5f, #1e293b);
+      border: 1px solid rgba(96, 165, 250, 0.25);
+    }
+
+    .land-card-arcade {
+      background: linear-gradient(145deg, #2e1a3a, #1a0d2e);
+      border: 1px solid rgba(255, 45, 117, 0.25);
+    }
+
+    .land-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .land-card-school:hover {
+      box-shadow: 0 16px 48px rgba(37, 99, 235, 0.25);
+    }
+
+    .land-card-arcade:hover {
+      box-shadow: 0 16px 48px rgba(255, 45, 117, 0.25);
+    }
+
+    .land-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+    }
+
+    .land-card-school .land-badge {
+      background: rgba(96, 165, 250, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+
+    .land-card-arcade .land-badge {
+      background: rgba(255, 45, 117, 0.12);
+      color: #ff7aaa;
+      border: 1px solid rgba(255, 45, 117, 0.3);
+    }
+
+    .land-icon {
+      font-size: 2rem;
+      margin: 0.2rem 0;
+    }
+
+    .land-cardtitle {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .land-carddesc {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.5;
+    }
+
+    .land-arrow {
+      margin-top: auto;
+      padding-top: 0.8rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0.45;
+      transition: opacity 0.2s, gap 0.2s;
+    }
+
+    .land-card-school .land-arrow {
+      color: #93c5fd;
+    }
+
+    .land-card-arcade .land-arrow {
+      color: var(--arc-pink);
+    }
+
+    .land-card:hover .land-arrow {
+      opacity: 1;
+      gap: 0.7rem;
+    }
+
+    /* WIDGET GRID */
+    .land-widgets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto auto;
+      gap: 0.85rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* span helpers */
+    .l-span2 {
+      grid-column: span 2;
+    }
+
+    .l-span4 {
+      grid-column: span 4;
+    }
+
+    .l-widget {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 0.95rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .l-widget:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .l-widget-label {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--arc-muted);
+      margin-bottom: 0.05rem;
+    }
+
+    .l-widget-sub {
+      font-size: 0.65rem;
+      color: var(--arc-muted);
+    }
+
+    /* CLOCK */
+    .l-clock-time {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--arc-cyan), #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .l-clock-kw {
+      font-size: 0.62rem;
+      color: var(--arc-muted);
+      margin-top: 0.15rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* WEATHER */
+    .l-weather-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 0.05rem;
+    }
+
+    .l-weather-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .l-weather-temp {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .l-weather-desc {
+      font-size: 0.67rem;
+      color: var(--arc-muted);
+      margin-top: 0.1rem;
+    }
+
+    /* FERIEN */
+    .l-countdown-days {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--arc-yellow), #ffaa00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .l-ferien-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--arc-yellow);
+      margin-top: 0.1rem;
+    }
+
+    .l-countdown-bar-wrap {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 4px;
+      margin-top: 0.55rem;
+      overflow: hidden;
+    }
+
+    .l-countdown-bar {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--arc-yellow), #ffaa00);
+      transition: width 0.8s ease;
+    }
+
+    /* SCHULSTUNDEN */
+    .l-stunde-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      margin-top: 0.1rem;
+    }
+
+    .l-stunde-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      padding: 0.22rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .l-stunde-item.current {
+      background: rgba(0, 240, 255, 0.09);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    .l-stunde-time {
+      color: var(--arc-muted);
+      font-size: 0.62rem;
+      font-family: 'Orbitron', monospace;
+    }
+
+    .l-stunde-name {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    /* QUOTE */
+    .l-quote-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.15rem;
+      font-style: italic;
+    }
+
+    .l-quote-author {
+      font-size: 0.62rem;
+      color: var(--arc-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* FUN FACT */
+    .l-fact-text {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      margin-top: 0.15rem;
+    }
+
+    .l-fact-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--arc-cyan);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0.35rem;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .l-fact-btn:hover {
+      background: rgba(0, 240, 255, 0.08);
+      border-color: var(--arc-cyan);
+    }
+
+    /* ========== SCHOOL ========== */
+    #school {
+      background: var(--sch-bg);
+      color: var(--sch-text);
+    }
+
+    .sch-body {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2rem 2rem 5rem;
+    }
+
+    .sch-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+
+    .sch-hero-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      line-height: 1.2;
+      margin-bottom: 0.4rem;
+    }
+
+    .sch-hero-text p {
+      color: var(--sch-muted);
+      font-size: 0.95rem;
+    }
+
+    .sch-date-chip {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-blue-md);
+      border-radius: 14px;
+      padding: 0.9rem 1.4rem;
+      text-align: center;
+      min-width: 130px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+    }
+
+    .date-day {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--sch-blue);
+      line-height: 1;
+    }
+
+    .date-label {
+      font-size: 0.68rem;
+      color: var(--sch-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.3rem;
+    }
+
+    .sch-quick {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sch-stat {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      border-radius: var(--sch-radius);
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .sch-stat:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .sch-stat-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .sch-stat-icon.blue {
+      background: var(--sch-blue-lt);
+    }
+
+    .sch-stat-icon.teal {
+      background: #f0fdfa;
+    }
+
+    .sch-stat-icon.amber {
+      background: #fffbeb;
+    }
+
+    .sch-stat-label {
+      font-size: 0.7rem;
+      color: var(--sch-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.15rem;
+    }
+
+    .sch-stat-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--sch-text);
+    }
+
+    .sch-sep {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--sch-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sch-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--sch-border);
+    }
+
+    .sch-frame-box {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      border-radius: var(--sch-radius);
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .sch-frame-header {
+      padding: 0.8rem 1.2rem;
+      background: var(--sch-blue-lt);
+      border-bottom: 1px solid var(--sch-blue-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sch-frame-header span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--sch-blue);
+    }
+
+    .sch-frame-header a {
+      font-size: 0.72rem;
+      color: var(--sch-blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .sch-frame-header a:hover {
+      opacity: 1;
+    }
+
+    .sch-frame-box iframe {
+      width: 100%;
+      height: 520px;
+      border: none;
+      display: block;
+    }
+
+    .sch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .sch-card {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      border-radius: var(--sch-radius);
+      padding: 1.3rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: sch-in 0.4s ease forwards;
+    }
+
+    .sch-card:nth-child(1) {
+      animation-delay: .04s
+    }
+
+    .sch-card:nth-child(2) {
+      animation-delay: .09s
+    }
+
+    .sch-card:nth-child(3) {
+      animation-delay: .14s
+    }
+
+    .sch-card:nth-child(4) {
+      animation-delay: .19s
+    }
+
+    .sch-card:nth-child(5) {
+      animation-delay: .24s
+    }
+
+    .sch-card:nth-child(6) {
+      animation-delay: .29s
+    }
+
+    .sch-card:nth-child(7) {
+      animation-delay: .34s
+    }
+
+    .sch-card:nth-child(8) {
+      animation-delay: .39s
+    }
+
+    .sch-card:nth-child(9) {
+      animation-delay: .44s
+    }
+
+    .sch-card:nth-child(10) {
+      animation-delay: .49s
+    }
+
+    .sch-card:nth-child(11) {
+      animation-delay: .54s
+    }
+
+    .sch-card:nth-child(12) {
+      animation-delay: .59s
+    }
+
+    .sch-grid.it .sch-card:nth-child(4n+1) {
+      --cc: #059669
+    }
+
+    .sch-grid.it .sch-card:nth-child(4n+2) {
+      --cc: #0284c7
+    }
+
+    .sch-grid.it .sch-card:nth-child(4n+3) {
+      --cc: #7c3aed
+    }
+
+    .sch-grid.it .sch-card:nth-child(4n+4) {
+      --cc: #db2777
+    }
+
+    @keyframes sch-in {
+      from {
+        opacity: 0;
+        transform: translateY(14px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .sch-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--cc, #2563eb);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .sch-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    .sch-card:hover::before {
+      opacity: 1;
+    }
+
+    .sch-card:nth-child(4n+1) {
+      --cc: #2563eb
+    }
+
+    .sch-card:nth-child(4n+2) {
+      --cc: #4f46e5
+    }
+
+    .sch-card:nth-child(4n+3) {
+      --cc: #0d9488
+    }
+
+    .sch-card:nth-child(4n+4) {
+      --cc: #d97706
+    }
+
+    .sch-cicon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      background: #f8fafc;
+      border: 1px solid var(--sch-border);
+    }
+
+    .sch-card h3 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--sch-text);
+    }
+
+    .sch-card p {
+      font-size: 0.78rem;
+      color: var(--sch-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .sch-caction {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--cc, #2563eb);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .sch-card:hover .sch-caction {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .sch-footer {
+      text-align: center;
+      color: var(--sch-muted);
+      font-size: 0.75rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--sch-border);
+    }
+
+    /* ========== ARCADE ========== */
+    #gaming {
+      background: var(--arc-bg);
+      color: var(--arc-text);
+    }
+
+    #gaming::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 45, 117, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 45, 117, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .arc-body {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .arc-head {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .arc-head h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(1rem, 3.5vw, 1.9rem);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.7rem;
+      background: linear-gradient(135deg, var(--arc-cyan), var(--arc-pink), var(--arc-yellow));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: grad 4s ease infinite;
+    }
+
+    .arc-head p {
+      color: var(--arc-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .arc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .arc-card {
+      position: relative;
+      background: var(--arc-card);
+      border: 2px outset rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      padding: 1.8rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      transition: transform 0.25s, border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+      opacity: 0;
+      animation: arc-in 0.5s ease forwards;
+    }
+
+    .arc-card:nth-child(1) {
+      animation-delay: .05s
+    }
+
+    .arc-card:nth-child(2) {
+      animation-delay: .12s
+    }
+
+    .arc-card:nth-child(3) {
+      animation-delay: .19s
+    }
+
+    .arc-card:nth-child(4) {
+      animation-delay: .26s
+    }
+
+    .arc-card:nth-child(5) {
+      animation-delay: .33s
+    }
+
+    .arc-card:nth-child(6) {
+      animation-delay: .40s
+    }
+
+    .arc-card:nth-child(7) {
+      animation-delay: .47s
+    }
+
+    .arc-card:nth-child(8) {
+      animation-delay: .54s
+    }
+
+    @keyframes arc-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .arc-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--ca, var(--arc-pink));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .arc-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--ca, var(--arc-pink));
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .arc-card:hover::before {
+      opacity: 1;
+    }
+
+    .arc-card:nth-child(4n+1) {
+      --ca: #ff2d75
+    }
+
+    .arc-card:nth-child(4n+2) {
+      --ca: #00f0ff
+    }
+
+    .arc-card:nth-child(4n+3) {
+      --ca: #ffe156
+    }
+
+    .arc-card:nth-child(4n+4) {
+      --ca: #39ff14
+    }
+
+    .arc-cicon {
+      font-size: 1.8rem;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .arc-card h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.68rem;
+      line-height: 1.6;
+    }
+
+    .arc-desc {
+      color: var(--arc-muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .arc-play {
+      margin-top: auto;
+      padding-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ca, var(--arc-pink));
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .arc-card:hover .arc-play {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .arc-foot {
+      text-align: center;
+      margin-top: 4rem;
+      color: var(--arc-muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .arc-foot span {
+      color: var(--arc-pink);
+    }
+
+    @keyframes grad {
+
+      0%,
+      100% {
+        background-position: 0% 50%
+      }
+
+      50% {
+        background-position: 100% 50%
+      }
+    }
+
+    /* ========== CATEGORY GROUPS ========== */
+    .cat-group {
+      margin-bottom: 1rem;
+      border-radius: var(--sch-radius);
+      border: 1px solid var(--sch-border);
+      background: var(--sch-surface);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .cat-header {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.3rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.18s;
+      text-align: left;
+    }
+
+    .cat-header:hover {
+      background: #f8fafc;
+    }
+
+    .cat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex: 1;
+    }
+
+    .cat-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cat-icon-wrap.blue {
+      background: var(--sch-blue-lt);
+    }
+
+    .cat-icon-wrap.green {
+      background: #f0fdf4;
+    }
+
+    .cat-icon-wrap.purple {
+      background: #faf5ff;
+    }
+
+    .cat-icon-wrap.amber {
+      background: #fffbeb;
+    }
+
+    .cat-icon-wrap.teal {
+      background: #f0fdfa;
+    }
+
+    .cat-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--sch-text);
+    }
+
+    .cat-subtitle {
+      font-size: 0.72rem;
+      color: var(--sch-muted);
+      margin-top: 0.1rem;
+    }
+
+    .cat-count {
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: var(--sch-blue-lt);
+      color: var(--sch-blue);
+      border: 1px solid var(--sch-blue-md);
+      border-radius: 100px;
+      padding: 0.15rem 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .cat-chevron {
+      font-size: 1rem;
+      color: var(--sch-muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .cat-group.collapsed .cat-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .cat-body {
+      border-top: 1px solid var(--sch-border);
+      padding: 1.2rem;
+      display: none;
+    }
+
+    .cat-body.open {
+      display: block;
+    }
+
+    .cat-body .sch-grid {
+      margin-bottom: 0;
+    }
+
+    /* ========== SCHULSTOFF PAGE ========== */
+    #schulstoff {
+      background: #0f1117;
+      color: #e2e8f0;
+    }
+
+    #schulstoff nav {
+      background: rgba(10, 10, 18, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    #schulstoff .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: #a78bfa;
+      -webkit-text-fill-color: #a78bfa;
+    }
+
+    #schulstoff .nav-btn {
+      color: var(--arc-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #schulstoff .nav-btn:hover {
+      color: var(--arc-text);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    #schulstoff .nav-btn.cur {
+      color: #a78bfa;
+      border-color: #a78bfa;
+    }
+
+    .ss-layout {
+      display: flex;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+
+    .ss-sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background: #0a0a12;
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ss-sidebar-header {
+      padding: 1.2rem 1.1rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .ss-sidebar-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      margin-bottom: 0.1rem;
+    }
+
+    .ss-sidebar-sub {
+      font-size: 0.66rem;
+      color: #374151;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .ss-sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.6rem 0.5rem;
+    }
+
+    .ss-sidebar-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .ss-sidebar-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+
+    .ss-subject {
+      margin-bottom: 0.2rem;
+    }
+
+    .ss-subject-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.7rem;
+      background: none;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+      text-align: left;
+    }
+
+    .ss-subject-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .ss-subject-btn.open {
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .ss-subject-icon {
+      font-size: 1rem;
+      width: 26px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .ss-subject-name {
+      font-size: 0.81rem;
+      font-weight: 600;
+      color: #d1d5db;
+      flex: 1;
+    }
+
+    .ss-subject-count {
+      font-size: 0.6rem;
+      background: rgba(255, 255, 255, 0.06);
+      color: #6b7280;
+      border-radius: 100px;
+      padding: 0.1rem 0.42rem;
+    }
+
+    .ss-chevron {
+      font-size: 0.6rem;
+      color: #374151;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .ss-subject-btn.open .ss-chevron {
+      transform: rotate(90deg);
+    }
+
+    .ss-topics {
+      display: none;
+      flex-direction: column;
+      padding: 0.1rem 0 0.2rem 0.5rem;
+    }
+
+    .ss-topics.open {
+      display: flex;
+    }
+
+    .ss-topic-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.38rem 0.65rem;
+      background: none;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.76rem;
+      color: #6b7280;
+      transition: all 0.15s;
+      text-align: left;
+    }
+
+    .ss-topic-btn::before {
+      content: '';
+      width: 3px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      background: transparent;
+      transition: background 0.15s;
+    }
+
+    .ss-topic-btn:hover {
+      color: #c4b5fd;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .ss-topic-btn:hover::before {
+      background: rgba(167, 139, 250, 0.4);
+    }
+
+    .ss-topic-btn.active {
+      color: #c4b5fd;
+      font-weight: 600;
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .ss-topic-btn.active::before {
+      background: #a78bfa;
+    }
+
+    .ss-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ss-topbar {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.55rem 1rem;
+      background: #0a0a12;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      flex-shrink: 0;
+    }
+
+    .ss-topbar-breadcrumb {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.76rem;
+      overflow: hidden;
+    }
+
+    .ss-breadcrumb-subject {
+      color: #4b5563;
+      white-space: nowrap;
+    }
+
+    .ss-breadcrumb-sep {
+      color: #1f2937;
+    }
+
+    .ss-breadcrumb-topic {
+      color: #c4b5fd;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ss-nav-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 7px;
+      padding: 0.28rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .ss-nav-btn:hover:not(:disabled) {
+      background: rgba(167, 139, 250, 0.1);
+      border-color: rgba(167, 139, 250, 0.5);
+      color: #c4b5fd;
+    }
+
+    .ss-nav-btn:disabled {
+      opacity: 0.22;
+      cursor: default;
+    }
+
+    .ss-open-btn {
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.28);
+      border-radius: 7px;
+      padding: 0.28rem 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: #c4b5fd;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .ss-open-btn:hover {
+      background: rgba(167, 139, 250, 0.2);
+      border-color: #a78bfa;
+    }
+
+    .ss-counter {
+      font-size: 0.65rem;
+      color: #374151;
+      font-family: 'Orbitron', monospace;
+      white-space: nowrap;
+    }
+
+    .ss-viewer {
+      flex: 1;
+      overflow: hidden;
+      background: #1a1a2e;
+    }
+
+    .ss-viewer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .ss-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: #0f1117;
+    }
+
+    .ss-empty-icon {
+      font-size: 3.5rem;
+      opacity: 0.3;
+    }
+
+    .ss-empty-text {
+      font-size: 0.82rem;
+      color: #374151;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    /* Landing card for Schulstoff */
+    .land-card-schulstoff {
+      background: linear-gradient(145deg, #1a1233, #0f0d1e);
+      border: 1px solid rgba(167, 139, 250, 0.22);
+    }
+
+    .land-card-schulstoff:hover {
+      box-shadow: 0 16px 48px rgba(167, 139, 250, 0.18);
+    }
+
+    .land-card-schulstoff .land-badge {
+      background: rgba(167, 139, 250, 0.12);
+      color: #c4b5fd;
+      border: 1px solid rgba(167, 139, 250, 0.28);
+    }
+
+    .land-card-schulstoff .land-arrow {
+      color: #a78bfa;
+    }
+
+    .land-cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media(max-width:900px) {
+      .land-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:540px) {
+      .land-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .ss-sidebar {
+        width: 200px;
+      }
+    }
+
+    /* ========== HEITZER LEGACY PDF VIEWER (Schulseite) ========== */
+    .pdf-viewer-wrap {
+      background: var(--sch-surface);
+      border: 1px solid var(--sch-border);
+      border-radius: var(--sch-radius);
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    .pdf-tabs-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.85rem 1rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--sch-border);
+    }
+
+    .pdf-tab {
+      background: none;
+      border: 1px solid var(--sch-border);
+      border-radius: 8px;
+      padding: 0.3rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 500;
+      color: var(--sch-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .pdf-tab:hover {
+      background: var(--sch-blue-lt);
+      border-color: var(--sch-blue-md);
+      color: var(--sch-blue);
+    }
+
+    .pdf-tab.active {
+      background: var(--sch-blue);
+      border-color: var(--sch-blue);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .pdf-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--sch-border);
+      background: var(--sch-surface);
+    }
+
+    .pdf-nav-btn {
+      background: none;
+      border: 1px solid var(--sch-border);
+      border-radius: 7px;
+      padding: 0.3rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--sch-text);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .pdf-nav-btn:hover:not(:disabled) {
+      background: var(--sch-blue-lt);
+      border-color: var(--sch-blue-md);
+      color: var(--sch-blue);
+    }
+
+    .pdf-nav-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .pdf-title-label {
+      flex: 1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--sch-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pdf-counter {
+      font-size: 0.7rem;
+      color: var(--sch-muted);
+      white-space: nowrap;
+    }
+
+    .pdf-open-btn {
+      background: none;
+      border: 1px solid var(--sch-blue-md);
+      border-radius: 7px;
+      padding: 0.3rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--sch-blue);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.18s;
+    }
+
+    .pdf-open-btn:hover {
+      background: var(--sch-blue);
+      color: #fff;
+    }
+
+    .pdf-frame-container {
+      position: relative;
+      width: 100%;
+      height: 680px;
+    }
+
+    .pdf-frame-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    @media(max-width:620px) {
+
+      .land-cards,
+      .sch-quick,
+      .arc-grid,
+      .sch-grid {
+        grid-template-columns: 1fr
+      }
+
+      .sch-hero {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      nav {
+        padding: 0 1rem
+      }
+
+      .arc-play {
+        opacity: 1;
+        transform: none
+      }
+
+      .land-dash-top,
+      .land-dash-mid,
+      .land-dash-bot {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========== LANDING ========== -->
+  <div class="page active" id="landing">
+    <nav>
+      <div class="nav-logo" onclick="go('landing')">F11 HUB</div>
+      <div class="nav-links">
+        <button class="nav-btn cur" onclick="go('landing')">Home</button>
+        <button class="nav-btn" onclick="go('school')">Schule</button>
+        <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
+        <button class="nav-btn" onclick="go('gaming')">Arcade</button>
+      </div>
+    </nav>
+    <div class="land-body">
+
+      <!-- Header -->
+      <div class="land-header">
+        <p class="land-eyebrow" id="land-greeting">Willkommen zurück</p>
+        <h1 class="land-title">F11 HUB</h1>
+      </div>
+
+
+
+      <!-- Widget Grid: 4 Spalten, 2 Reihen -->
+      <div class="land-widgets">
+
+        <!-- Uhr -->
+        <div class="l-widget">
+          <div class="l-widget-label">🕐 Uhrzeit</div>
+          <div class="l-clock-time" id="lnd-time">--:--:--</div>
+          <div class="l-widget-sub" id="lnd-date">—</div>
+          <div class="l-clock-kw" id="lnd-kw-small">KW --</div>
+        </div>
+
+        <!-- Wetter -->
+        <div class="l-widget">
+          <div class="l-widget-label">🌤️ Plattling</div>
+          <div class="l-weather-row">
+            <div class="l-weather-icon" id="lnd-wx-icon">⏳</div>
+            <div>
+              <div class="l-weather-temp" id="lnd-wx-temp">--°</div>
+              <div class="l-weather-desc" id="lnd-wx-desc">Lädt…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ferien Countdown -->
+        <div class="l-widget l-span2">
+          <div class="l-widget-label">🏖️ Nächste Ferien Bayern</div>
+          <div class="l-countdown-days" id="lnd-ferien-tage">--</div>
+          <div class="l-ferien-name" id="lnd-ferien-name">—</div>
+          <div class="l-widget-sub" id="lnd-ferien-datum">—</div>
+          <div class="l-countdown-bar-wrap">
+            <div class="l-countdown-bar" id="lnd-ferien-bar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Schulstunden -->
+        <div class="l-widget l-span2">
+          <div class="l-widget-label">⏱️ Schulstunden heute</div>
+          <div class="l-stunde-row" id="lnd-stunden"></div>
+        </div>
+
+        <!-- Spruch -->
+        <div class="l-widget l-span2">
+          <div class="l-widget-label">💬 Spruch des Tages</div>
+          <div class="l-quote-text" id="lnd-quote">…</div>
+          <div class="l-quote-author" id="lnd-quote-author">—</div>
+        </div>
+
+        <!-- Fun Fact -->
+        <div class="l-widget l-span4">
+          <div class="l-widget-label">🎲 Fun Fact</div>
+          <div class="l-fact-text" id="lnd-fact">…</div>
+          <button class="l-fact-btn" onclick="nextFact()">Nächster Fakt →</button>
+        </div>
+
+      </div><!-- /widgets -->
+      <!-- Nav Cards -->
+      <div class="land-cards">
+        <div class="land-card land-card-school" onclick="go('school')">
+          <span class="land-badge">Bildung</span>
+          <div class="land-icon">📚</div>
+          <div class="land-cardtitle">Schule</div>
+          <p class="land-carddesc">Stundenplan, Noten, Vokabeln und alle Tools für den Schulalltag</p>
+          <div class="land-arrow">Öffnen <span>→</span></div>
+        </div>
+        <div class="land-card land-card-schulstoff" onclick="go('schulstoff')">
+          <span class="land-badge">Lernmaterial</span>
+          <div class="land-icon">🐧</div>
+          <div class="land-cardtitle">Schulstoff</div>
+          <p class="land-carddesc">Alle Unterlagen, Skripte und PDFs nach Fach geordnet</p>
+          <div class="land-arrow">Öffnen <span>→</span></div>
+        </div>
+        <div class="land-card land-card-arcade" onclick="go('gaming')">
+          <span class="land-badge">Gaming</span>
+          <div class="land-icon">🎮</div>
+          <div class="land-cardtitle">Arcade</div>
+          <p class="land-carddesc">Games, Browser-Klassiker und alles zum Spielen und Entspannen</p>
+          <div class="land-arrow">Play <span>→</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== SCHOOL ========== -->
+  <div class="page" id="school">
+    <nav>
+      <div class="nav-logo" onclick="go('landing')">F11 HUB</div>
+      <div class="nav-links">
+        <button class="nav-btn" onclick="go('landing')">Home</button>
+        <button class="nav-btn cur" onclick="go('school')">Schule</button>
+        <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
+        <button class="nav-btn" onclick="go('gaming')">Arcade</button>
+      </div>
+    </nav>
+    <div class="sch-body">
+
+      <div class="sch-hero">
+        <div class="sch-hero-text">
+          <h1 id="greeting">Guten Morgen ☀️</h1>
+          <p>Alles, was du heute für die Schule brauchst.</p>
+        </div>
+        <div class="sch-date-chip">
+          <div class="date-day" id="date-day">—</div>
+          <div class="date-label" id="date-label">…</div>
+        </div>
+      </div>
+
+      <div class="sch-quick">
+        <div class="sch-stat">
+          <div class="sch-stat-icon blue">📅</div>
+          <div>
+            <div class="sch-stat-label">Wochentag</div>
+            <div class="sch-stat-value" id="qs-weekday">—</div>
+          </div>
+        </div>
+        <div class="sch-stat">
+          <div class="sch-stat-icon teal">🕐</div>
+          <div>
+            <div class="sch-stat-label">Uhrzeit</div>
+            <div class="sch-stat-value" id="qs-time">—</div>
+          </div>
+        </div>
+        <div class="sch-stat">
+          <div class="sch-stat-icon amber">📆</div>
+          <div>
+            <div class="sch-stat-label">Kalenderwoche</div>
+            <div class="sch-stat-value" id="qs-kw">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ CATEGORY GROUPS ══════════ -->
+
+      <!-- 1 · SCHULALLTAG -->
+      <div class="cat-group collapsed" id="cat-alltag">
+        <button class="cat-header" onclick="toggleCat('cat-alltag')">
+          <div class="cat-header-left">
+            <span class="cat-icon-wrap blue">📅</span>
+            <div>
+              <div class="cat-title">Schulalltag</div>
+              <div class="cat-subtitle">Stundenplan, Intranet, Essen & tägliche Basics</div>
+            </div>
+          </div>
+          <span class="cat-count">4</span>
+          <span class="cat-chevron">▾</span>
+        </button>
+        <div class="cat-body">
+          <div class="sch-grid">
+            <a href="https://klatab.edvschule-plattling.de/dashboard" class="sch-card" target="_blank">
+              <img src="O:\work\Allgemein\Hub\Sammlung\arcade-hub\logo2x2.ico" class="sch-cicon">
+              <h3>Stundenplan</h3>
+              <p>KlaTab Online – aktueller Stundenplan auf einen Blick.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://i.edvschulen-plattling.de/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🏫</div>
+              <h3>Intranet</h3>
+              <p>Intranet der EDV-Schule Plattling.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://app.vinow.de/login" class="sch-card" target="_blank">
+              <div class="sch-cicon">🍴</div>
+              <h3>ViNOW</h3>
+              <p>Bestelle dein Essen für den nächsten Schultag.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.globus.de/plattling/unser-restaurant.php" class="sch-card" target="_blank">
+              <div class="sch-cicon">🌍</div>
+              <h3>Globus</h3>
+              <p>Wochengericht und aktuelle Angebote im Globus Plattling.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 · PRÜFUNGSVORBEREITUNG -->
+      <div class="cat-group collapsed" id="cat-pruefung">
+        <button class="cat-header" onclick="toggleCat('cat-pruefung')">
+          <div class="cat-header-left">
+            <span class="cat-icon-wrap green">📝</span>
+            <div>
+              <div class="cat-title">Prüfungsvorbereitung</div>
+              <div class="cat-subtitle">Karteikarten, Lernhilfen & eigene Zusammenfassungen</div>
+            </div>
+          </div>
+          <span class="cat-count">3</span>
+          <span class="cat-chevron">▾</span>
+        </button>
+        <div class="cat-body">
+          <div class="sch-grid it">
+            <a href="O:\work\Allgemein\Hub\Schule\linux.html" class="sch-card" target="_blank">
+              <div class="sch-cicon">🐧</div>
+              <h3>Linux Prüfungsvorbereitung</h3>
+              <p>Interaktive Karteikarten zu Linux-Befehlen und Konzepten.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="O:\work\Allgemein\Hub\Schule\sa3-pruefungsvorbereitung.html" class="sch-card">
+              <div class="sch-cicon">📡</div>
+              <h3>KOM Skript: Mailing, IPTables, Squid</h3>
+              <p>Prüfungsvorbereitung: Postfix, Dovecot, Firewall & Proxy kompakt erklärt.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="O:\work\Allgemein\Hub\Schule\Notenkalkulator.html" class="sch-card" target="_blank">
+              <div class="sch-cicon">🧮</div>
+              <h3>Notenrechner</h3>
+              <p>Notendurchschnitt berechnen und Prüfungsergebnisse planen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://eliaspoehner.github.io/Vokabellerner/" class="sch-card" target="_blank">
+              <div class="sch-cicon">📖</div>
+              <h3>Vokabeltrainer</h3>
+              <p>Lerne und teste dein Vokabular interaktiv.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 · IT & PROGRAMMIEREN -->
+      <div class="cat-group collapsed" id="cat-it">
+        <button class="cat-header" onclick="toggleCat('cat-it')">
+          <div class="cat-header-left">
+            <span class="cat-icon-wrap purple">💻</span>
+            <div>
+              <div class="cat-title">IT &amp; Programmieren</div>
+              <div class="cat-subtitle">IDEs, Docs, Datenbanken, Design & Versionierung</div>
+            </div>
+          </div>
+          <span class="cat-count">11</span>
+          <span class="cat-chevron">▾</span>
+        </button>
+        <div class="cat-body">
+          <div class="sch-grid it">
+            <a href="file:\\\Desktop\lxcConnect.cmd" class="sch-card" target="_blank">
+              <img src="O:\work\Allgemein\Hub\Sammlung\arcade-hub\Linux.webp" class="sch-cicon">
+              <h3>Linux Maschine</h3>
+              <p>Verbinde dich mit der Linux-VM. Datei <code
+                  style="font-size:0.72rem;background:#f1f5f9;padding:0 4px;border-radius:3px">lxcConnect.cmd</code> auf
+                dem Desktop ablegen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://replit.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">💻</div>
+              <h3>Replit</h3>
+              <p>Online-IDE für Python, Java, HTML/CSS/JS – direkt im Browser, kein Setup.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://app.diagrams.net/" class="sch-card" target="_blank">
+              <div class="sch-cicon">📊</div>
+              <h3>draw.io</h3>
+              <p>Flussdiagramme, UML, Netzwerkpläne und Prozessdiagramme kostenlos erstellen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://academic.signavio.com/p/explorer?t=5231105ea9114383a2e0b13de5d973f1#/directory/0e8ce3dceb3345fdbd30e43bf4a9474e"
+              class="sch-card" target="_blank">
+              <div class="sch-cicon">📊</div>
+              <h3>Signavio</h3>
+              <p>EPKs, BPMN und Prozessmodellierung für Wirtschaftsinformatik.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://s41lp1.ucc.cit.tum.de:8100/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=301&sap-language=DE#Launchpad-openFLPPage?pageId=Z_PP_PAGE&spaceId=Z_SP_06PP"
+              class="sch-card" target="_blank">
+              <img src="O:\work\Allgemein\Hub\Sammlung\arcade-hub\SAP.jpg" class="sch-cicon">
+              <h3>SAP Fiori</h3>
+              <p>SAP-System der Schule – Produktionsplanung und mehr.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://sqliteonline.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🗄️</div>
+              <h3>SQLite Online</h3>
+              <p>SQL direkt im Browser testen – Datenbanken erstellen, kein Setup nötig.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://drawsql.app/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🔗</div>
+              <h3>DrawSQL</h3>
+              <p>ER-Diagramme und Datenbankmodelle visuell gestalten.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://github.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🐙</div>
+              <h3>GitHub</h3>
+              <p>Code versionieren, Projekte verwalten und gemeinsam entwickeln.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.figma.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🎨</div>
+              <h3>Figma</h3>
+              <p>UI/UX Design und Prototyping – Mockups und Wireframes.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://regex101.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🔍</div>
+              <h3>regex101</h3>
+              <p>Reguläre Ausdrücke live testen – mit Erklärung jedes Zeichens.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://roadmap.sh/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🗺️</div>
+              <h3>roadmap.sh</h3>
+              <p>Strukturierte Lernpfade für Web, Backend, DevOps und SQL.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 · DOCS & REFERENZEN -->
+      <div class="cat-group collapsed" id="cat-docs">
+        <button class="cat-header" onclick="toggleCat('cat-docs')">
+          <div class="cat-header-left">
+            <span class="cat-icon-wrap amber">📚</span>
+            <div>
+              <div class="cat-title">Docs &amp; Referenzen</div>
+              <div class="cat-subtitle">Offizielle Dokumentationen für schnelles Nachschlagen</div>
+            </div>
+          </div>
+          <span class="cat-count">4</span>
+          <span class="cat-chevron">▾</span>
+        </button>
+        <div class="cat-body">
+          <div class="sch-grid it">
+            <a href="https://code.visualstudio.com/docs" class="sch-card" target="_blank">
+              <div class="sch-cicon">📘</div>
+              <h3>VS Code Docs</h3>
+              <p>Offizielle Doku für Visual Studio Code – Shortcuts, Extensions, Tipps.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.w3schools.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🏫</div>
+              <h3>W3Schools</h3>
+              <p>Tutorials und Referenzen zu HTML, CSS, JavaScript, SQL, Python und mehr.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://developer.mozilla.org/de/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🦊</div>
+              <h3>MDN Web Docs</h3>
+              <p>Umfassendste Referenz für Webentwicklung – HTML, CSS, JS, Web-APIs.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.python.org/doc/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🐍</div>
+              <h3>Python Docs</h3>
+              <p>Offizielle Python-Doku – Sprachreferenz, Standardbibliothek, Tutorials.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 · ALLGEMEINE LERNTOOLS -->
+      <div class="cat-group collapsed" id="cat-tools">
+        <button class="cat-header" onclick="toggleCat('cat-tools')">
+          <div class="cat-header-left">
+            <span class="cat-icon-wrap teal">🎓</span>
+            <div>
+              <div class="cat-title">Allgemeine Lerntools</div>
+              <div class="cat-subtitle">Sprache, Mathe, Recherche & freies Lernen</div>
+            </div>
+          </div>
+          <span class="cat-count">6</span>
+          <span class="cat-chevron">▾</span>
+        </button>
+        <div class="cat-body">
+          <div class="sch-grid">
+
+            <a href="https://www.leo.org/german-english/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🔤</div>
+              <h3>LEO Wörterbuch</h3>
+              <p>Deutsch-Englisch Übersetzungen und Grammatik.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.duden.de/" class="sch-card" target="_blank">
+              <div class="sch-cicon">📝</div>
+              <h3>Duden</h3>
+              <p>Rechtschreibung und Grammatik korrekt nachschlagen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.wolframalpha.com/" class="sch-card" target="_blank">
+              <div class="sch-cicon">📐</div>
+              <h3>Wolfram Alpha</h3>
+              <p>Mathe, Physik, Chemie – Aufgaben lösen und verstehen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://www.desmos.com/calculator" class="sch-card" target="_blank">
+              <div class="sch-cicon">📈</div>
+              <h3>Desmos Rechner</h3>
+              <p>Interaktiver Grafikrechner für Funktionen und Gleichungen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+            <a href="https://de.wikipedia.org/" class="sch-card" target="_blank">
+              <div class="sch-cicon">🌐</div>
+              <h3>Wikipedia DE</h3>
+              <p>Freie Enzyklopädie für schnelle Recherchen.</p>
+              <div class="sch-caction">Öffnen →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="sch-footer">Schul-Hub · F11 HUB</div>
+    </div>
+  </div>
+
+  <!-- ========== SCHULSTOFF ========== -->
+  <div class="page" id="schulstoff">
+    <nav>
+      <div class="nav-logo" onclick="go('landing')">F11 HUB</div>
+      <div class="nav-links">
+        <button class="nav-btn" onclick="go('landing')">Home</button>
+        <button class="nav-btn" onclick="go('school')">Schule</button>
+        <button class="nav-btn cur" onclick="go('schulstoff')">Schulstoff</button>
+        <button class="nav-btn" onclick="go('gaming')">Arcade</button>
+      </div>
+    </nav>
+
+    <div class="ss-layout">
+
+      <!-- ── Sidebar ── -->
+      <aside class="ss-sidebar">
+        <div class="ss-sidebar-header">
+          <div class="ss-sidebar-title">Schulstoff</div>
+          <div class="ss-sidebar-sub">Lernmaterial &amp; PDFs</div>
+        </div>
+        <div class="ss-sidebar-scroll" id="ss-sidebar-content">
+
+          <!-- Subject: Heitzer Linux -->
+          <div class="ss-subject">
+            <button class="ss-subject-btn" onclick="ssToggleSubject('ss-linux')">
+              <span class="ss-subject-icon">🐧</span>
+              <span class="ss-subject-name">Heitzer Linux</span>
+              <span class="ss-subject-count">13</span>
+              <span class="ss-chevron">▶</span>
+            </button>
+            <div class="ss-topics" id="ss-linux">
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Ansible', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Ansible.pdf', 0, 13)">Ansible</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Backups', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Backups.pdf', 1, 13)">Backups</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'DNS', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\DNS.pdf', 2, 13)">DNS</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'IPv6', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\IPv6.pdf', 3, 13)">IPv6</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Kommunikation', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Kommunikation.pdf', 4, 13)">Kommunikation</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Mailserver', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Mailserver.pdf', 5, 13)">Mailserver</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'SSH', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\SSH.pdf', 6, 13)">SSH</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'systemd', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\systemd.pdf', 7, 13)">systemd</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Verschlüsselung', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Verschlüsselung.pdf', 8, 13)">Verschlüsselung</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'VirtualBox', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Virtualisierung mit VirtualBox.pdf', 9, 13)">VirtualBox</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Webserver', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Webserver.pdf', 10, 13)">Webserver</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Wichtige Befehle', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Wichtige Befehle für Kommunikation.pdf', 11, 13)">Wichtige
+                Befehle</button>
+              <button class="ss-topic-btn"
+                onclick="ssSelect('Heitzer Linux', 'Windows-Linux', 'O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Windows-Linux-Integration.pdf', 12, 13)">Windows-Linux</button>
+            </div>
+          </div>
+
+          <!--Subject: -->
+
+          <!-- Placeholder subjects for future use -->
+          <!-- Example: Java, Englisch etc. will go here -->
+
+        </div>
+      </aside>
+
+      <!-- ── Main viewer ── -->
+      <div class="ss-main">
+        <!-- Topbar -->
+        <div class="ss-topbar" id="ss-topbar" style="display:none">
+          <button class="ss-nav-btn" id="ss-prev" onclick="ssNav(-1)">← Zurück</button>
+          <div class="ss-topbar-breadcrumb">
+            <span class="ss-breadcrumb-subject" id="ss-bread-subject">—</span>
+            <span class="ss-breadcrumb-sep">›</span>
+            <span class="ss-breadcrumb-topic" id="ss-bread-topic">—</span>
+          </div>
+          <span class="ss-counter" id="ss-counter">— / —</span>
+          <a class="ss-open-btn" id="ss-open-btn" href="#" target="_blank">↗ Tab</a>
+          <button class="ss-nav-btn" id="ss-next" onclick="ssNav(1)">Weiter →</button>
+        </div>
+
+        <!-- Empty state -->
+        <div class="ss-empty" id="ss-empty">
+          <div class="ss-empty-icon">📂</div>
+          <div class="ss-empty-text">Wähle links ein Fach und ein Thema<br>um das PDF zu öffnen.</div>
+        </div>
+
+        <!-- PDF viewer -->
+        <div class="ss-viewer" id="ss-viewer" style="display:none">
+          <iframe id="ss-iframe" src="" title="Schulstoff PDF"></iframe>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== ARCADE ========== -->
+  <div class="page" id="gaming">
+    <nav>
+      <div class="nav-logo" onclick="go('landing')">F11 HUB</div>
+      <div class="nav-links">
+        <button class="nav-btn" onclick="go('landing')">Home</button>
+        <button class="nav-btn" onclick="go('school')">Schule</button>
+        <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
+        <button class="nav-btn cur" onclick="go('gaming')">Arcade</button>
+      </div>
+    </nav>
+    <div class="arc-body">
+      <div class="arc-head">
+        <h1>F11 ARCADE-HUB</h1>
+        <p>Select your game</p>
+      </div>
+      <div class="arc-grid">
+        <a href="O:\work\Allgemein\Hub\Sammlung\Klassiker\Klassiker.html" class="arc-card">
+          <div class="arc-cicon">🎮</div>
+          <h2>Klassiker</h2>
+          <p class="arc-desc">2048, Minesweeper, Snake, Tetris und vieles mehr</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="O:\work\Allgemein\Hub\Sammlung\runner\runner.html" class="arc-card" target="_blank">
+          <div class="arc-cicon">🏃</div>
+          <h2>RUNNER</h2>
+          <p class="arc-desc">Renn weg.</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="O:\work\Allgemein\Hub\Sammlung\Dorf\dorf.html" class="arc-card" target="_blank">
+          <div class="arc-cicon">🏘️</div>
+          <h2>Dorf</h2>
+          <p class="arc-desc">Bau dein Dorf!</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="https://flappy-bird-web.appspot.com/" class="arc-card" target="_blank">
+          <div class="arc-cicon">🐦</div>
+          <h2>Flappy-Bird</h2>
+          <p class="arc-desc">Flappy Bird – der Klassiker</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="https://www.google.com/fbx?fbx=snake_arcade" class="arc-card" target="_blank">
+          <div class="arc-cicon">🐍</div>
+          <h2>Snake</h2>
+          <p class="arc-desc">Wie lange kannst du überleben?</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="https://www.worldguessr.com/" class="arc-card" target="_blank">
+          <div class="arc-cicon">🌍</div>
+          <h2>Worldguessr</h2>
+          <p class="arc-desc">Wer weiß, wo wir sind?</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="https://geographie-quiz.de/" class="arc-card" target="_blank">
+          <div class="arc-cicon">🗺️</div>
+          <h2>Geographie Quiz</h2>
+          <p class="arc-desc">Teste deine Geograpie Skills</p>
+          <div class="arc-play">Play →</div>
+        </a>
+        <a href="https://kreuzwortraetsel.net/" class="arc-card" target="_blank">
+          <div class="arc-cicon">🧾</div>
+          <h2>Kreuzworträtsel</h2>
+          <p class="arc-desc">Teste dein Wissen.</p>
+          <div class="arc-play">Play →</div>
+        </a>
+      </div>
+      <div class="arc-foot">Built with <span>♥</span> and pixels</div>
+    </div>
+  </div>
+
+  <script>
+    function toggleCat(id) {
+      const group = document.getElementById(id);
+      const body = group.querySelector('.cat-body');
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      group.classList.toggle('collapsed', isOpen);
+    }
+
+    function go(id) {
+      document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+        p.scrollTop = 0;
+      });
+      document.getElementById(id).classList.add('active');
+      const page = document.getElementById(id);
+      page.querySelectorAll('.sch-card, .arc-card').forEach(c => {
+        c.style.animation = 'none';
+        void c.offsetHeight;
+        c.style.animation = '';
+      });
+    }
+
+    /* ========== SHARED HELPERS ========== */
+    const DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+    const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+    function kw(d) {
+      const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+      return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+    }
+
+    /* ========== SCHOOL PAGE TICK ========== */
+    function tick() {
+      const n = new Date();
+      document.getElementById('date-day').textContent = n.getDate();
+      document.getElementById('date-label').textContent = MONTHS[n.getMonth()] + ' ' + n.getFullYear();
+      document.getElementById('qs-weekday').textContent = DAYS[n.getDay()];
+      document.getElementById('qs-time').textContent = n.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('qs-kw').textContent = 'KW ' + kw(n);
+      const h = n.getHours();
+      document.getElementById('greeting').textContent = h < 12 ? 'Guten Morgen ☀️' : h < 18 ? 'Guten Tag 🌤️' : 'Guten Abend 🌙';
+    }
+
+    /* ========== LANDING DASHBOARD ========== */
+
+    // --- Clock & date ---
+    function tickLanding() {
+      const n = new Date();
+      document.getElementById('lnd-time').textContent = n.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('lnd-date').textContent = DAYS[n.getDay()] + ', ' + n.getDate() + '. ' + MONTHS[n.getMonth()];
+      document.getElementById('lnd-kw-small').textContent = 'KW ' + kw(n) + ' · ' + n.getFullYear();
+      const h = n.getHours();
+      document.getElementById('land-greeting').textContent = h < 12 ? 'Guten Morgen ☀️' : h < 18 ? 'Guten Tag 🌤️' : 'Guten Abend 🌙';
+    }
+
+    // --- Bayerische Schulferien ---
+    const FERIEN = [
+      { name: 'Pfingstferien', start: new Date(2026, 4, 26), end: new Date(2026, 5, 5) },
+      { name: 'Sommerferien', start: new Date(2026, 7, 3), end: new Date(2026, 8, 14) },
+      { name: 'Herbstferien', start: new Date(2026, 10, 2), end: new Date(2026, 10, 6) },
+      { name: 'Weihnachtsferien', start: new Date(2026, 11, 22), end: new Date(2027, 0, 5) },
+      { name: 'Frühjahrsferien', start: new Date(2027, 1, 8), end: new Date(2027, 1, 12) },
+      { name: 'Osterferien', start: new Date(2027, 2, 22), end: new Date(2027, 3, 2) },
+    ];
+
+    function updateFerien() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Check if currently in Ferien
+      for (const f of FERIEN) {
+        if (today >= f.start && today <= f.end) {
+          const remaining = Math.ceil((f.end - today) / 86400000) + 1;
+          document.getElementById('lnd-ferien-tage').textContent = remaining + ' Tag' + (remaining !== 1 ? 'e' : '');
+          document.getElementById('lnd-ferien-name').textContent = '🎉 Jetzt: ' + f.name;
+          document.getElementById('lnd-ferien-datum').textContent = 'Noch bis ' + f.end.getDate() + '. ' + MONTHS[f.end.getMonth()];
+          document.getElementById('lnd-ferien-bar').style.width = '100%';
+          return;
+        }
+      }
+
+      // Find next Ferien
+      const next = FERIEN.find(f => f.start > today);
+      if (!next) return;
+      const diff = Math.ceil((next.start - today) / 86400000);
+      document.getElementById('lnd-ferien-tage').textContent = diff + ' Tag' + (diff !== 1 ? 'e' : '');
+      document.getElementById('lnd-ferien-name').textContent = next.name;
+      document.getElementById('lnd-ferien-datum').textContent = next.start.getDate() + '. ' + MONTHS[next.start.getMonth()] + ' – ' + next.end.getDate() + '. ' + MONTHS[next.end.getMonth()];
+
+      // Progress bar: distance from prev ferien end (or year start) to next start
+      const prev = [...FERIEN].reverse().find(f => f.end < today);
+      const rangeStart = prev ? prev.end : new Date(today.getFullYear(), 0, 1);
+      const total = next.start - rangeStart;
+      const elapsed = today - rangeStart;
+      const pct = Math.min(100, Math.round((elapsed / total) * 100));
+      document.getElementById('lnd-ferien-bar').style.width = pct + '%';
+    }
+
+    // --- Schulstunden ---
+    const STUNDEN = [
+      { name: '1. Stunde', start: '08:00', end: '08:45' },
+      { name: '2. Stunde', start: '08:45', end: '09:30' },
+      { name: 'Pause', start: '09:30', end: '09:45', pause: true },
+      { name: '3. Stunde', start: '09:45', end: '10:30' },
+      { name: '4. Stunde', start: '10:30', end: '11:15' },
+      { name: 'Pause', start: '11:15', end: '11:30', pause: true },
+      { name: '5. Stunde', start: '11:30', end: '12:15' },
+      { name: '6. Stunde', start: '12:15', end: '13:00' },
+      { name: '7. Stunde', start: '13:00', end: '13:45' },
+      { name: '8. Stunde', start: '13:45', end: '14:30' },
+      { name: 'Pause', start: '14:30', end: '14:45', pause: true },
+      { name: '9. Stunde', start: '14:45', end: '15:30' },
+      { name: '10. Stunde', start: '15:30', end: '16:15' },
+    ];
+
+    function updateStunden() {
+      const n = new Date();
+      const now = n.getHours() * 60 + n.getMinutes();
+      const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+      const container = document.getElementById('lnd-stunden');
+
+      // Show current + next 3 relevant slots
+      let shown = 0;
+      const items = [];
+      for (const s of STUNDEN) {
+        const st = toMin(s.start), en = toMin(s.end);
+        const isCur = now >= st && now < en;
+        const isUpcoming = now < st;
+        if (isCur || (isUpcoming && shown < 4)) {
+          items.push({ ...s, isCur });
+          if (!isCur) shown++;
+          if (items.length >= 5) break;
+        }
+      }
+      if (items.length === 0) {
+        container.innerHTML = '<div class="l-stunde-item"><span class="l-stunde-name" style="color:var(--arc-muted)">Kein Unterricht mehr 🎉</span></div>';
+        return;
+      }
+      container.innerHTML = items.map(s =>
+        `<div class="l-stunde-item${s.isCur ? ' current' : ''}">
+          <span class="l-stunde-name">${s.isCur ? '▶ ' : ''}${s.name}</span>
+          <span class="l-stunde-time">${s.start}–${s.end}</span>
+        </div>`
+      ).join('');
+    }
+
+    // --- Quotes ---
+    const QUOTES = [
+      { text: 'Der einzige Weg, gute Arbeit zu leisten, ist zu lieben, was man tut.', author: '— Steve Jobs' },
+      { text: 'Bildung ist die mächtigste Waffe, die du verwenden kannst, um die Welt zu verändern.', author: '— Nelson Mandela' },
+      { text: 'Du musst die Veränderung selbst sein, die du dir für die Welt wünschst.', author: '— Mahatma Gandhi' },
+      { text: 'Wer aufhört zu lernen, ist alt. Wer immer lernt, bleibt jung.', author: '— Henry Ford' },
+      { text: 'Der Weg ist das Ziel.', author: '— Konfuzius' },
+      { text: 'Tue jeden Tag etwas, wovor du dich fürchtest.', author: '— Eleanor Roosevelt' },
+      { text: 'Erfolg ist die Summe kleiner Anstrengungen, die Tag für Tag wiederholt werden.', author: '— Robert Collier' },
+      { text: 'Es ist nicht genug zu wissen – man muss auch anwenden. Es ist nicht genug zu wollen – man muss auch tun.', author: '— Johann Wolfgang von Goethe' },
+    ];
+    let quoteIdx = new Date().getDay() % QUOTES.length;
+    function showQuote() {
+      const q = QUOTES[quoteIdx];
+      document.getElementById('lnd-quote').textContent = '„' + q.text + '"';
+      document.getElementById('lnd-quote-author').textContent = q.author;
+    }
+
+    // --- Fun Facts ---
+    const FACTS = [
+      'Honig verdirbt nie — in ägyptischen Gräbern wurde 3000 Jahre alter, noch genießbarer Honig gefunden.',
+      'Oktopusse haben drei Herzen und blaues Blut.',
+      'Ein Tag auf der Venus ist länger als ein Jahr auf der Venus.',
+      'Cleopatra lebte näher am Mondlandung als an der Errichtung der Großen Pyramide.',
+      'Bananen sind botanisch gesehen Beeren – Erdbeeren hingegen nicht.',
+      'Das menschliche Gehirn erzeugt genug Strom, um eine Glühbirne zu betreiben.',
+      'In der Schweiz ist es illegal, eine Guppie allein zu halten – Fische sind Rudeltiere.',
+      'Oxford University ist älter als die Azteken (gegründet ~1096, Azteken ~1300 n. Chr.).',
+      'Wenn du alle leeren Räume in Atomen entferntest, würde die gesamte Menschheit in einen Zuckerwürfel passen.',
+      'Krokodile können bis zu 100 Jahre alt werden.',
+      'Haie existieren länger als Bäume – sie schwimmen seit über 400 Millionen Jahren in den Ozeanen.',
+      'Ein Blitz ist etwa fünfmal heißer als die Oberfläche der Sonne.',
+      'Wombats haben würfelförmigen Kot.',
+      'Der Eiffelturm kann im Sommer bis zu 15 cm größer werden, weil sich das Metall ausdehnt.',
+      'Es gibt mehr mögliche Schachpartien als Atome im beobachtbaren Universum.',
+      'Seesterne haben kein Gehirn und kein Blut.',
+      'Ein Teelöffel Honig ist die Lebensarbeit von etwa 12 Bienen.',
+      'Tintenfische können ihre Farbe und sogar ihre Hautstruktur in Sekunden verändern.',
+      'Die Erde ist nicht perfekt rund, sondern an den Polen leicht abgeflacht.',
+      'Einige Schildkröten können durch ihren Po atmen.',
+      'Das lauteste Tier der Welt ist der Blauwal – sein Ruf kann über 180 Dezibel erreichen.',
+      'Es gibt Pilze, die Zombies machen – sie übernehmen die Kontrolle über Insekten.',
+      'Die Internationale Raumstation ist das teuerste Objekt, das je gebaut wurde.',
+      'Ein Tag auf dem Merkur dauert länger als sein Jahr.',
+      'Menschen teilen etwa 60 % ihrer DNA mit Bananen.',
+      'Es gibt mehr Sterne im Universum als Sandkörner auf allen Stränden der Erde.',
+      'Der menschliche Körper enthält genug Fett, um theoretisch mehrere Seifenstücke herzustellen.',
+      'Ameisen können das 50-fache ihres eigenen Körpergewichts tragen.',
+      'Ein Oktopus kann durch jede Öffnung passen, die größer ist als sein Schnabel.',
+      'Einige Frösche können komplett einfrieren und später wieder auftauen und weiterleben.',
+      'Es gibt Quallen, die biologisch unsterblich sind – sie können sich immer wieder in ihr jüngeres Stadium zurückversetzen.',
+      'Ein durchschnittlicher Mensch läuft in seinem Leben etwa fünfmal um die Erde.',
+      'Die meisten Staubpartikel in deinem Zuhause bestehen aus abgestorbenen Hautzellen.',
+      'Katzen können keinen süßen Geschmack wahrnehmen.',
+      'Ein Elefant ist das einzige Säugetier, das nicht springen kann.',
+      'Es gibt mehr Bäume auf der Erde als Sterne in der Milchstraße.',
+      'Einige Haie müssen ständig schwimmen, um zu atmen.',
+      'Die menschliche Nase kann über eine Billion verschiedene Gerüche unterscheiden.',
+      'Pinguine machen Heiratsanträge mit Steinen.',
+      'Der längste aufgezeichnete Schluckauf dauerte 68 Jahre.',
+      'Kühe haben beste Freunde und werden gestresst, wenn sie getrennt werden.',
+      'Ein Regenbogen ist eigentlich ein vollständiger Kreis – wir sehen meist nur einen Teil davon.',
+      'Der menschliche Magen erneuert seine Schleimhaut alle paar Tage.',
+      'Einige Pflanzen können miteinander „kommunizieren“ und sich vor Gefahren warnen.',
+      'Das Herz einer Garnele befindet sich in ihrem Kopf.',
+      'Es gibt mehr Mikroorganismen auf deinem Körper als menschliche Zellen.',
+      'Faultiere können so lange die Luft anhalten wie Delfine.',
+      'Einige Vulkane spucken nicht Lava, sondern Schlamm.',
+      'Der Mond entfernt sich jedes Jahr etwa 3,8 cm von der Erde.',
+      'Ein Mensch verbringt im Durchschnitt etwa 6 Monate seines Lebens wartend an Ampeln.',
+    ];
+    let factIdx = Math.floor(Math.random() * FACTS.length);
+    function showFact() {
+      document.getElementById('lnd-fact').textContent = FACTS[factIdx];
+    }
+    function nextFact() {
+      factIdx = (factIdx + 1) % FACTS.length;
+      showFact();
+    }
+
+    // --- Weather (Open-Meteo, kein API-Key nötig) ---
+    async function loadWeather() {
+      try {
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=48.7745&longitude=12.8693&current_weather=true&hourly=apparent_temperature&timezone=Europe%2FBerlin');
+        const d = await r.json();
+        const cw = d.current_weather;
+        const wmoIcons = {
+          0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+          45: '🌫️', 48: '🌫️',
+          51: '🌦️', 53: '🌦️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️',
+          71: '❄️', 73: '❄️', 75: '❄️', 77: '🌨️',
+          80: '🌦️', 81: '🌧️', 82: '⛈️',
+          85: '🌨️', 86: '🌨️',
+          95: '⛈️', 96: '⛈️', 99: '⛈️'
+        };
+        const wmoDesc = {
+          0: 'Sonnig', 1: 'Überwiegend klar', 2: 'Teilweise bewölkt', 3: 'Bedeckt',
+          45: 'Nebel', 48: 'Raureif',
+          51: 'Leichter Nieselregen', 53: 'Nieselregen', 55: 'Dichter Nieselregen',
+          61: 'Leichter Regen', 63: 'Regen', 65: 'Starker Regen',
+          71: 'Leichter Schnee', 73: 'Schnee', 75: 'Starker Schneefall', 77: 'Schneekörner',
+          80: 'Regenschauer', 81: 'Regenschauer', 82: 'Starke Schauer',
+          85: 'Schneeschauer', 86: 'Starke Schneeschauer',
+          95: 'Gewitter', 96: 'Gewitter m. Hagel', 99: 'Schweres Gewitter'
+        };
+        const code = cw.weathercode;
+        document.getElementById('lnd-wx-icon').textContent = wmoIcons[code] || '🌡️';
+        document.getElementById('lnd-wx-temp').textContent = Math.round(cw.temperature) + '°';
+        document.getElementById('lnd-wx-desc').textContent = wmoDesc[code] || 'Unbekannt';
+      } catch (e) {
+        document.getElementById('lnd-wx-desc').textContent = 'Nicht verfügbar';
+      }
+    }
+
+    // --- Init ---
+    tick();
+    tickLanding();
+    updateFerien();
+    updateStunden();
+    showQuote();
+    showFact();
+    loadWeather();
+
+    setInterval(tick, 30000);
+    setInterval(tickLanding, 1000);
+    setInterval(updateStunden, 60000);
+
+    /* ========== SCHULSTOFF PAGE ========== */
+    let ss_currentSubjectId = null;
+    let ss_currentIdx = 0;
+    let ss_currentTotal = 0;
+    let ss_currentSubjectName = '';
+
+    function ssToggleSubject(id) {
+      const topics = document.getElementById(id);
+      const btn = topics.previousElementSibling;
+      const isOpen = topics.classList.contains('open');
+      // Close all others
+      document.querySelectorAll('.ss-topics').forEach(t => t.classList.remove('open'));
+      document.querySelectorAll('.ss-subject-btn').forEach(b => b.classList.remove('open'));
+      if (!isOpen) {
+        topics.classList.add('open');
+        btn.classList.add('open');
+      }
+    }
+
+    function ssSelect(subject, topic, path, idx, total) {
+      ss_currentSubjectId = null; // used for nav — we store all topics of active subject
+      ss_currentIdx = idx;
+      ss_currentTotal = total;
+      ss_currentSubjectName = subject;
+
+      // Find all topic buttons of this subject
+      const subjectBtn = [...document.querySelectorAll('.ss-subject-btn')].find(
+        b => b.querySelector('.ss-subject-name')?.textContent === subject
+      );
+      const topicsContainer = subjectBtn?.nextElementSibling;
+      ss_currentSubjectId = topicsContainer?.id || null;
+
+      // Update active state
+      document.querySelectorAll('.ss-topic-btn').forEach(b => b.classList.remove('active'));
+      if (topicsContainer) {
+        topicsContainer.querySelectorAll('.ss-topic-btn')[idx]?.classList.add('active');
+      }
+
+      // Show topbar
+      document.getElementById('ss-topbar').style.display = 'flex';
+      document.getElementById('ss-bread-subject').textContent = subject;
+      document.getElementById('ss-bread-topic').textContent = topic;
+      document.getElementById('ss-counter').textContent = (idx + 1) + ' / ' + total;
+      document.getElementById('ss-open-btn').href = path;
+      document.getElementById('ss-prev').disabled = idx === 0;
+      document.getElementById('ss-next').disabled = idx === total - 1;
+
+      // Load PDF
+      document.getElementById('ss-iframe').src = path;
+      document.getElementById('ss-empty').style.display = 'none';
+      document.getElementById('ss-viewer').style.display = 'block';
+    }
+
+    function ssNav(dir) {
+      if (!ss_currentSubjectId) return;
+      const container = document.getElementById(ss_currentSubjectId);
+      const btns = container.querySelectorAll('.ss-topic-btn');
+      const nextIdx = ss_currentIdx + dir;
+      if (nextIdx >= 0 && nextIdx < btns.length) {
+        btns[nextIdx].click();
+        btns[nextIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+
+</html>

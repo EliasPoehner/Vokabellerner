@@ -1,0 +1,652 @@
+/*
+ * ============================================================
+ *  HUB STYLESHEET  –  generisches Design-System
+ *  Pfad: O:\work\Allgemein\Hub\Style\hub-style.css
+ *
+ *  Zwei Themes in einer Datei:
+ *    • Dark / Neon  (theme-dark)   – Arcade / Gaming-Bereich
+ *    • Light / Clean (theme-light) – Schule / Arbeit-Bereich
+ *
+ *  Einbinden im <head>:
+ *    <link rel="stylesheet" href="O:\work\Allgemein\Hub\Style\hub-style.css">
+ * ============================================================
+ */
+
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES  (Design Tokens)
+   ============================================================ */
+:root {
+
+  /* --- Dark Theme (Neon / Arcade) --- */
+  --dark-bg:          #2e283a;          /* Seitenhintergrund       */
+  --dark-surface:     #12121e;          /* Karten-/Card-Hintergrund */
+  --dark-accent-1:    #ff2d75;          /* Primäre Akzentfarbe (Pink/Rot) */
+  --dark-accent-2:    #00f0ff;          /* Sekundäre Akzentfarbe (Cyan) */
+  --dark-accent-3:    #ffe156;          /* Tertiäre Akzentfarbe (Gelb) */
+  --dark-muted:       #6b6880;          /* Gedämpfter Text / Labels */
+  --dark-text:        #e8e6f0;          /* Haupttextfarbe */
+
+  /* --- Light Theme (Clean / School) --- */
+  --light-bg:         #f5f6fa;          /* Seitenhintergrund       */
+  --light-surface:    #ffffff;          /* Karten-/Card-Hintergrund */
+  --light-accent:     #2563eb;          /* Primäre Akzentfarbe (Blau) */
+  --light-accent-lt:  #eff6ff;          /* Helle Akzent-Fläche     */
+  --light-accent-md:  #bfdbfe;          /* Mittlere Akzent-Fläche  */
+  --light-text:       #1e1b4b;          /* Haupttextfarbe          */
+  --light-muted:      #64748b;          /* Gedämpfter Text / Labels */
+  --light-border:     #e2e8f0;          /* Rahmenfarbe             */
+
+  /* --- Gemeinsame Werte --- */
+  --radius-sm:        8px;
+  --radius-md:        14px;
+  --radius-lg:        16px;
+  --nav-height:       56px;
+
+  /* --- Übergänge --- */
+  --transition-fast:  0.2s ease;
+  --transition-base:  0.25s ease;
+  --transition-slow:  0.3s ease;
+}
+
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+
+/* ============================================================
+   3. SEITEN-SCHICHTEN  (Full-Screen Page Layers)
+   Jede Seite liegt übereinander und blendet per Opacity ein.
+   ============================================================ */
+.page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.page.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: all;
+}
+
+
+/* ============================================================
+   4. NAVIGATION
+   ============================================================ */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: var(--nav-height);
+}
+
+/* Dunkle Nav (Dark Theme) */
+.nav-dark {
+  background: rgba(15, 13, 22, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Helle Nav (Light Theme) */
+.nav-light {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--light-border);
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Logo */
+.nav-logo {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 700;
+}
+
+.nav-logo-dark {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  background: linear-gradient(135deg, var(--dark-accent-2), var(--dark-accent-1));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-logo-light {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--light-accent);
+  -webkit-text-fill-color: var(--light-accent);
+}
+
+/* Nav-Buttons */
+.nav-links {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.nav-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+/* Dunkle Nav-Buttons */
+.nav-dark .nav-btn {
+  color: var(--dark-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-dark .nav-btn:hover {
+  color: var(--dark-text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-dark .nav-btn.cur {
+  color: var(--dark-accent-1);
+  border-color: var(--dark-accent-1);
+}
+
+/* Helle Nav-Buttons */
+.nav-light .nav-btn {
+  color: var(--light-muted);
+  border: 1px solid transparent;
+}
+
+.nav-light .nav-btn:hover {
+  color: var(--light-text);
+  background: var(--light-accent-lt);
+}
+
+.nav-light .nav-btn.cur {
+  color: var(--light-accent);
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+  font-weight: 600;
+}
+
+
+/* ============================================================
+   5. HINTERGRÜNDE & RASTER-OVERLAY
+   ============================================================ */
+
+/* Dark Background */
+.bg-dark {
+  background: #0f0d16;
+  color: var(--dark-text);
+}
+
+/* Dark Raster-Overlay (::before am Seitencontainer) */
+.bg-dark-grid::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 45, 117, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dark Raster-Variante 2 (feiner, einfarbig pink) */
+.bg-dark-grid-2::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 45, 117, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 45, 117, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Light Background */
+.bg-light {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+
+/* ============================================================
+   6. KARTEN – ALLGEMEIN
+   ============================================================ */
+.card {
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.3rem;
+  cursor: pointer;
+  transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Farbstreifen oben beim Hover (generisch über --card-color) */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-color, var(--dark-accent-1));
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* Dunkle Karte */
+.card-dark {
+  background: var(--dark-surface);
+  border: 2px outset rgba(255, 255, 255, 0.35);
+}
+
+.card-dark:hover {
+  border-color: var(--card-color, var(--dark-accent-1));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Helle Karte */
+.card-light {
+  background: var(--light-surface);
+  border: 1px solid var(--light-border);
+}
+
+.card-light:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* Einblend-Animation für Grid-Karten */
+.card-anim {
+  opacity: 0;
+  animation: card-in 0.5s ease forwards;
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Automatische Animationsverzögerungen (bis 12 Kinder) */
+.card-anim:nth-child(1)  { animation-delay: .05s }
+.card-anim:nth-child(2)  { animation-delay: .10s }
+.card-anim:nth-child(3)  { animation-delay: .15s }
+.card-anim:nth-child(4)  { animation-delay: .20s }
+.card-anim:nth-child(5)  { animation-delay: .25s }
+.card-anim:nth-child(6)  { animation-delay: .30s }
+.card-anim:nth-child(7)  { animation-delay: .35s }
+.card-anim:nth-child(8)  { animation-delay: .40s }
+.card-anim:nth-child(9)  { animation-delay: .45s }
+.card-anim:nth-child(10) { animation-delay: .50s }
+.card-anim:nth-child(11) { animation-delay: .55s }
+.card-anim:nth-child(12) { animation-delay: .60s }
+
+/* Karten-Icon */
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 1.3rem;
+}
+
+.card-icon-sm  { width: 40px; height: 40px; }
+.card-icon-md  { width: 50px; height: 50px; font-size: 1.8rem; }
+
+.card-icon-dark {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card-icon-light {
+  background: #f8fafc;
+  border: 1px solid var(--light-border);
+}
+
+/* Karten-Badge / Label */
+.card-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 100px;
+}
+
+/* Call-to-Action Pfeil (ausgeblendet, erscheint beim Hover) */
+.card-action {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--card-color, var(--dark-accent-1));
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.card:hover .card-action {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+/* ============================================================
+   7. WIDGET-RASTER  (Dashboard-Kacheln, Dark Theme)
+   ============================================================ */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.widget {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.widget:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Span-Helfer */
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+
+/* Widget Label */
+.widget-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--dark-muted);
+  margin-bottom: 0.05rem;
+}
+
+.widget-sub {
+  font-size: 0.65rem;
+  color: var(--dark-muted);
+}
+
+
+/* ============================================================
+   8. TYPOGRAFIE-HELFER
+   ============================================================ */
+
+/* Großer Anzeigewert (z. B. Uhrzeit, Countdown) */
+.display-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Neon Gradient Text */
+.text-gradient-neon {
+  background: linear-gradient(135deg, var(--dark-accent-2), var(--dark-accent-1), var(--dark-accent-3));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 5s ease infinite;
+}
+
+/* Cyan Gradient Text */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, var(--dark-accent-2), #fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gelb Gradient Text */
+.text-gradient-yellow {
+  background: linear-gradient(135deg, var(--dark-accent-3), #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Pixel-Font Überschrift */
+.heading-pixel {
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0.1em;
+}
+
+/* Serif Überschrift */
+.heading-serif {
+  font-family: 'DM Serif Display', serif;
+}
+
+/* Eyebrow / Kategorie-Label */
+.eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--dark-muted);
+}
+
+
+/* ============================================================
+   9. FORTSCHRITTSBALKEN
+   ============================================================ */
+.progress-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--dark-accent-3), #ffaa00);
+  transition: width 0.8s ease;
+}
+
+
+/* ============================================================
+   10. ABSCHNITT-TRENNER  (Light Theme)
+   ============================================================ */
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--light-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--light-border);
+}
+
+
+/* ============================================================
+   11. STAT-KACHEL  (Light Theme, 3-spaltig)
+   ============================================================ */
+.stat-tile {
+  background: var(--light-surface);
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: box-shadow var(--transition-fast);
+}
+
+.stat-tile:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* Farbvarianten für Stat-Icons */
+.stat-icon-blue   { background: var(--light-accent-lt); }
+.stat-icon-teal   { background: #f0fdfa; }
+.stat-icon-amber  { background: #fffbeb; }
+.stat-icon-purple { background: #f5f3ff; }
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--light-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.15rem;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--light-text);
+}
+
+
+/* ============================================================
+   12. IFRAME-RAHMEN  (Light Theme)
+   ============================================================ */
+.frame-box {
+  background: var(--light-surface);
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+}
+
+.frame-header {
+  padding: 0.8rem 1.2rem;
+  background: var(--light-accent-lt);
+  border-bottom: 1px solid var(--light-accent-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.frame-header span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--light-accent);
+}
+
+.frame-header a {
+  font-size: 0.72rem;
+  color: var(--light-accent);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.frame-header a:hover { opacity: 1; }
+
+.frame-box iframe {
+  width: 100%;
+  height: 520px;
+  border: none;
+  display: block;
+}
+
+
+/* ============================================================
+   13. ANIMATIONEN
+   ============================================================ */
+@keyframes gradient-shift {
+  0%,100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+
+/* ============================================================
+   14. RESPONSIVE  (< 620px)
+   ============================================================ */
+@media (max-width: 620px) {
+
+  .widget-grid,
+  .card-grid,
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  nav {
+    padding: 0 1rem;
+  }
+
+  .col-span-2,
+  .col-span-3,
+  .col-span-4 {
+    grid-column: span 1;
+  }
+}

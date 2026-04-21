@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notenkalkulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f0f4fa;
+  --surface:#ffffff;
+  --surface2:#f7f9fd;
+  --surface3:#eef2f8;
+  --border:#e1e7f2;
+  --border2:#cdd6ea;
+  --text:#1a2236;
+  --text2:#4a5672;
+  --text3:#8c97b0;
+  --accent:#3d6ef5;
+  --accent-dim:#eef1fe;
+  --accent-border:#c3cefb;
+  --teal:#0ea87a;
+  --teal-dim:#e6f8f2;
+  --orange:#e07d28;
+  --red:#d94040;
+  --blue-sa:#5b8ef0;
+  --blue-sa-dim:#ebf1fe;
+  --blue-sa-border:#bccffa;
+  --radius:14px;
+  --radius-sm:8px;
+  --shadow:0 1px 3px rgba(60,80,140,0.08),0 4px 16px rgba(60,80,140,0.06);
+  --shadow-sm:0 1px 2px rgba(60,80,140,0.07);
+}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;padding:2.5rem 1.25rem 6rem;font-size:14px;
+}
+body::before{
+  content:'';position:fixed;top:-200px;left:-200px;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(61,110,245,0.07) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;bottom:-150px;right:-150px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(14,168,122,0.06) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
+
+.container{max-width:980px;margin:0 auto;position:relative;z-index:1}
+
+/* HEADER */
+.header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:2.75rem;gap:1rem;flex-wrap:wrap;
+}
+.header-left h1{
+  font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;
+  letter-spacing:-.02em;color:var(--text);line-height:1.1;margin-bottom:5px;
+}
+.header-left p{font-size:12px;color:var(--text3);letter-spacing:.02em}
+.saved-badge{
+  display:flex;align-items:center;gap:5px;font-size:11px;
+  color:var(--teal);background:var(--teal-dim);
+  padding:5px 12px;border-radius:20px;opacity:0;transition:opacity .35s;
+}
+.saved-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--teal)}
+.saved-badge.show{opacity:1}
+
+/* SECTION */
+.section{margin-bottom:2.25rem}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+.section-label{
+  font-size:10.5px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--text3);white-space:nowrap;
+}
+.section-line{flex:1;height:1px;background:var(--border)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+
+/* CARD */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  box-shadow:var(--shadow-sm);transition:border-color .2s,box-shadow .2s;
+}
+.card:focus-within{border-color:var(--border2);box-shadow:var(--shadow)}
+.card-name{font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:10px;letter-spacing:.01em}
+
+/* TABS */
+.tabs{
+  display:flex;background:var(--surface3);border-radius:20px;
+  padding:2px;margin-bottom:9px;border:1px solid var(--border);
+}
+.tab{
+  flex:1;font-size:10.5px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;
+  padding:4px 8px;border-radius:18px;border:none;
+  background:transparent;color:var(--text3);cursor:pointer;
+  transition:all .18s;white-space:nowrap;text-align:center;
+}
+.tab.active-m{
+  background:var(--surface);color:var(--text2);
+  box-shadow:0 1px 3px rgba(60,80,140,0.1);
+}
+.tab.active-sa{
+  background:var(--blue-sa-dim);color:var(--blue-sa);
+  border:1px solid var(--blue-sa-border);
+}
+
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px;min-height:2px}
+.pill{
+  display:flex;align-items:center;gap:2px;border-radius:20px;
+  padding:2px 5px 2px 8px;font-size:11.5px;font-family:'JetBrains Mono',monospace;
+}
+.pill.pm{background:var(--surface3);border:1px solid var(--border2);color:var(--text2)}
+.pill.psa{background:var(--blue-sa-dim);border:1px solid var(--blue-sa-border);color:var(--blue-sa)}
+.pill button{
+  background:none;border:none;cursor:pointer;color:var(--text3);
+  font-size:14px;line-height:1;padding:0 1px;transition:color .1s;
+}
+.pill button:hover{color:var(--red)}
+
+/* INPUT */
+.input-row{display:flex;gap:5px}
+.input-row input{
+  flex:1;min-width:0;padding:5px 8px;font-size:12px;
+  font-family:'JetBrains Mono',monospace;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface2);color:var(--text);outline:none;
+  transition:border-color .15s;-moz-appearance:textfield;
+}
+.input-row input::-webkit-outer-spin-button,
+.input-row input::-webkit-inner-spin-button{-webkit-appearance:none}
+.input-row input:focus{border-color:var(--accent)}
+.input-row input::placeholder{color:var(--text3)}
+.btn-add{
+  padding:5px 11px;font-size:16px;line-height:1;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:transparent;color:var(--text3);cursor:pointer;transition:all .15s;
+}
+.btn-add:hover{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+
+/* AVG */
+.card-avg{margin-top:9px;display:flex;align-items:baseline;gap:6px;min-height:22px}
+.avg-num{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;line-height:1;transition:color .3s}
+.avg-meta{font-size:10.5px;color:var(--text3)}
+.good{color:var(--teal)}.ok{color:var(--orange)}.bad{color:var(--red)}.dash{color:var(--text3)}
+
+/* ZUSAMMEN */
+.zusammen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.zcard{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;
+  box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+}
+.zcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),#7ba8ff);
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.zcard-name{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:3px}
+.zcard-sub{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:10px}
+.zcard-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500}
+
+/* SUMMARY */
+.summary-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 26px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.summary-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--teal),#5be0b8);
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin-bottom:18px}
+.sitem .sl{font-size:10.5px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.sitem .sv{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500}
+.sum-divider{height:1px;background:var(--border);margin:16px 0}
+.gesamt-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.gesamt-label{font-family:'Instrument Serif',serif;font-size:15px;color:var(--text2);font-style:italic}
+.gesamt-val{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:500;line-height:1}
+.sum-footer{
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.reset-btn{
+  font-size:11px;color:var(--text3);background:none;border:none;
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.reset-btn:hover{color:var(--red)}
+
+/* ANIMS - only on initial load */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.section{animation:fadeUp .4s ease both}
+.section:nth-child(1){animation-delay:.04s}
+.section:nth-child(2){animation-delay:.09s}
+.section:nth-child(3){animation-delay:.14s}
+.section:nth-child(4){animation-delay:.19s}
+.section:nth-child(5){animation-delay:.24s}
+.section:nth-child(6){animation-delay:.29s}
+.no-anim,.no-anim *{animation:none!important}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="header-left">
+      <h1>Notenkalkulator</h1>
+      <p>Noten werden lokal gespeichert · Schulaufgaben zählen doppelt</p>
+    </div>
+    <span id="saved-badge" class="saved-badge">Gespeichert</span>
+  </header>
+  <div id="app"></div>
+</div>
+
+<script>
+const GRUPPEN=[
+  {label:"Allgemeinbildung",            faecher:["Physik","Englisch","Deutsch","SoWe"]},
+  {label:"Informatik & Programmierung", faecher:["SQL","Win","Java","ABAP","Web"]},
+  {label:"Betriebswirtschaft",          faecher:["Wipug","BwLohn","BwLog","FiBu"]},
+  {label:"Kommunikation",               faecher:["KOM","DVT"]}
+];
+
+const ZUSAMMEN=[
+  {label:"Programmierung (gewichtet)", sub:"Java ×3 + ABAP ×2 + Web ×1 ÷ 6",      faecher:["Java","ABAP","Web"],   gewichte:{Java:3,ABAP:2,Web:1},divisor:6},
+  {label:"Betriebswirtschaft gesamt",  sub:"BwLohn + BwLog + FiBu gleichgewichtet", faecher:["BwLohn","BwLog","FiBu"],gewichte:null},
+  {label:"Kommunikation gesamt",       sub:"KOM + DVT gleichgewichtet",             faecher:["KOM","DVT"],            gewichte:null}
+];
+
+const KEY="notenkalkulator_v2";
+let state={}, tabs={};
+GRUPPEN.forEach(g=>g.faecher.forEach(f=>{state[f]={m:[],sa:[]};tabs[f]="m";}));
+
+/* ── STORAGE ── */
+function load(){
+  try{const s=localStorage.getItem(KEY);if(s){const p=JSON.parse(s);Object.keys(state).forEach(f=>{if(p[f])state[f]=p[f];});}}catch(e){}
+}
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(state));
+    const b=document.getElementById("saved-badge");
+    b.classList.add("show");clearTimeout(b._t);
+    b._t=setTimeout(()=>b.classList.remove("show"),1800);
+  }catch(e){}
+}
+
+/* ── CALCULATIONS ── */
+function avgFach(f){
+  const m=(state[f]?.m||[]).filter(x=>x>=1&&x<=6);
+  const sa=(state[f]?.sa||[]).filter(x=>x>=1&&x<=6);
+  const n=m.length+2*sa.length;
+  if(!n)return null;
+  return(m.reduce((a,b)=>a+b,0)+2*sa.reduce((a,b)=>a+b,0))/n;
+}
+function avgZusammen(conf){
+  if(conf.gewichte){
+    let sv=0,sg=0;
+    conf.faecher.forEach(f=>{const a=avgFach(f);if(a!==null){sv+=a*conf.gewichte[f];sg+=conf.gewichte[f];}});
+    return sg?sv/conf.divisor:null;
+  }
+  const v=conf.faecher.map(f=>avgFach(f)).filter(x=>x!==null);
+  return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;
+}
+function cc(v){if(v===null)return"dash";if(v<=2.5)return"good";if(v<=3.75)return"ok";return"bad";}
+function fmt(v){return v!==null?v.toFixed(2):"—";}
+function fmtN(n){return n%1===0?String(n):n.toFixed(1);}
+
+/* ── CARD HTML (inner content only, no wrapper) ── */
+function cardInner(f){
+  const t=tabs[f], a=avgFach(f);
+  const arr=t==="m"?state[f].m:state[f].sa;
+  const mC=state[f].m.length, saC=state[f].sa.length;
+  const meta=[mC?`${mC} Mdl.`:"", saC?`${saC} SA`:""].filter(Boolean).join(" · ");
+  return `
+    <div class="card-name">${f}</div>
+    <div class="tabs">
+      <button class="tab ${t==="m"?"active-m":""}" onclick="setTab('${f}','m')">Mündlich</button>
+      <button class="tab ${t==="sa"?"active-sa":""}" onclick="setTab('${f}','sa')">Schulaufg. ×2</button>
+    </div>
+    <div class="pills" id="pills-${f}">
+      ${arr.map((n,i)=>`<span class="pill p${t}">${fmtN(n)}<button onclick="rem('${f}','${t}',${i})">×</button></span>`).join("")}
+    </div>
+    <div class="input-row">
+      <input id="i-${f}" type="number" min="1" max="6" step="0.5" placeholder="1 – 6"
+        onkeydown="if(event.key==='Enter')addNote('${f}')">
+      <button class="btn-add" onclick="addNote('${f}')">+</button>
+    </div>
+    <div class="card-avg">
+      ${a!==null?`<span class="avg-num ${cc(a)}">${fmt(a)}</span><span class="avg-meta">${meta}</span>`:""}
+    </div>`;
+}
+
+/* ── FULL INITIAL RENDER ── */
+function render(){
+  let h="";
+  GRUPPEN.forEach(g=>{
+    h+=`<div class="section"><div class="section-header"><span class="section-label">${g.label}</span><span class="section-line"></span></div><div class="grid">`;
+    g.faecher.forEach(f=>{h+=`<div class="card" id="card-${f}">${cardInner(f)}</div>`;});
+    h+=`</div></div>`;
+  });
+
+  h+=`<div class="section"><div class="section-header"><span class="section-label">Zusammenfassungen</span><span class="section-line"></span></div><div class="zusammen-grid">`;
+  ZUSAMMEN.forEach((conf,i)=>{
+    const v=avgZusammen(conf);
+    h+=`<div class="zcard"><div class="zcard-name">${conf.label}</div><div class="zcard-sub">${conf.sub}</div><div class="zcard-val ${cc(v)}" id="zval-${i}">${fmt(v)}</div></div>`;
+  });
+  h+=`</div></div>`;
+
+  const allA=GRUPPEN.flatMap(g=>g.faecher.map(f=>avgFach(f))).filter(v=>v!==null);
+  const gesamt=allA.length?allA.reduce((a,b)=>a+b,0)/allA.length:null;
+
+  h+=`<div class="section"><div class="section-header"><span class="section-label">Gesamtübersicht</span><span class="section-line"></span></div>
+    <div class="summary-card">
+      <div class="sum-grid">`;
+  GRUPPEN.forEach((g,i)=>{
+    const av=g.faecher.map(f=>avgFach(f)).filter(v=>v!==null);
+    const a=av.length?av.reduce((a,b)=>a+b,0)/av.length:null;
+    h+=`<div class="sitem"><div class="sl">${g.label}</div><div class="sv ${cc(a)}" id="sg-${i}">${fmt(a)}</div></div>`;
+  });
+  h+=`</div><div class="sum-divider"></div>
+      <div class="gesamt-row">
+        <span class="gesamt-label">Gesamtdurchschnitt</span>
+        <span class="gesamt-val ${cc(gesamt)}" id="gesamt-val">${fmt(gesamt)}</span>
+      </div>
+      <div class="sum-footer">
+        <div class="legend">
+          <span class="leg"><span class="leg-dot" style="background:var(--surface3);border:1px solid var(--border2)"></span>Mündliche Note ×1</span>
+          <span class="leg"><span class="leg-dot" style="background:var(--blue-sa-dim);border:1px solid var(--blue-sa-border)"></span>Schulaufgabe ×2</span>
+        </div>
+        <button class="reset-btn" onclick="resetAll()">Zurücksetzen</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById("app").innerHTML=h;
+}
+
+/* ── TARGETED UPDATE (no full re-render) ── */
+function updateCard(f){
+  const card=document.getElementById("card-"+f);
+  if(!card){render();return;}
+  card.classList.add("no-anim");
+  card.innerHTML=cardInner(f);
+  updateSummaries();
+}
+
+function updateSummaries(){
+  // Update Zusammenfassungen
+  ZUSAMMEN.forEach((conf,i)=>{
+    const el=document.getElementById("zval-"+i);
+    if(el){const v=avgZusammen(conf);el.className=`zcard-val ${cc(v)}`;el.textContent=fmt(v);}
+  });
+  // Update Gruppenübersicht
+  GRUPPEN.forEach((g,i)=>{
+    const el=document.getElementById("sg-"+i);
+    if(el){
+      const av=g.faecher.map(f=>avgFach(f)).filter(v=>v!==null);
+      const a=av.length?av.reduce((a,b)=>a+b,0)/av.length:null;
+      el.className=`sv ${cc(a)}`;el.textContent=fmt(a);
+    }
+  });
+  // Update Gesamtdurchschnitt
+  const el=document.getElementById("gesamt-val");
+  if(el){
+    const allA=GRUPPEN.flatMap(g=>g.faecher.map(f=>avgFach(f))).filter(v=>v!==null);
+    const gesamt=allA.length?allA.reduce((a,b)=>a+b,0)/allA.length:null;
+    el.className=`gesamt-val ${cc(gesamt)}`;el.textContent=fmt(gesamt);
+  }
+}
+
+/* ── ACTIONS ── */
+function setTab(f,t){
+  tabs[f]=t;
+  updateCard(f);
+  // Refocus input after tab switch
+  setTimeout(()=>{const i=document.getElementById("i-"+f);if(i)i.focus();},0);
+}
+
+function addNote(f){
+  const t=tabs[f], el=document.getElementById("i-"+f);
+  const v=parseFloat(el.value.replace(",","."));
+  if(isNaN(v)||v<1||v>6){
+    el.style.borderColor="var(--red)";
+    setTimeout(()=>el.style.borderColor="",600);
+    el.value="";el.focus();return;
+  }
+  state[f][t].push(Math.round(v*10)/10);
+  el.value="";save();
+  updateCard(f);
+  setTimeout(()=>{const i=document.getElementById("i-"+f);if(i)i.focus();},0);
+}
+
+function rem(f,t,i){
+  state[f][t].splice(i,1);
+  save();updateCard(f);
+}
+
+function resetAll(){
+  if(!confirm("Alle Noten wirklich löschen?"))return;
+  GRUPPEN.forEach(g=>g.faecher.forEach(f=>{state[f]={m:[],sa:[]};}));
+  save();render();
+}
+
+load();render();
+</script>
+</body>
+</html>
