@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="neon">
 
 <head>
   <meta charset="UTF-8">
@@ -9,6 +9,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Press+Start+2P&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="Hub/Style/hub-style.css">
   <style>
     *,
     *::before,
@@ -19,20 +20,23 @@
     }
 
     :root {
-      --arc-bg: #2e283a;
-      --arc-card: #12121e;
-      --arc-pink: #ff2d75;
-      --arc-cyan: #00f0ff;
-      --arc-yellow: #ffe156;
-      --arc-muted: #6b6880;
-      --arc-text: #e8e6f0;
-      --sch-bg: #f5f6fa;
+      /* Akzentfarben sind Aliase → wechseln automatisch mit dem Theme */
+      --arc-pink:   var(--dark-accent-1);
+      --arc-cyan:   var(--dark-accent-2);
+      --arc-yellow: var(--dark-accent-3);
+      /* Statische Dark-Variablen */
+      --arc-bg:     #2e283a;
+      --arc-card:   #12121e;
+      --arc-muted:  #6b6880;
+      --arc-text:   #e8e6f0;
+      /* Light-Variablen (Schule) */
+      --sch-bg:     #f5f6fa;
       --sch-surface: #ffffff;
-      --sch-blue: #2563eb;
+      --sch-blue:   #2563eb;
       --sch-blue-lt: #eff6ff;
       --sch-blue-md: #bfdbfe;
-      --sch-text: #1e1b4b;
-      --sch-muted: #64748b;
+      --sch-text:   #1e1b4b;
+      --sch-muted:  #64748b;
       --sch-border: #e2e8f0;
       --sch-radius: 14px;
     }
@@ -1800,6 +1804,16 @@
         <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
         <button class="nav-btn" onclick="go('gaming')">Arcade</button>
       </div>
+      <div class="theme-switcher">
+        <button class="nav-btn theme-toggle-btn" onclick="toggleThemePanel(this)" title="Design wechseln">🎨</button>
+        <div class="theme-panel">
+          <span class="theme-panel-label">Theme</span>
+          <button class="theme-dot" data-theme="neon" onclick="setTheme('neon')" title="Neon"></button>
+          <button class="theme-dot" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+          <button class="theme-dot" data-theme="ocean" onclick="setTheme('ocean')" title="Ocean"></button>
+          <button class="theme-dot" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+        </div>
+      </div>
     </nav>
     <div class="land-body">
 
@@ -1903,6 +1917,16 @@
         <button class="nav-btn cur" onclick="go('school')">Schule</button>
         <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
         <button class="nav-btn" onclick="go('gaming')">Arcade</button>
+      </div>
+      <div class="theme-switcher">
+        <button class="nav-btn theme-toggle-btn" onclick="toggleThemePanel(this)" title="Design wechseln">🎨</button>
+        <div class="theme-panel">
+          <span class="theme-panel-label">Theme</span>
+          <button class="theme-dot" data-theme="neon" onclick="setTheme('neon')" title="Neon"></button>
+          <button class="theme-dot" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+          <button class="theme-dot" data-theme="ocean" onclick="setTheme('ocean')" title="Ocean"></button>
+          <button class="theme-dot" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+        </div>
       </div>
     </nav>
     <div class="sch-body">
@@ -2227,6 +2251,16 @@
         <button class="nav-btn cur" onclick="go('schulstoff')">Schulstoff</button>
         <button class="nav-btn" onclick="go('gaming')">Arcade</button>
       </div>
+      <div class="theme-switcher">
+        <button class="nav-btn theme-toggle-btn" onclick="toggleThemePanel(this)" title="Design wechseln">🎨</button>
+        <div class="theme-panel">
+          <span class="theme-panel-label">Theme</span>
+          <button class="theme-dot" data-theme="neon" onclick="setTheme('neon')" title="Neon"></button>
+          <button class="theme-dot" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+          <button class="theme-dot" data-theme="ocean" onclick="setTheme('ocean')" title="Ocean"></button>
+          <button class="theme-dot" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+        </div>
+      </div>
     </nav>
 
     <div class="ss-layout">
@@ -2326,6 +2360,16 @@
         <button class="nav-btn" onclick="go('schulstoff')">Schulstoff</button>
         <button class="nav-btn cur" onclick="go('gaming')">Arcade</button>
       </div>
+      <div class="theme-switcher">
+        <button class="nav-btn theme-toggle-btn" onclick="toggleThemePanel(this)" title="Design wechseln">🎨</button>
+        <div class="theme-panel">
+          <span class="theme-panel-label">Theme</span>
+          <button class="theme-dot" data-theme="neon" onclick="setTheme('neon')" title="Neon"></button>
+          <button class="theme-dot" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+          <button class="theme-dot" data-theme="ocean" onclick="setTheme('ocean')" title="Ocean"></button>
+          <button class="theme-dot" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+        </div>
+      </div>
     </nav>
     <div class="arc-body">
       <div class="arc-head">
@@ -2387,6 +2431,31 @@
   </div>
 
   <script>
+    /* ========== THEME SWITCHER ========== */
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('hub-theme', theme);
+      document.querySelectorAll('.theme-dot').forEach(d => {
+        d.classList.toggle('active', d.dataset.theme === theme);
+      });
+    }
+
+    function toggleThemePanel(btn) {
+      const panel = btn.nextElementSibling;
+      const isOpen = panel.classList.contains('open');
+      document.querySelectorAll('.theme-panel').forEach(p => p.classList.remove('open'));
+      if (!isOpen) panel.classList.add('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.theme-switcher')) {
+        document.querySelectorAll('.theme-panel').forEach(p => p.classList.remove('open'));
+      }
+    });
+
+    // Gespeichertes Theme laden
+    setTheme(localStorage.getItem('hub-theme') || 'neon');
+
     function toggleCat(id) {
       const group = document.getElementById(id);
       const body = group.querySelector('.cat-body');

@@ -15,14 +15,41 @@
 /* ============================================================
    1. CSS CUSTOM PROPERTIES  (Design Tokens)
    ============================================================ */
+
+/* --- Theme-spezifische Akzentfarben (überschreibt :root per data-theme) --- */
+/* Neon (Standard) */
+[data-theme="neon"] {
+  --dark-accent-1: #ff2d75;
+  --dark-accent-2: #00f0ff;
+  --dark-accent-3: #ffe156;
+}
+/* Forest */
+[data-theme="forest"] {
+  --dark-accent-1: #00c97f;
+  --dark-accent-2: #4ade80;
+  --dark-accent-3: #fbbf24;
+}
+/* Ocean */
+[data-theme="ocean"] {
+  --dark-accent-1: #3b82f6;
+  --dark-accent-2: #22d3ee;
+  --dark-accent-3: #a78bfa;
+}
+/* Sunset */
+[data-theme="sunset"] {
+  --dark-accent-1: #f97316;
+  --dark-accent-2: #ef4444;
+  --dark-accent-3: #fde047;
+}
+
 :root {
 
   /* --- Dark Theme (Neon / Arcade) --- */
   --dark-bg:          #2e283a;          /* Seitenhintergrund       */
   --dark-surface:     #12121e;          /* Karten-/Card-Hintergrund */
-  --dark-accent-1:    #ff2d75;          /* Primäre Akzentfarbe (Pink/Rot) */
-  --dark-accent-2:    #00f0ff;          /* Sekundäre Akzentfarbe (Cyan) */
-  --dark-accent-3:    #ffe156;          /* Tertiäre Akzentfarbe (Gelb) */
+  --dark-accent-1:    #ff2d75;          /* Primäre Akzentfarbe (Standard: Neon-Pink) */
+  --dark-accent-2:    #00f0ff;          /* Sekundäre Akzentfarbe (Standard: Cyan) */
+  --dark-accent-3:    #ffe156;          /* Tertiäre Akzentfarbe (Standard: Gelb) */
   --dark-muted:       #6b6880;          /* Gedämpfter Text / Labels */
   --dark-text:        #e8e6f0;          /* Haupttextfarbe */
 
@@ -630,7 +657,84 @@ nav {
 
 
 /* ============================================================
-   14. RESPONSIVE  (< 620px)
+   14. THEME-SWITCHER
+   ============================================================ */
+.theme-switcher {
+  position: relative;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.3rem 0.55rem !important;
+}
+
+.theme-panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  background: #1a1626;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.theme-panel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+.theme-panel-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--dark-muted);
+  margin-right: 0.25rem;
+}
+
+.theme-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  outline: 2px solid transparent;
+  transition: transform var(--transition-fast), outline-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.theme-dot:hover {
+  transform: scale(1.2);
+}
+
+.theme-dot.active {
+  outline-color: rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* Theme-Punkt-Farben */
+.theme-dot[data-theme="neon"]   { background: linear-gradient(135deg, #ff2d75, #00f0ff); }
+.theme-dot[data-theme="forest"] { background: linear-gradient(135deg, #00c97f, #4ade80); }
+.theme-dot[data-theme="ocean"]  { background: linear-gradient(135deg, #3b82f6, #22d3ee); }
+.theme-dot[data-theme="sunset"] { background: linear-gradient(135deg, #f97316, #ef4444); }
+
+
+/* ============================================================
+   15. RESPONSIVE  (< 620px)
    ============================================================ */
 @media (max-width: 620px) {
 
