@@ -19,11 +19,33 @@
       box-sizing: border-box;
     }
 
+    /* ===== THEMES (Akzentfarben wechseln per data-theme auf <html>) ===== */
+    :root,
+    [data-theme="neon"] {
+      --arc-pink:   #ff2d75;
+      --arc-cyan:   #00f0ff;
+      --arc-yellow: #ffe156;
+    }
+
+    [data-theme="forest"] {
+      --arc-pink:   #00c97f;
+      --arc-cyan:   #4ade80;
+      --arc-yellow: #fbbf24;
+    }
+
+    [data-theme="ocean"] {
+      --arc-pink:   #3b82f6;
+      --arc-cyan:   #22d3ee;
+      --arc-yellow: #a78bfa;
+    }
+
+    [data-theme="sunset"] {
+      --arc-pink:   #f97316;
+      --arc-cyan:   #ef4444;
+      --arc-yellow: #fde047;
+    }
+
     :root {
-      /* Akzentfarben sind Aliase → wechseln automatisch mit dem Theme */
-      --arc-pink:   var(--dark-accent-1);
-      --arc-cyan:   var(--dark-accent-2);
-      --arc-yellow: var(--dark-accent-3);
       /* Statische Dark-Variablen */
       --arc-bg:     #2e283a;
       --arc-card:   #12121e;
