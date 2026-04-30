@@ -1,0 +1,2652 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>F11 HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-background": "#dae2fd",
+            "surface-bright": "#31394d",
+            "surface": "#0b1326",
+            "on-surface": "#dae2fd",
+            "tertiary": "#adc6ff",
+            "on-surface-variant": "#cfc2d6",
+            "surface-tint": "#ddb7ff",
+            "surface-container-lowest": "#060e20",
+            "secondary-container": "#00a572",
+            "inverse-surface": "#dae2fd",
+            "surface-variant": "#2d3449",
+            "secondary": "#4edea3",
+            "outline": "#988d9f",
+            "error": "#ffb4ab",
+            "inverse-primary": "#842bd2",
+            "surface-container": "#171f33",
+            "tertiary-container": "#4d8eff",
+            "surface-dim": "#0b1326",
+            "surface-container-highest": "#2d3449",
+            "on-primary": "#490080",
+            "surface-container-high": "#222a3d",
+            "primary-container": "#b76dff",
+            "primary": "#ddb7ff",
+            "outline-variant": "#4d4354",
+            "background": "#0b1326",
+            "surface-container-low": "#131b2e",
+            "on-primary-container": "#400071"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "md": "16px",
+            "lg": "24px",
+            "gutter": "24px",
+            "xs": "4px",
+            "sm": "8px",
+            "container-max": "1440px",
+            "base": "8px",
+            "xl": "40px"
+          },
+          fontSize: {
+            "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "h2": ["30px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "h3": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Identical glass-card to code.html */
+    .glass-card {
+      background: linear-gradient(135deg, rgba(23, 31, 51, 0.8) 0%, rgba(11, 19, 38, 0.9) 100%);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(221, 183, 255, 0.07);
+    }
+
+    /* Progress bar */
+    .prog-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width .8s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* Page switching */
+    .hub-page {
+      display: none;
+    }
+
+    .hub-page.active {
+      display: block;
+    }
+
+    /* Active nav — identical bg+border to code.html purple tint */
+    .nav-active {
+      background: rgba(168, 85, 247, .1) !important;
+      color: rgb(192, 132, 252) !important;
+      border-right: 4px solid rgb(168, 85, 247);
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    /* ══════════════════════════════════════
+       LIGHT MODE — neutrales, professionelles Design
+       Akzentfarbe: Indigo #4f46e5 (gut lesbar auf Weiß)
+       Kein Neon-Lila, kein Neon-Grün
+       ══════════════════════════════════════ */
+    html.light {
+      --lm-bg: #f1f3f8;
+      --lm-surface: #ffffff;
+      --lm-surface2: #e8ebf4;
+      --lm-surface3: #dde1ee;
+      --lm-border: #d0d4e0;
+      --lm-text: #111827;
+      --lm-text-sub: #4b5563;
+      --lm-text-mute: #9ca3af;
+      --lm-accent: #4f46e5;
+      --lm-accent-bg: rgba(79, 70, 229, .09);
+    }
+
+    /* Basis */
+    html.light body {
+      background-color: var(--lm-bg) !important;
+      color: var(--lm-text) !important;
+    }
+
+    /* Sidebar & Header */
+    html.light aside {
+      background-color: var(--lm-surface) !important;
+      border-color: var(--lm-border) !important;
+    }
+
+    html.light header {
+      background-color: rgba(255, 255, 255, .95) !important;
+      border-color: var(--lm-border) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .06) !important;
+    }
+
+    /* Karten */
+    html.light .glass-card {
+      background: var(--lm-surface) !important;
+      border: 1px solid var(--lm-border) !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .06) !important;
+    }
+
+    /* Navigation */
+    html.light .nav-item {
+      color: var(--lm-text-sub) !important;
+    }
+
+    html.light .nav-item:hover {
+      background: var(--lm-accent-bg) !important;
+      color: var(--lm-accent) !important;
+    }
+
+    html.light .nav-active {
+      background: var(--lm-accent-bg) !important;
+      color: var(--lm-accent) !important;
+      border-right-color: var(--lm-accent) !important;
+    }
+
+    /* Top-Nav */
+    html.light .topnav-item {
+      color: var(--lm-text-sub) !important;
+    }
+
+    html.light .topnav-item:hover {
+      color: var(--lm-text) !important;
+    }
+
+    html.light .topnav-item.text-purple-500,
+    html.light .topnav-item.dark\:text-purple-400 {
+      color: var(--lm-accent) !important;
+      border-color: var(--lm-accent) !important;
+    }
+
+    /* Slate-Töne */
+    html.light .text-slate-400,
+    html.light .dark\:text-slate-500 {
+      color: var(--lm-text-sub) !important;
+    }
+
+    html.light .text-slate-500 {
+      color: var(--lm-text-mute) !important;
+    }
+
+    html.light .text-slate-600 {
+      color: #c0c4cf !important;
+    }
+
+    /* Hintergründe */
+    html.light .bg-slate-900,
+    html.light .bg-slate-950,
+    html.light .dark\:bg-slate-950 {
+      background-color: var(--lm-surface) !important;
+    }
+
+    html.light .bg-slate-900\/80,
+    html.light .dark\:bg-slate-950\/80 {
+      background-color: rgba(255, 255, 255, .95) !important;
+    }
+
+    html.light .bg-background {
+      background-color: var(--lm-bg) !important;
+    }
+
+    html.light .bg-surface-container-low {
+      background-color: var(--lm-surface2) !important;
+    }
+
+    html.light .bg-surface-container-high {
+      background-color: var(--lm-surface3) !important;
+    }
+
+    html.light .hover\:bg-surface-container-high:hover {
+      background-color: #d0d4e0 !important;
+    }
+
+    html.light .hover\:bg-slate-800\/40:hover,
+    html.light .hover\:bg-slate-800\/50:hover {
+      background-color: var(--lm-accent-bg) !important;
+    }
+
+    /* Rahmen */
+    html.light .border-slate-800,
+    html.light .dark\:border-slate-800\/50 {
+      border-color: var(--lm-border) !important;
+    }
+
+    html.light .border-slate-700 {
+      border-color: var(--lm-border) !important;
+    }
+
+    /* Text */
+    html.light .text-on-surface {
+      color: var(--lm-text) !important;
+    }
+
+    html.light .text-on-surface-variant {
+      color: var(--lm-text-sub) !important;
+    }
+
+    html.light .text-on-background {
+      color: var(--lm-text) !important;
+    }
+
+    html.light .text-white,
+    html.light .dark\:text-slate-50 {
+      color: var(--lm-text) !important;
+    }
+
+    /* Akzentfarben neu mappen: primary→Indigo, secondary→Teal, tertiary→Slate-Blue */
+    html.light .text-primary {
+      color: #4f46e5 !important;
+    }
+
+    html.light .text-secondary {
+      color: #0d9488 !important;
+    }
+
+    html.light .text-tertiary {
+      color: #3b82f6 !important;
+    }
+
+    html.light .bg-primary\/10,
+    html.light .bg-primary\/10 {
+      background-color: rgba(79, 70, 229, .1) !important;
+    }
+
+    html.light .bg-secondary\/10 {
+      background-color: rgba(13, 148, 136, .1) !important;
+    }
+
+    html.light .bg-tertiary\/10 {
+      background-color: rgba(59, 130, 246, .1) !important;
+    }
+
+    /* Icon-Button in Sidebar */
+    html.light .text-purple-500 {
+      color: #4f46e5 !important;
+    }
+
+    /* Progress-Track */
+    html.light .prog-track {
+      background: rgba(0, 0, 0, .08) !important;
+    }
+
+    /* Suchfeld */
+    html.light input[type="text"] {
+      background-color: var(--lm-surface2) !important;
+      color: var(--lm-text) !important;
+      border-color: var(--lm-border) !important;
+    }
+
+    html.light input[type="text"]::placeholder {
+      color: var(--lm-text-mute) !important;
+    }
+
+    /* ── Sidebar eingeklappt: Icons gut sichtbar ── */
+    #main-sidebar.collapsed .material-symbols-outlined {
+      color: #6b7280;
+    }
+
+    html.light #main-sidebar.collapsed .material-symbols-outlined {
+      color: #374151 !important;
+    }
+
+    html.light #main-sidebar.collapsed .nav-active .material-symbols-outlined {
+      color: #4f46e5 !important;
+    }
+
+    #main-sidebar.collapsed .nav-item {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    #main-sidebar.collapsed .nav-active {
+      border-radius: 0.5rem;
+      border-right: none;
+      border-left: 3px solid rgb(168, 85, 247);
+    }
+
+    html.light #main-sidebar.collapsed .nav-active {
+      border-left-color: #4f46e5 !important;
+    }
+
+    #main-sidebar.collapsed .px-4 {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    /* ── NEWS TABS ── */
+    .news-tab-btn {
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .news-tab-btn:hover {
+      background: rgba(173,198,255,0.08);
+      color: #adc6ff;
+    }
+    .news-tab-btn.active {
+      background: rgba(173,198,255,0.15);
+      color: #adc6ff;
+      border-color: rgba(173,198,255,0.35);
+    }
+    html.light .news-tab-btn { color: #6b7280; border-color: #d0d4e0; }
+    html.light .news-tab-btn:hover { background: rgba(79,70,229,0.07); color: #4f46e5; }
+    html.light .news-tab-btn.active { background: rgba(79,70,229,0.1); color: #4f46e5; border-color: rgba(79,70,229,0.35); }
+
+    /* news card */
+    .news-card { transition: transform .2s, box-shadow .2s; cursor: pointer; }
+    .news-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Subtle dot grid like a premium dashboard */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(221, 183, 255, .018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(221, 183, 255, .018) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-background selection:bg-primary/30 min-h-screen flex">
+
+  <!-- ══════════════════════════════════
+     SIDEBAR  (structure = code.html)
+     ══════════════════════════════════ -->
+  <aside id="main-sidebar"
+    class="hidden md:flex flex-col h-screen border-r border-slate-800 dark:border-slate-800/50 bg-slate-900 dark:bg-slate-950 py-6 gap-8 sticky top-0 z-40 flex-shrink-0 transition-all duration-300"
+    style="width:16rem">
+
+    <div class="px-6 flex flex-col gap-1">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-primary"
+            style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 600">hub</span>
+        </div>
+        <span class="text-lg font-black text-purple-500 sidebar-label whitespace-nowrap">F11 HUB</span>
+        <button onclick="toggleSidebar()"
+          class="ml-auto p-1 text-slate-500 hover:text-slate-300 rounded-lg transition-colors flex-shrink-0"
+          title="Sidebar einklappen">
+          <span class="material-symbols-outlined" id="sidebar-toggle-icon" style="font-size:18px">chevron_left</span>
+        </button>
+      </div>
+      <span
+        class="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-1 sidebar-label">Deep
+        Work
+        Mode</span>
+    </div>
+
+    <div class="px-4 flex flex-col gap-2 flex-grow">
+      <a id="nav-landing"
+        class="nav-item nav-active flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('landing')">
+        <span class="material-symbols-outlined flex-shrink-0">dashboard</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Dashboard</span>
+      </a>
+      <a id="nav-school"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('school')">
+        <span class="material-symbols-outlined flex-shrink-0">school</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Schule</span>
+      </a>
+      <a id="nav-schulstoff"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('schulstoff')">
+        <span class="material-symbols-outlined flex-shrink-0">menu_book</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Schulstoff</span>
+      </a>
+      <a id="nav-gaming"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('gaming')">
+        <span class="material-symbols-outlined flex-shrink-0">sports_esports</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Arcade-Hall</span>
+      </a>
+
+      <div class="mt-8 sidebar-label flex flex-col gap-3">
+        <button onclick="openFactPopup()"
+          class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          Neuer Fun Fact ✦
+        </button>
+        <button onclick="openAtemPause()"
+          class="w-full py-3 bg-secondary/20 text-secondary border border-secondary/30 font-bold rounded-xl hover:bg-secondary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          🌬️ Atempause
+        </button>
+        <button onclick="openPomodoro()"
+          class="w-full py-3 bg-tertiary/20 text-tertiary border border-tertiary/30 font-bold rounded-xl hover:bg-tertiary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          ⏱️ Pomodoro
+        </button>
+        <button onclick="openFokusMusik()"
+          class="w-full py-3 border font-bold rounded-xl hover:scale-[1.02] active:scale-95 transition-all text-sm"
+          style="background:rgba(221,183,255,0.12);color:#ddb7ff;border-color:rgba(221,183,255,0.2);">
+          🎵 Fokus-Musik
+        </button>
+      </div>
+    </div>
+
+    <div class="px-4 border-t border-slate-800 pt-6 flex flex-col gap-2">
+      <button onclick="cycleTheme()"
+        class="flex items-center gap-3 px-4 py-2 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg transition-all duration-200 w-full text-left">
+        <span class="material-symbols-outlined flex-shrink-0" id="theme-icon">brightness_auto</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label" id="theme-label">System</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════
+     MAIN COLUMN
+     ══════════════════════════════════ -->
+  <div class="flex-grow flex flex-col min-w-0 relative z-10">
+
+    <!-- TOP BAR — identical to code.html -->
+    <header
+      class="flex items-center justify-between px-8 h-16 w-full bg-slate-900/80 backdrop-blur-md dark:bg-slate-950/80 border-b border-slate-800 dark:border-slate-800/50 sticky top-0 z-50 shadow-sm">
+      <div class="flex items-center gap-4">
+        <!-- Sidebar expand button (shown when sidebar is collapsed) -->
+        <button id="sidebar-open-btn" onclick="toggleSidebar()"
+          class="hidden p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-colors"
+          title="Sidebar öffnen">
+          <span class="material-symbols-outlined" style="font-size:20px">menu</span>
+        </button>
+        <span class="text-xl font-bold tracking-tighter text-white dark:text-slate-50 md:hidden">F11 HUB</span>
+        <nav class="hidden lg:flex items-center gap-6 h-16">
+          <a id="topnav-landing"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-purple-500 dark:text-purple-400 border-b-2 border-purple-500 cursor-pointer"
+            onclick="goPage('landing')">Dashboard</a>
+          <a id="topnav-school"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('school')">Schule</a>
+          <a id="topnav-schulstoff"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('schulstoff')">Schulstoff</a>
+          <a id="topnav-gaming"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('gaming')">Arcade-Hall</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative hidden sm:block">
+          <input
+            class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 text-sm w-48 focus:w-64 transition-all focus:border-primary focus:ring-0 outline-none"
+            placeholder="Suchen…" type="text" />
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <div
+            class="h-8 w-8 rounded-full bg-primary-container border border-slate-700 ml-2 flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-primary-container"
+              style="font-size:18px;font-variation-settings:'FILL' 1">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════
+       DASHBOARD
+       ══════════════════════════════════ -->
+    <main class="hub-page active p-xl max-w-container-max mx-auto w-full pb-24 md:pb-xl" id="page-landing">
+      <div class="grid grid-cols-12 gap-gutter">
+
+        <!-- HERO: Uhrzeit & Begrüßung — wide, with atmospheric bg like code.html -->
+        <section
+          class="col-span-12 lg:col-span-8 h-64 relative rounded-xl overflow-hidden glass-card p-lg flex flex-col justify-end group">
+          <div class="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#2d0055 0%,#0b1326 50%,#002918 100%);">
+            </div>
+          </div>
+          <!-- Glow orbs for depth -->
+          <div class="absolute top-8 right-16 w-40 h-40 rounded-full z-0"
+            style="background:radial-gradient(circle,rgba(183,109,255,.3) 0%,transparent 70%);"></div>
+          <div class="absolute -bottom-4 left-24 w-32 h-32 rounded-full z-0"
+            style="background:radial-gradient(circle,rgba(78,222,163,.2) 0%,transparent 70%);"></div>
+          <div class="relative z-10">
+            <span class="font-label-md text-secondary mb-xs block" id="dash-status">AKTUELLER STATUS: FOKUS</span>
+            <h1 class="text-on-surface mb-sm" id="dash-time"
+              style="font-size:48px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;">--:--</h1>
+            <p class="text-on-surface-variant max-w-md" style="font-size:18px;line-height:1.6;" id="dash-greeting">Guten
+              Morgen! Lade…</p>
+          </div>
+        </section>
+
+        <!-- WETTER — square, centred, same as code.html -->
+        <section
+          class="col-span-12 sm:col-span-6 lg:col-span-4 h-64 glass-card rounded-xl p-lg flex flex-col items-center justify-center text-center">
+          <div class="text-secondary mb-sm" id="dash-wx-icon-wrap">
+            <span class="material-symbols-outlined"
+              style="font-size:56px;font-variation-settings:'FILL' 1,'wght' 300">cloud_queue</span>
+          </div>
+          <div class="font-h2 text-on-surface" id="dash-wx-temp"
+            style="font-size:30px;font-weight:600;letter-spacing:-0.01em;">--°C</div>
+          <div class="font-body-md text-on-surface-variant">Plattling</div>
+          <div class="mt-md flex gap-4 text-sm text-slate-500">
+            <span id="dash-wx-desc">Lädt…</span>
+          </div>
+          <div class="text-xs text-slate-600 mt-sm" id="dash-date-chip">—</div>
+        </section>
+
+        <!-- QUICK ACCESS — vertical, row-span-2, identical structure to code.html -->
+        <section class="col-span-12 lg:col-span-4 lg:row-span-2 glass-card rounded-xl p-lg flex flex-col">
+          <h3 class="text-on-surface mb-lg flex items-center gap-2"
+            style="font-size:24px;font-weight:600;letter-spacing:-0.01em;">
+            <span class="material-symbols-outlined text-primary">bolt</span>
+            Schnellzugriff
+          </h3>
+          <div class="flex flex-col gap-sm">
+            <button onclick="goPage('school')"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+                style="font-size:22px">school</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Schule</p>
+                <p class="text-[10px] text-slate-500">Stundenplan & Tools</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </button>
+            <button onclick="goPage('schulstoff')"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+                style="font-size:22px">menu_book</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Schulstoff</p>
+                <p class="text-[10px] text-slate-500">PDFs & Skripte</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </button>
+            <a href="O:\work\Allgemein\Hub\Sammlung\Klassiker\Klassiker.html" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:22px">sports_esports</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Arcade-Hall</p>
+                <p class="text-[10px] text-slate-500">Tetris, Snake und vieles mehr</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+
+            <div class="border-t border-slate-800 my-1"></div>
+            <a href="https://klatab.edvschule-plattling.de/dashboard" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+                style="font-size:22px">calendar_view_week</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">KlaTab</p>
+                <p class="text-[10px] text-slate-500">Online-Stundenplan</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+            <a href="https://i.edvschulen-plattling.de/" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:20px">school</span>
+              <div class="flex-1 min-w-0">
+                <p class="font-label-md text-on-surface">Intranet</p>
+                <p class="text-[10px] text-slate-500 mt-xs">Intranet der EDV-Schule Plattling</p>
+              </div>
+              <span
+                class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+            </a>
+            <a href="https://sqliteonline.com/" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:22px">database</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">SQLite Online</p>
+                <p class="text-[10px] text-slate-500">Datenbank im Browser</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- SCHULSTUNDEN — compact -->
+        <section class="col-span-12 lg:col-span-8 glass-card rounded-xl p-md">
+          <div class="flex items-center justify-between mb-md">
+            <h3 class="text-on-surface font-semibold text-base">Schulstunden heute</h3>
+            <span class="text-xs font-medium text-secondary" id="dash-stunden-day">—</span>
+          </div>
+          <div id="dash-stunden-grid" class="grid grid-cols-1 gap-sm">
+            <!-- Filled by JS -->
+          </div>
+        </section>
+
+        <!-- FERIEN + SCHULJAHR — combined card -->
+        <section class="col-span-12 sm:col-span-6 lg:col-span-4 glass-card rounded-xl p-lg flex flex-col gap-lg">
+          <div>
+            <h4 class="font-label-md text-slate-500 mb-sm">NÄCHSTE FERIEN BAYERN</h4>
+            <div class="text-xl font-bold text-on-surface" id="dash-ferien-tage">-- <span
+                class="text-sm font-normal text-primary">Tage noch</span></div>
+            <div class="text-sm text-on-surface-variant font-semibold mt-xs" id="dash-ferien-name">—</div>
+            <div class="text-xs text-slate-600 mt-xs mb-md" id="dash-ferien-datum">—</div>
+            <div class="prog-track">
+              <div class="prog-fill" id="dash-ferien-bar" style="width:0%;background:#4edea3;"></div>
+            </div>
+          </div>
+          <div class="border-t border-slate-800"></div>
+          <div>
+            <div class="flex justify-between text-xs mb-xs">
+              <span class="text-slate-400 font-semibold uppercase tracking-widest" style="font-size:11px;">Fortschritt
+                Schuljahr</span>
+              <span class="text-primary font-bold" id="dash-kw-val">KW --</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="dash-kw-bar" style="background:#ddb7ff; width:0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FUN FACT -->
+        <section class="col-span-12 sm:col-span-6 lg:col-span-4 glass-card rounded-xl p-lg overflow-hidden relative">
+          <h4 class="font-label-md text-slate-500 mb-sm">FUN FACT</h4>
+          <div class="absolute top-4 right-4 flex items-end gap-0.5 h-10 opacity-15 pointer-events-none">
+            <div class="w-1 rounded-sm" style="height:30%;background:#ddb7ff;"></div>
+            <div class="w-1 rounded-sm" style="height:60%;background:#4edea3;"></div>
+            <div class="w-1 rounded-sm" style="height:45%;background:#adc6ff;"></div>
+            <div class="w-1 rounded-sm" style="height:90%;background:#ddb7ff;"></div>
+            <div class="w-1 rounded-sm" style="height:55%;background:#4edea3;"></div>
+            <div class="w-1 rounded-sm" style="height:75%;background:#adc6ff;"></div>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed" id="dash-fact">…</p>
+          <button onclick="nextFact()"
+            class="mt-md text-xs font-semibold text-primary hover:text-primary/80 transition-colors">Nächster Fakt
+            →</button>
+          <br>
+          <h4 class="font-label-md text-slate-500 mb-xs">ZITAT DES TAGES</h4>
+          <p class="text-sm text-on-surface italic leading-relaxed mt-sm" id="dash-quote">…</p>
+          <p class="text-xs mt-sm text-secondary font-semibold" id="dash-quote-author">—</p>
+        </section>
+
+        <!-- NEWS FEED -->
+        <section class="col-span-12 glass-card rounded-xl p-lg" id="news-section">
+          <!-- Header row -->
+          <div class="flex items-center justify-between mb-md flex-wrap gap-sm">
+            <h3 class="text-on-surface font-semibold flex items-center gap-2" style="font-size:18px;">
+              <span class="material-symbols-outlined text-tertiary" style="font-size:20px;font-variation-settings:'FILL' 1">newspaper</span>
+              Newsfeed
+            </h3>
+            <!-- Category tabs -->
+            <div class="flex items-center gap-xs" id="news-tabs" style="flex-wrap:wrap;">
+              <button class="news-tab-btn active" data-cat="it" onclick="newsSetCat('it')">💻 IT & Tech</button>
+              <button class="news-tab-btn" data-cat="allgemein" onclick="newsSetCat('allgemein')">🌍 Allgemein</button>
+              <button class="news-tab-btn" data-cat="sport" onclick="newsSetCat('sport')">⚽ Sport</button>
+              <button class="news-tab-btn" data-cat="wissenschaft" onclick="newsSetCat('wissenschaft')">🔬 Wissenschaft</button>
+              <button class="news-tab-btn" data-cat="wirtschaft" onclick="newsSetCat('wirtschaft')">📈 Wirtschaft</button>
+            </div>
+            <button onclick="loadNews()" id="news-refresh-btn"
+              class="flex items-center gap-xs text-xs font-semibold px-md py-xs rounded-full border transition-all hover:scale-105 active:scale-95"
+              style="border-color:rgba(173,198,255,0.2);color:#adc6ff;background:rgba(173,198,255,0.06);">
+              <span class="material-symbols-outlined" style="font-size:14px" id="news-refresh-icon">refresh</span>
+              Aktualisieren
+            </button>
+          </div>
+
+          <!-- Loading state -->
+          <div id="news-loading" class="hidden flex flex-col items-center justify-center py-8 gap-md">
+            <div style="width:32px;height:32px;border:2px solid rgba(173,198,255,0.15);border-top-color:#adc6ff;border-radius:50%;animation:spin .8s linear infinite;"></div>
+            <p class="text-xs text-slate-500">Nachrichten werden geladen…</p>
+          </div>
+
+          <!-- Error state -->
+          <div id="news-error" class="hidden flex flex-col items-center justify-center py-8 gap-sm text-center">
+            <span class="material-symbols-outlined text-slate-600" style="font-size:36px">wifi_off</span>
+            <p class="text-sm text-slate-500" id="news-error-msg">Nachrichten konnten nicht geladen werden.</p>
+            <button onclick="loadNews()" class="text-xs font-semibold text-tertiary hover:text-tertiary/80 transition-colors">Erneut versuchen →</button>
+          </div>
+
+          <!-- Articles grid -->
+          <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md"></div>
+
+          <p class="text-[10px] text-slate-700 mt-md text-center">KI-generierte Schlagzeilen · Nur zu Übungszwecken · Kein Anspruch auf Aktualität</p>
+        </section>
+
+      </div><!-- /grid -->
+    </main>
+
+    <!-- ══════════════════════════════════
+       SCHULE
+       ══════════════════════════════════ -->
+    <main class="hub-page p-xl max-w-container-max mx-auto w-full pb-24 md:pb-xl" id="page-school">
+
+      <!-- Hero -->
+      <div class="flex items-center justify-between mb-lg gap-6 flex-wrap">
+        <div>
+          <h2 class="text-on-surface font-bold" style="font-size:30px;letter-spacing:-0.01em;" id="school-greeting">
+            Guten Tag</h2>
+          <p class="text-slate-500 text-sm mt-1">Alles, was du heute für die Schule brauchst.</p>
+        </div>
+        <div class="glass-card rounded-xl px-lg py-md flex gap-lg text-center">
+          <div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Wochentag</p>
+            <p class="text-on-surface font-bold mt-xs" id="school-weekday">—</p>
+          </div>
+          <div class="w-px bg-slate-700"></div>
+          <div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Uhrzeit</p>
+            <p class="text-on-surface font-bold mt-xs" id="school-time">—</p>
+          </div>
+          <div class="w-px bg-slate-700"></div>
+          <div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">KW</p>
+            <p class="text-on-surface font-bold mt-xs" id="school-kw">—</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1 · SCHULALLTAG -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-alltag')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+            style="font-size:20px">calendar_today</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Schulalltag</p>
+            <p class="text-[10px] text-slate-500">Stundenplan, Intranet, Essen &amp; tägliche Basics</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">4</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-alltag-chevron">expand_more</span>
+        </button>
+        <div id="scat-alltag" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+          <a href="https://klatab.edvschule-plattling.de/dashboard" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">calendar_view_week</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">KlaTab Stundenplan</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Aktueller Stundenplan auf einen Blick</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://i.edvschulen-plattling.de/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">school</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Intranet</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Intranet der EDV-Schule Plattling</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://app.vinow.de/login" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">restaurant</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">ViNOW</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Essen für den nächsten Schultag bestellen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.globus.de/plattling/unser-restaurant.php" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">store</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Globus</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Wochengericht &amp; aktuelle Angebote</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2 · PRÜFUNGSVORBEREITUNG -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-pruefung')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+            style="font-size:20px">edit_note</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Prüfungsvorbereitung</p>
+            <p class="text-[10px] text-slate-500">Karteikarten, Lernhilfen &amp; Zusammenfassungen</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">4</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-pruefung-chevron">expand_more</span>
+        </button>
+        <div id="scat-pruefung"
+          class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+          <a href="O:\work\Allgemein\Hub\Schule\linux.html" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">terminal</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Linux Prüfungsvorbereitung</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Interaktive Karteikarten zu Linux-Befehlen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="O:\work\Allgemein\Hub\Schule\sa3-pruefungsvorbereitung.html"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">wifi</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">KOM: Mailing, IPTables, Squid</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Postfix, Dovecot, Firewall &amp; Proxy kompakt</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="O:\work\Allgemein\Hub\Schule\Notenkalkulator.html" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">calculate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Notenrechner</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Notendurchschnitt berechnen &amp; planen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://eliaspoehner.github.io/Vokabellerner/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">spellcheck</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Vokabeltrainer</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Vokabular interaktiv lernen &amp; testen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3 · IT & PROGRAMMIEREN -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-it')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+            style="font-size:20px">computer</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">IT &amp; Programmieren</p>
+            <p class="text-[10px] text-slate-500">IDEs, Docs, Datenbanken, Design &amp; Versionierung</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-tertiary/10 text-tertiary">11</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-it-chevron">expand_more</span>
+        </button>
+        <div id="scat-it" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+          <a href="file:\\\Desktop\lxcConnect.cmd" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">dns</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Linux Maschine</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Verbinde dich mit der Linux-VM</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://replit.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">code</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Replit</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Online-IDE für Python, Java, HTML/CSS/JS</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://app.diagrams.net/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">account_tree</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">draw.io</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Flussdiagramme, UML, Netzwerkpläne</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://academic.signavio.com/p/explorer?t=5231105ea9114383a2e0b13de5d973f1#/directory/0e8ce3dceb3345fdbd30e43bf4a9474e"
+            target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">schema</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Signavio</p>
+              <p class="text-[11px] text-slate-500 mt-xs">EPKs, BPMN und Prozessmodellierung</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://s41lp1.ucc.cit.tum.de:8100/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=301&sap-language=DE#Launchpad-openFLPPage?pageId=Z_PP_PAGE&spaceId=Z_SP_06PP"
+            target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">business_center</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">SAP Fiori</p>
+              <p class="text-[11px] text-slate-500 mt-xs">SAP-System der Schule</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://sqliteonline.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">database</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">SQLite Online</p>
+              <p class="text-[11px] text-slate-500 mt-xs">SQL direkt im Browser testen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://drawsql.app/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">table_chart</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">DrawSQL</p>
+              <p class="text-[11px] text-slate-500 mt-xs">ER-Diagramme visuell gestalten</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://github.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">source_environment</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">GitHub</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Code versionieren &amp; Projekte verwalten</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.figma.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">palette</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Figma</p>
+              <p class="text-[11px] text-slate-500 mt-xs">UI/UX Design, Mockups &amp; Wireframes</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://regex101.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">search</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">regex101</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Reguläre Ausdrücke live testen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://roadmap.sh/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">map</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">roadmap.sh</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Lernpfade für Web, Backend, DevOps</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 · DOCS & REFERENZEN -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-docs')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+            style="font-size:20px">menu_book</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Docs &amp; Referenzen</p>
+            <p class="text-[10px] text-slate-500">Offizielle Dokumentationen für schnelles Nachschlagen</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">4</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-docs-chevron">expand_more</span>
+        </button>
+        <div id="scat-docs" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+          <a href="https://code.visualstudio.com/docs" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">developer_guide</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">VS Code Docs</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Shortcuts, Extensions &amp; Tipps</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.w3schools.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">html</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">W3Schools</p>
+              <p class="text-[11px] text-slate-500 mt-xs">HTML, CSS, JS, SQL, Python &amp; mehr</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://developer.mozilla.org/de/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">public</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">MDN Web Docs</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Referenz für HTML, CSS, JS &amp; Web-APIs</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.python.org/doc/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">integration_instructions</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Python Docs</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Sprachreferenz &amp; Standardbibliothek</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 5 · ALLGEMEINE LERNTOOLS -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-tools')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+            style="font-size:20px">school</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Allgemeine Lerntools</p>
+            <p class="text-[10px] text-slate-500">Sprache, Mathe, Recherche &amp; freies Lernen</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">5</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-tools-chevron">expand_more</span>
+        </button>
+        <div id="scat-tools" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+          <a href="https://www.leo.org/german-english/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">g_translate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">LEO Wörterbuch</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Deutsch-Englisch Übersetzungen &amp; Grammatik</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.duden.de/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">spellcheck</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Duden</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Rechtschreibung &amp; Grammatik nachschlagen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.wolframalpha.com/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg flex-shrink-0"
+              style="font-size:20px">calculate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Wolfram Alpha</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Mathe, Physik, Chemie – Aufgaben lösen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg flex-shrink-0"
+              style="font-size:20px">show_chart</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Desmos Rechner</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Interaktiver Grafikrechner für Funktionen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+          <a href="https://de.wikipedia.org/" target="_blank"
+            class="glass-card rounded-xl p-md flex items-start gap-md hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg flex-shrink-0"
+              style="font-size:20px">language</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-semibold text-sm">Wikipedia DE</p>
+              <p class="text-[11px] text-slate-500 mt-xs">Freie Enzyklopädie für schnelle Recherchen</p>
+            </div>
+            <span
+              class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════
+       SCHULSTOFF
+       ══════════════════════════════════ -->
+    <main class="hub-page" id="page-schulstoff" style="display:none;">
+      <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-64 flex-shrink-0 flex flex-col border-r border-slate-800 bg-slate-950 overflow-y-auto">
+          <div class="px-lg py-md border-b border-slate-800">
+            <h3 class="text-on-surface font-bold text-base">Schulstoff</h3>
+            <p class="text-[11px] text-slate-500 mt-xs">Lernmaterial &amp; PDFs</p>
+          </div>
+          <div class="flex-1 overflow-y-auto py-sm px-sm">
+
+            <!-- Heitzer Linux -->
+            <div class="mb-xs">
+              <button onclick="ssToggleSubject('ss-linux')"
+                class="w-full flex items-center gap-sm px-sm py-sm rounded-lg hover:bg-surface-container-high transition-colors text-left">
+                <span class="text-base">🐧</span>
+                <span class="text-sm font-semibold text-on-surface flex-1">Heitzer Linux</span>
+                <span class="text-[10px] font-bold px-xs py-xs rounded-full bg-primary/10 text-primary">13</span>
+                <span class="material-symbols-outlined text-slate-600 ss-chevron"
+                  style="font-size:16px">expand_more</span>
+              </button>
+              <div class="ss-topics hidden pl-md pr-sm pb-sm flex flex-col gap-xs" id="ss-linux">
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Ansible','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Ansible.pdf',0,13)">Ansible</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Backups','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Backups.pdf',1,13)">Backups</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','DNS','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\DNS.pdf',2,13)">DNS</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','IPv6','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\IPv6.pdf',3,13)">IPv6</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Kommunikation','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Kommunikation.pdf',4,13)">Kommunikation</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','NFS','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\NFS.pdf',5,13)">NFS</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Samba','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Samba.pdf',6,13)">Samba</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','SSH','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\SSH.pdf',7,13)">SSH</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Systemd','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Systemd.pdf',8,13)">Systemd</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','VirtualBox','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Virtualisierung mit VirtualBox.pdf',9,13)">VirtualBox</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Webserver','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Webserver.pdf',10,13)">Webserver</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Wichtige Befehle','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Wichtige Befehle für Kommunikation.pdf',11,13)">Wichtige
+                  Befehle</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Windows-Linux','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Windows-Linux-Integration.pdf',12,13)">Windows-Linux</button>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- Main PDF Viewer -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-surface-container-lowest">
+
+          <!-- Topbar -->
+          <div id="ss-topbar"
+            class="hidden items-center gap-sm px-lg py-sm border-b border-slate-800 bg-slate-900/80 backdrop-blur-md flex-shrink-0">
+            <button onclick="ssNav(-1)" id="ss-prev"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-surface-container-high text-on-surface hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-30">←
+              Zurück</button>
+            <div class="flex items-center gap-xs text-sm text-slate-400 flex-1 min-w-0">
+              <span id="ss-bread-subject" class="text-primary font-semibold truncate">—</span>
+              <span class="text-slate-600">›</span>
+              <span id="ss-bread-topic" class="text-on-surface truncate">—</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-semibold flex-shrink-0" id="ss-counter">— / —</span>
+            <a id="ss-open-btn" href="#" target="_blank"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex-shrink-0">↗
+              Tab</a>
+            <button onclick="ssNav(1)" id="ss-next"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-surface-container-high text-on-surface hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-30">Weiter
+              →</button>
+          </div>
+
+          <!-- Empty state -->
+          <div id="ss-empty" class="flex-1 flex flex-col items-center justify-center text-center gap-md">
+            <span class="material-symbols-outlined text-slate-700"
+              style="font-size:56px;font-variation-settings:'FILL' 1">folder_open</span>
+            <p class="text-slate-500 text-sm">Wähle links ein Fach und ein Thema,<br>um das PDF zu öffnen.</p>
+          </div>
+
+          <!-- PDF iframe -->
+          <div id="ss-viewer" class="hidden flex-1 overflow-hidden">
+            <iframe id="ss-iframe" src="" title="Schulstoff PDF" class="w-full h-full border-0"></iframe>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- ══════════════════════════════════
+       ARCADE-HALL
+       ══════════════════════════════════ -->
+    <main class="hub-page p-xl max-w-container-max mx-auto w-full pb-24 md:pb-xl" id="page-gaming">
+      <div class="mb-lg">
+        <h2 class="text-on-surface font-bold mb-1 flex items-center gap-3"
+          style="font-size:30px;letter-spacing:-0.01em;">
+          <span class="material-symbols-outlined text-tertiary"
+            style="font-size:32px;font-variation-settings:'FILL' 1">sports_esports</span>
+          F11 Arcade-Hall
+        </h2>
+        <p class="text-slate-500 text-sm">Select your game</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        <!-- Flappy Bird -->
+        <a href="https://flappy-bird-web.appspot.com/" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🐦</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Flappy Bird</h3>
+            <p class="text-slate-500 text-sm mt-1">Flappy Bird – der Klassiker</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Snake -->
+        <a href="https://www.google.com/fbx?fbx=snake_arcade" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🐍</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Snake</h3>
+            <p class="text-slate-500 text-sm mt-1">Wie lange kannst du überleben?</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!--- Solitär --->
+        <a href="O:\work\Allgemein\Hub\Sammlung\solitaire.html"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">♠️</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Kartenspiele</h3>
+            <p class="text-slate-500 text-sm mt-1">Spiele Solitär, Spider und vieles mehr!</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+
+        <a href="https://play.typeracer.com/" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">⌨️</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">TippGame</h3>
+            <p class="text-slate-500 text-sm mt-1">Schau ob du am schnellsten Tippen kannst</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+
+        <!-- Worldguessr -->
+        <a href="https://www.worldguessr.com/" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🌍</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Worldguessr</h3>
+            <p class="text-slate-500 text-sm mt-1">Wer weiß, wo wir sind?</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Geographie Quiz -->
+        <a href="https://geographie-quiz.de/" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🗺️</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Geographie Quiz</h3>
+            <p class="text-slate-500 text-sm mt-1">Teste deine Geografie-Skills</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Kreuzworträtsel -->
+        <a href="https://kreuzwortraetsel.net/" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🧾</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Kreuzworträtsel</h3>
+            <p class="text-slate-500 text-sm mt-1">Teste dein Wissen</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!--- WikiRace --->
+        <a href="O:\work\Allgemein\Hub\Sammlung\solitaire.html target=" _blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🌏</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">WikiRace</h3>
+            <p class="text-slate-500 text-sm mt-1">Finde dich in Wikipedia zurecht!</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Klassiker lokal -->
+        <a href="O:\work\Allgemein\Hub\Sammlung\Klassiker\Klassiker.html"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🎮</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Klassiker</h3>
+            <p class="text-slate-500 text-sm mt-1">2048, Minesweeper, Snake, Tetris & mehr</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Runner lokal -->
+        <a href="O:\work\Allgemein\Hub\Sammlung\runner\runner.html" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🏃</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Runner</h3>
+            <p class="text-slate-500 text-sm mt-1">Renn weg.</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Dorf lokal -->
+        <a href="O:\work\Allgemein\Hub\Sammlung\Dorf\dorf.html" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🏘️</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Dorf</h3>
+            <p class="text-slate-500 text-sm mt-1">Bau dein Dorf!</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+        <!-- Asteroid Blaster lokal -->
+        <a href="O:\work\Allgemein\Hub\Sammlung\asteroid_blaster.html" target="_blank"
+          class="glass-card rounded-xl p-lg flex flex-col gap-md hover:border-tertiary/40 transition-all group cursor-pointer"
+          style="border:1px solid rgba(173,198,255,0.07);">
+          <div class="text-4xl">🚀</div>
+          <div>
+            <h3 class="text-on-surface font-bold text-lg">Asteroid Blaster</h3>
+            <p class="text-slate-500 text-sm mt-1">Zerstöre Meteoriten!</p>
+          </div>
+          <span
+            class="text-tertiary text-sm font-semibold mt-auto group-hover:translate-x-1 transition-transform inline-block">Play
+            →</span>
+        </a>
+      </div>
+      <p class="text-center text-xs text-slate-700 mt-xl">Built with ♥ and pixels</p>
+    </main>
+
+  </div><!-- /main column -->
+
+  <!-- ══════════════════════════════════
+     MOBILE BOTTOM NAV — identical to code.html
+     ══════════════════════════════════ -->
+  <nav
+    class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900 border-t border-slate-800 flex items-center justify-around px-6 z-50">
+    <a class="flex flex-col items-center gap-1 text-purple-500 cursor-pointer" onclick="goPage('landing')">
+      <span class="material-symbols-outlined" style="font-size:22px">dashboard</span>
+      <span class="text-[10px] font-bold">DASHBOARD</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('school')">
+      <span class="material-symbols-outlined" style="font-size:22px">school</span>
+      <span class="text-[10px] font-bold">SCHULE</span>
+    </a>
+    <div class="relative -top-4">
+      <button onclick="nextFact()"
+        class="w-12 h-12 bg-primary rounded-full shadow-lg shadow-primary/40 flex items-center justify-center text-on-primary">
+        <span class="material-symbols-outlined" style="font-size:22px">casino</span>
+      </button>
+    </div>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('schulstoff')">
+      <span class="material-symbols-outlined" style="font-size:22px">menu_book</span>
+      <span class="text-[10px] font-bold">STOFF</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('gaming')">
+      <span class="material-symbols-outlined" style="font-size:22px">sports_esports</span>
+      <span class="text-[10px] font-bold">ARCADE</span>
+    </a>
+  </nav>
+
+  <!-- ══════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════ -->
+  <script>
+    /* ── NAVIGATION ── */
+    const ALL_PAGES = ['landing', 'school', 'schulstoff', 'gaming'];
+    function goPage(id) {
+      ALL_PAGES.forEach(p => document.getElementById('page-' + p)?.classList.remove('active'));
+      document.getElementById('page-' + id)?.classList.add('active');
+
+      // Sidebar nav
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('nav-active');
+        el.classList.add('text-slate-400', 'dark:text-slate-500');
+      });
+      const a = document.getElementById('nav-' + id);
+      if (a) { a.classList.add('nav-active'); a.classList.remove('text-slate-400', 'dark:text-slate-500'); }
+
+      // Top nav
+      document.querySelectorAll('.topnav-item').forEach(el => {
+        el.classList.remove('text-purple-500', 'dark:text-purple-400', 'border-purple-500');
+        el.classList.add('text-slate-400', 'dark:text-slate-500', 'border-transparent');
+      });
+      const tn = document.getElementById('topnav-' + id);
+      if (tn) {
+        tn.classList.remove('text-slate-400', 'dark:text-slate-500', 'border-transparent');
+        tn.classList.add('text-purple-500', 'dark:text-purple-400', 'border-purple-500');
+      }
+    }
+
+    /* ── CLOCK ── */
+    function getKW(d) {
+      const u = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dn = u.getUTCDay() || 7; u.setUTCDate(u.getUTCDate() + 4 - dn);
+      const yr = new Date(Date.UTC(u.getUTCFullYear(), 0, 1));
+      return Math.ceil((((u - yr) / 86400000) + 1) / 7);
+    }
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('dash-time').textContent = h + ':' + m;
+      const DAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+      const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+      const kw = getKW(now);
+      document.getElementById('dash-date-chip').textContent =
+        DAYS[now.getDay()] + ', ' + now.getDate() + '. ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+      document.getElementById('dash-kw-val').textContent = 'KW ' + kw;
+      // Schuljahr Sept–Juli ≈ 42 Wochen, KW 36–52 + 1–29
+      let kwPct = 0;
+      if (kw >= 36) kwPct = ((kw - 36) / 42) * 100;
+      else if (kw <= 29) kwPct = ((kw + 16) / 42) * 100;
+      document.getElementById('dash-kw-bar').style.width = Math.min(100, Math.max(0, kwPct)) + '%';
+      const hr = now.getHours();
+      let greet = 'Guten Tag', status = 'AKTUELLER STATUS: BEREIT';
+      if (hr < 13) { greet = 'Guten Morgen'; status = hr < 10 ? 'AKTUELLER STATUS: FRÜHSTART' : 'AKTUELLER STATUS: FOKUS'; }
+      else if (hr >= 18) { greet = 'Guten Abend'; status = 'AKTUELLER STATUS: FEIERABEND'; }
+      const WT = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      document.getElementById('dash-greeting').textContent = greet + ' — heute ist ' + WT[now.getDay()] + '.';
+      document.getElementById('dash-status').textContent = status;
+    }
+
+    /* ── FERIEN ── */
+    const FERIEN = [
+      { name: 'Pfingstferien', start: new Date(2025, 5, 7), end: new Date(2025, 5, 20) },
+      { name: 'Sommerferien', start: new Date(2025, 6, 28), end: new Date(2025, 8, 8) },
+      { name: 'Herbstferien', start: new Date(2025, 9, 27), end: new Date(2025, 10, 7) },
+      { name: 'Weihnachtsferien', start: new Date(2025, 11, 24), end: new Date(2026, 0, 6) },
+      { name: 'Winterferien', start: new Date(2026, 1, 16), end: new Date(2026, 1, 20) },
+      { name: 'Osterferien', start: new Date(2026, 3, 2), end: new Date(2026, 3, 17) },
+      { name: 'Pfingstferien 26', start: new Date(2026, 4, 23), end: new Date(2026, 5, 5) },
+    ];
+    const fmtD = d => d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear();
+
+    function updateFerien() {
+      const now = new Date(); now.setHours(0, 0, 0, 0);
+      for (const f of FERIEN) {
+        if (now >= f.start && now <= f.end) {
+          const left = Math.ceil((f.end - now) / 86400000);
+          document.getElementById('dash-ferien-tage').innerHTML = left + ' <span style="font-size:.875rem;font-weight:400;color:#4edea3;">Tage noch</span>';
+          document.getElementById('dash-ferien-name').textContent = '🎉 ' + f.name + ' läuft!';
+          document.getElementById('dash-ferien-datum').textContent = fmtD(f.start) + ' – ' + fmtD(f.end);
+          document.getElementById('dash-ferien-bar').style.width = '100%';
+          return;
+        }
+      }
+      let next = FERIEN.find(f => f.start > now);
+      if (!next) { document.getElementById('dash-ferien-tage').textContent = '—'; return; }
+      const days = Math.ceil((next.start - now) / 86400000);
+      document.getElementById('dash-ferien-tage').innerHTML = days + ' <span style="font-size:.875rem;font-weight:400;color:#ddb7ff;">Tage noch</span>';
+      document.getElementById('dash-ferien-name').textContent = next.name;
+      document.getElementById('dash-ferien-datum').textContent = fmtD(next.start) + ' – ' + fmtD(next.end);
+      let lastEnd = new Date(2025, 0, 1);
+      for (const f of FERIEN) { if (f.end < next.start) lastEnd = f.end; }
+      const pct = Math.min(100, Math.max(0, ((now - lastEnd) / (next.start - lastEnd)) * 100));
+      document.getElementById('dash-ferien-bar').style.width = pct + '%';
+    }
+
+    /* ── SCHULSTUNDEN ──
+       Stundenzeiten laut Schulplan:
+       1./2. Std: 08:00–08:45 / 08:45–09:30
+       3./4. Std: 09:45–10:30 / 10:30–11:15
+       5./6. Std: 11:30–12:15 / 12:15–13:00
+       7./8. Std: 13:00–13:45 / 13:45–14:30
+       9./10.Std: 14:45–15:30 / 15:30–16:15
+       Fächer aus KW 28.04–02.05.2026 (Alle-Spalte je Tag)
+    */
+    const SP = {
+      // Montag 27.04: Kö208 BwLog (1./2.), Rz102 E (8./9.)
+      1: [{ f: 'BwLog', v: '08:00', b: '08:45' }, { f: 'BwLog', v: '08:45', b: '09:30' },
+      { f: 'Elektrotechnik', v: '13:45', b: '14:30' }, { f: 'Elektrotechnik', v: '14:45', b: '15:30' }],
+      // Dienstag 28.04: Li113 Web (1./2.), He2052 Sowe (3./4.), Le2052 BwLohn (5./6.), He2051 DB (8./9.), Le2051 BwFibu (10.)
+      2: [{ f: 'Web', v: '08:00', b: '08:45' }, { f: 'Web', v: '08:45', b: '09:30' },
+      { f: 'Sowe', v: '09:45', b: '10:30' }, { f: 'Sowe', v: '10:30', b: '11:15' },
+      { f: 'BwLohn', v: '11:30', b: '12:15' }, { f: 'BwLohn', v: '12:15', b: '13:00' },
+      { f: 'Datenbank', v: '13:45', b: '14:30' }, { f: 'Datenbank', v: '14:45', b: '15:30' },
+      { f: 'BwFibu', v: '15:30', b: '16:15' }],
+      // Mittwoch 29.04: Os2051 De (1./2.), Re2051 KOM (3./4.), Fe2051 Java (5./6.), Gl2051 DVT (8./9.)
+      3: [{ f: 'Deutsch', v: '08:00', b: '08:45' }, { f: 'Deutsch', v: '08:45', b: '09:30' },
+      { f: 'KOM', v: '09:45', b: '10:30' }, { f: 'KOM', v: '10:30', b: '11:15' },
+      { f: 'Java', v: '11:30', b: '12:15' }, { f: 'Java', v: '12:15', b: '13:00' },
+      { f: 'DVT', v: '13:45', b: '14:30' }],
+      // Donnerstag 30.04: He2051 Abap (1./2.), Kö2051 BwLog (3./4.), Le2051 WiPuG (5./6.), Wz207 Phy (8./9.)
+      4: [{ f: 'ABAP', v: '08:00', b: '08:45' }, { f: 'ABAP', v: '08:45', b: '09:30' },
+      { f: 'BwLog', v: '09:45', b: '10:30' }, { f: 'BwLog', v: '10:30', b: '11:15' },
+      { f: 'WiPuG', v: '11:30', b: '12:15' }, { f: 'WiPuG', v: '12:15', b: '13:00' },
+      { f: 'Physik', v: '13:45', b: '14:30' }, { f: 'Physik', v: '14:45', b: '15:30' }],
+      // Freitag 01.05: Gl2051 BsWin (1./2.), Wz122 Phy (7.)
+      5: [{ f: 'BsWin', v: '08:00', b: '08:45' }, { f: 'BsWin', v: '08:45', b: '09:30' },
+      { f: 'Physik', v: '13:00', b: '13:45' }],
+    };
+    const FICON = {
+      BwLog: 'inventory', Elektrotechnik: 'bolt', Web: 'language', Sowe: 'groups',
+      BwLohn: 'payments', Datenbank: 'database', BwFibu: 'receipt_long',
+      Deutsch: 'g_translate', KOM: 'wifi', Java: 'code', DVT: 'developer_board',
+      ABAP: 'terminal', WiPuG: 'business_center', Physik: 'science', BsWin: 'window',
+    };
+    const FCOL = {
+      BwLog: 'tertiary', Elektrotechnik: 'primary', Web: 'secondary', Sowe: 'tertiary',
+      BwLohn: 'primary', Datenbank: 'secondary', BwFibu: 'tertiary',
+      Deutsch: 'primary', KOM: 'secondary', Java: 'tertiary', DVT: 'primary',
+      ABAP: 'secondary', WiPuG: 'tertiary', Physik: 'primary', BsWin: 'secondary',
+    };
+    const CMAP = {
+      primary: { bg: 'rgba(221,183,255,.12)', text: '#ddb7ff', bdr: '#ddb7ff' },
+      secondary: { bg: 'rgba(78,222,163,.12)', text: '#4edea3', bdr: '#4edea3' },
+      tertiary: { bg: 'rgba(173,198,255,.12)', text: '#adc6ff', bdr: '#adc6ff' },
+    };
+    const mOf = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+
+    function updateStunden() {
+      const now = new Date(), dow = now.getDay(), cur = now.getHours() * 60 + now.getMinutes();
+      const WT = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      document.getElementById('dash-stunden-day').textContent = WT[dow];
+      const grid = document.getElementById('dash-stunden-grid');
+      const stunden = SP[dow];
+      if (!stunden) {
+        grid.innerHTML = `<div class="p-md bg-surface-container-high rounded-xl border-l-4 border-secondary flex items-center gap-md">
+      <span class="material-symbols-outlined text-secondary p-sm rounded-lg bg-secondary/10" style="font-size:22px;font-variation-settings:'FILL' 1">weekend</span>
+      <div><p class="font-label-md text-secondary">WOCHENENDE</p><p class="text-sm text-slate-400 mt-xs">Kein Unterricht heute 🎉</p></div></div>`;
+        return;
+      }
+
+      // Merge consecutive identical Fächer into Doppelstunden
+      const merged = [];
+      for (const s of stunden) {
+        const prev = merged[merged.length - 1];
+        if (prev && prev.f === s.f) {
+          prev.b = s.b; // extend end time
+          prev.doppel = true;
+        } else {
+          merged.push({ ...s, doppel: false });
+        }
+      }
+
+      grid.innerHTML = merged.map(s => {
+        const st = mOf(s.v), en = mOf(s.b);
+        const col = FCOL[s.f] || 'primary', c = CMAP[col];
+        let lbl = 'AUSSTEHEND', bdr = '#4d4354', opac = '', done = false;
+        if (cur >= st && cur < en) { lbl = 'JETZT · ' + (en - cur) + ' min'; bdr = c.bdr; }
+        else if (cur >= en) { lbl = 'ABGESCHLOSSEN'; bdr = '#4edea3'; opac = ' opacity-50'; done = true; }
+        const icon = FICON[s.f] || 'book';
+        const tc = done ? '#4edea3' : cur >= st && cur < en ? c.text : '#988d9f';
+        const doppelBadge = s.doppel
+          ? `<span class="text-[10px] font-bold px-xs py-xs rounded" style="background:${c.bg};color:${c.text};">2× Std.</span>`
+          : '';
+        return `<div class="px-md py-sm bg-surface-container-high rounded-lg border-l-4 flex items-center gap-md${opac}" style="border-color:${bdr};">
+      <span class="material-symbols-outlined rounded-md flex-shrink-0" style="font-size:16px;color:${c.text};background:${c.bg};padding:4px;">${icon}</span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-sm">
+          <p class="text-on-surface font-semibold text-sm${done ? ' line-through text-slate-500' : ''}">${s.f}</p>
+          ${doppelBadge}
+        </div>
+        <p class="text-xs text-slate-500">${s.v} – ${s.b} Uhr</p>
+      </div>
+      <span class="text-[10px] font-semibold flex-shrink-0" style="color:${tc};">${lbl}</span>
+    </div>`;
+      }).join('');
+    }
+
+    /* ── QUOTE ── */
+    const QUOTES = [
+      { text: 'Der Anfang ist die Hälfte des Ganzen.', author: 'Aristoteles' },
+      { text: 'Wer aufhört zu lernen, ist alt. Wer lernt, bleibt jung.', author: 'Henry Ford' },
+      { text: 'Man muss das Unmögliche versuchen, um das Mögliche zu erreichen.', author: 'Hermann Hesse' },
+      { text: 'Bildung ist die mächtigste Waffe, mit der du die Welt verändern kannst.', author: 'Nelson Mandela' },
+      { text: 'Der Weg ist das Ziel.', author: 'Konfuzius' },
+      { text: 'Nur wer sein Ziel kennt, findet den Weg.', author: 'Laozi' },
+      { text: 'Erfolg ist die Summe kleiner Bemühungen, die täglich wiederholt werden.', author: 'Robert Collier' },
+    ];
+    function showQuote() {
+      const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+      document.getElementById('dash-quote').textContent = '„' + q.text + '"';
+      document.getElementById('dash-quote-author').textContent = '— ' + q.author;
+    }
+
+    /* ── FUN FACTS ── */
+    const FACTS = [
+      'Honig verdirbt nie – in ägyptischen Gräbern wurde 3000 Jahre alter Honig gefunden, der noch genießbar war.',
+      'Oktopusse haben drei Herzen und blaues Blut.',
+      'Ein Blitz ist etwa fünfmal heißer als die Oberfläche der Sonne.',
+      'Wombats haben würfelförmigen Kot.',
+      'Der Eiffelturm kann im Sommer bis zu 15 cm größer werden.',
+      'Es gibt mehr mögliche Schachpartien als Atome im beobachtbaren Universum.',
+      'Menschen teilen etwa 60 % ihrer DNA mit Bananen.',
+      'Ameisen können das 50-fache ihres eigenen Körpergewichts tragen.',
+      'Pinguine machen Heiratsanträge mit Steinen.',
+      'Der Mond entfernt sich jedes Jahr etwa 3,8 cm von der Erde.',
+      'Kühe haben beste Freunde und werden gestresst, wenn sie getrennt werden.',
+      'Der längste aufgezeichnete Schluckauf dauerte 68 Jahre.',
+      'Es gibt Pilze, die Zombies machen – sie übernehmen die Kontrolle über Insekten.',
+      'Ein Tag auf dem Merkur dauert länger als sein Jahr.',
+      'Katzen können keinen süßen Geschmack wahrnehmen.',
+      'Ein Regenbogen ist eigentlich ein vollständiger Kreis.',
+    ];
+    let factIdx = Math.floor(Math.random() * FACTS.length);
+    function showFact() { document.getElementById('dash-fact').textContent = FACTS[factIdx]; }
+    function nextFact() { factIdx = (factIdx + 1) % FACTS.length; showFact(); }
+
+    function openFactPopup() {
+      nextFact();
+      document.getElementById('fact-popup-text').textContent = FACTS[factIdx];
+      // emoji decoration per fact index
+      const emojis = ['🍯', '🐙', '⚡', '🐾', '🗼', '♟️', '🍌', '🐜', '🐧', '🌕', '🐄', '😤', '🍄', '🪐', '🐱', '🌈'];
+      document.getElementById('fact-popup-emoji').textContent = emojis[factIdx % emojis.length];
+      document.getElementById('fact-overlay').style.display = 'flex';
+    }
+    function closeFactPopup() {
+      document.getElementById('fact-overlay').style.display = 'none';
+    }
+
+    /* ══════════════════════════════════════
+       POMODORO TIMER
+       ══════════════════════════════════════ */
+    const POMO_MODES = {
+      work: { label: 'Fokus-Phase', dur: 25 * 60, color: '#ddb7ff', glow: 'rgba(221,183,255,0.15)' },
+      shortBreak: { label: 'Kurze Pause', dur: 5 * 60, color: '#4edea3', glow: 'rgba(78,222,163,0.15)' },
+      longBreak: { label: 'Lange Pause', dur: 15 * 60, color: '#adc6ff', glow: 'rgba(173,198,255,0.15)' },
+    };
+    let _pomoMode = 'work';
+    let _pomoRunning = false;
+    let _pomoTimer = null;
+    let _pomoLeft = 25 * 60;
+    let _pomoRounds = 0;
+
+    function openPomodoro() {
+      document.getElementById('pomo-overlay').style.display = 'flex';
+      renderPomo();
+    }
+    function closePomodoro() {
+      document.getElementById('pomo-overlay').style.display = 'none';
+    }
+    function pomoSetMode(mode) {
+      if (_pomoRunning) { clearInterval(_pomoTimer); _pomoRunning = false; }
+      _pomoMode = mode;
+      _pomoLeft = POMO_MODES[mode].dur;
+      document.querySelectorAll('.pomo-tab').forEach(b => {
+        b.style.background = b.dataset.mode === mode ? 'rgba(255,255,255,0.1)' : 'transparent';
+        b.style.color = b.dataset.mode === mode ? '#dae2fd' : '#4b5563';
+      });
+      document.getElementById('pomo-btn').textContent = 'Start';
+      renderPomo();
+    }
+    function renderPomo() {
+      const m = POMO_MODES[_pomoMode];
+      const mins = String(Math.floor(_pomoLeft / 60)).padStart(2, '0');
+      const secs = String(_pomoLeft % 60).padStart(2, '0');
+      document.getElementById('pomo-time').textContent = mins + ':' + secs;
+      document.getElementById('pomo-time').style.color = m.color;
+      document.getElementById('pomo-label').textContent = m.label;
+      document.getElementById('pomo-rounds').textContent = '🍅'.repeat(Math.min(_pomoRounds, 8)) || '—';
+      // ring: circumference ~534 for r=85
+      const total = POMO_MODES[_pomoMode].dur;
+      const frac = (_pomoLeft / total);
+      document.getElementById('pomo-ring').style.strokeDashoffset = 534 - (534 * (1 - frac));
+      document.getElementById('pomo-ring').style.stroke = m.color;
+      document.getElementById('pomo-modal').style.boxShadow = `0 0 80px ${m.glow}, 0 30px 80px rgba(0,0,0,0.6)`;
+    }
+    function togglePomodoro() {
+      if (_pomoRunning) {
+        clearInterval(_pomoTimer);
+        _pomoRunning = false;
+        document.getElementById('pomo-btn').textContent = 'Fortsetzen';
+      } else {
+        _pomoRunning = true;
+        document.getElementById('pomo-btn').textContent = 'Pause';
+        _pomoTimer = setInterval(() => {
+          _pomoLeft--;
+          if (_pomoLeft <= 0) {
+            clearInterval(_pomoTimer);
+            _pomoRunning = false;
+            if (_pomoMode === 'work') {
+              _pomoRounds++;
+              const isLong = _pomoRounds % 4 === 0;
+              document.getElementById('pomo-btn').textContent = isLong ? 'Lange Pause starten' : 'Kurze Pause starten';
+              document.getElementById('pomo-btn').onclick = () => { pomoSetMode(isLong ? 'longBreak' : 'shortBreak'); togglePomodoro(); document.getElementById('pomo-btn').onclick = togglePomodoro; };
+            } else {
+              document.getElementById('pomo-btn').textContent = 'Neue Runde starten';
+              document.getElementById('pomo-btn').onclick = () => { pomoSetMode('work'); togglePomodoro(); document.getElementById('pomo-btn').onclick = togglePomodoro; };
+            }
+            _pomoLeft = 0;
+          }
+          renderPomo();
+        }, 1000);
+      }
+    }
+    function resetPomodoro() {
+      clearInterval(_pomoTimer);
+      _pomoRunning = false;
+      _pomoLeft = POMO_MODES[_pomoMode].dur;
+      document.getElementById('pomo-btn').textContent = 'Start';
+      document.getElementById('pomo-btn').onclick = togglePomodoro;
+      renderPomo();
+    }
+
+    /* ══════════════════════════════════════
+       FOKUS-MUSIK (via YouTube embed)
+       ══════════════════════════════════════ */
+    const MUSIK_TRACKS = [
+      { title: 'Lo-Fi Hip Hop Radio', sub: 'Entspannt · zum Lernen', id: 'jfKfPfyJRdk' },
+      { title: 'Deep Focus Music', sub: 'Alpha Waves · Konzentration', id: 'WPni755-Krg' },
+      { title: 'Jazz Café Vibes', sub: 'Smooth Jazz · gemütlich', id: 'vmDDOFXSgAs' },
+      { title: 'Classical Study Music', sub: 'Mozart & Bach · zeitlos', id: 'mDaPyhKVGmA' },
+      { title: 'Rainy Day Ambience', sub: 'Regen & Donner · entspannt', id: 'mPZkdNFkNps' },
+      { title: 'Forest & Nature Sounds', sub: 'Natur-Geräusche · beruhigend', id: 'xNN7iTA57jM' },
+    ];
+    let _musikIdx = 0;
+
+    function openFokusMusik() {
+      document.getElementById('musik-overlay').style.display = 'flex';
+      renderMusik();
+    }
+    function closeFokusMusik() {
+      document.getElementById('musik-overlay').style.display = 'none';
+      // stop iframe
+      const iframe = document.getElementById('musik-iframe');
+      iframe.src = '';
+    }
+    function renderMusik() {
+      const t = MUSIK_TRACKS[_musikIdx];
+      document.getElementById('musik-title').textContent = t.title;
+      document.getElementById('musik-sub').textContent = t.sub;
+      document.getElementById('musik-counter').textContent = (_musikIdx + 1) + ' / ' + MUSIK_TRACKS.length;
+      document.querySelectorAll('.musik-dot').forEach((d, i) => {
+        d.style.background = i === _musikIdx ? '#ddb7ff' : 'rgba(255,255,255,0.15)';
+        d.style.width = i === _musikIdx ? '18px' : '6px';
+      });
+    }
+    function playMusik() {
+      const t = MUSIK_TRACKS[_musikIdx];
+      document.getElementById('musik-iframe').src =
+        `https://www.youtube.com/embed/${t.id}?autoplay=1&mute=0&controls=1&rel=0`;
+      document.getElementById('musik-play-btn').style.display = 'none';
+      document.getElementById('musik-player-wrap').style.display = 'block';
+    }
+    function musikNav(dir) {
+      _musikIdx = (_musikIdx + dir + MUSIK_TRACKS.length) % MUSIK_TRACKS.length;
+      document.getElementById('musik-iframe').src = '';
+      document.getElementById('musik-play-btn').style.display = 'flex';
+      document.getElementById('musik-player-wrap').style.display = 'none';
+      renderMusik();
+    }
+
+    /* ── WETTER ── */
+    const WXICON = {
+      0: 'wb_sunny', 1: 'partly_cloudy_day', 2: 'partly_cloudy_day', 3: 'cloud', 45: 'foggy', 48: 'foggy',
+      51: 'grain', 53: 'grain', 55: 'grain', 61: 'rainy', 63: 'rainy', 65: 'rainy', 71: 'ac_unit', 73: 'ac_unit', 75: 'ac_unit',
+      77: 'grain', 80: 'thunderstorm', 81: 'thunderstorm', 82: 'thunderstorm', 85: 'cloudy_snowing', 86: 'cloudy_snowing',
+      95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm'
+    };
+    const WXCOL = {
+      0: '#ddb7ff', 1: '#adc6ff', 2: '#adc6ff', 3: '#988d9f', 45: '#988d9f', 48: '#988d9f',
+      51: '#adc6ff', 53: '#adc6ff', 55: '#adc6ff', 61: '#4edea3', 63: '#4edea3', 65: '#4edea3',
+      71: '#d8e2ff', 73: '#d8e2ff', 75: '#d8e2ff', 80: '#ffb4ab', 81: '#ffb4ab', 82: '#ffb4ab',
+      95: '#ffb4ab', 96: '#ffb4ab', 99: '#ffb4ab'
+    };
+    const WXDESC = {
+      0: 'Sonnig', 1: 'Überwiegend klar', 2: 'Teilweise bewölkt', 3: 'Bedeckt', 45: 'Nebel',
+      51: 'Nieselregen', 53: 'Nieselregen', 55: 'Dichter Nieselregen', 61: 'Leichter Regen', 63: 'Regen',
+      65: 'Starker Regen', 71: 'Leichter Schnee', 73: 'Schnee', 75: 'Starker Schnee', 80: 'Regenschauer',
+      81: 'Regenschauer', 82: 'Starke Schauer', 95: 'Gewitter', 96: 'Gewitter m. Hagel', 99: 'Schweres Gewitter'
+    };
+
+    async function loadWeather() {
+      try {
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=48.7745&longitude=12.8693&current_weather=true&timezone=Europe%2FBerlin');
+        const d = await r.json();
+        const cw = d.current_weather, code = cw.weathercode;
+        document.getElementById('dash-wx-icon-wrap').innerHTML =
+          `<span class="material-symbols-outlined" style="font-size:56px;color:${WXCOL[code] || '#988d9f'};font-variation-settings:'FILL' 1,'wght' 300">${WXICON[code] || 'device_thermostat'}</span>`;
+        document.getElementById('dash-wx-temp').textContent = Math.round(cw.temperature) + '°C';
+        document.getElementById('dash-wx-desc').textContent = WXDESC[code] || 'Unbekannt';
+      } catch (e) { document.getElementById('dash-wx-desc').textContent = 'Nicht verfügbar'; }
+    }
+
+    /* ── SCHULE PAGE ── */
+    function updateSchoolClock() {
+      const n = new Date();
+      const el_g = document.getElementById('school-greeting');
+      const el_w = document.getElementById('school-weekday');
+      const el_t = document.getElementById('school-time');
+      const el_k = document.getElementById('school-kw');
+      if (!el_g) return;
+      const WT = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      const h = n.getHours();
+      el_g.textContent = (h < 12 ? 'Guten Morgen ☀️' : h < 18 ? 'Guten Tag 🌤️' : 'Guten Abend 🌙');
+      el_w.textContent = WT[n.getDay()];
+      el_t.textContent = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
+      el_k.textContent = 'KW ' + getKW(n);
+    }
+    function toggleSchCat(id) {
+      const body = document.getElementById(id);
+      const chevron = document.getElementById(id + '-chevron');
+      const isOpen = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', isOpen);
+      if (chevron) chevron.textContent = isOpen ? 'expand_more' : 'expand_less';
+    }
+
+    /* ── SCHULSTOFF PAGE ── */
+    let ss_currentSubjectId = null;
+    let ss_currentIdx = 0;
+    let ss_currentTotal = 0;
+
+    function ssToggleSubject(id) {
+      const topics = document.getElementById(id);
+      const btn = topics.previousElementSibling;
+      const chevron = btn.querySelector('.ss-chevron');
+      const isOpen = !topics.classList.contains('hidden');
+      document.querySelectorAll('.ss-topics').forEach(t => t.classList.add('hidden'));
+      document.querySelectorAll('.ss-chevron').forEach(c => c.textContent = 'expand_more');
+      if (isOpen) return;
+      topics.classList.remove('hidden');
+      if (chevron) chevron.textContent = 'expand_less';
+    }
+
+    function ssSelect(subject, topic, path, idx, total) {
+      ss_currentIdx = idx;
+      ss_currentTotal = total;
+      const subjectBtn = [...document.querySelectorAll('.ss-topics button')].find(
+        b => b.getAttribute('onclick')?.includes("'" + subject + "'")
+      );
+      const container = document.getElementById('ss-linux'); // expand as needed
+      ss_currentSubjectId = 'ss-linux';
+
+      document.querySelectorAll('.ss-topic-btn').forEach(b => {
+        b.classList.remove('bg-primary/10', 'text-primary');
+        b.classList.add('text-slate-400');
+      });
+      // highlight active
+      event?.target?.classList.add('bg-primary/10', 'text-primary');
+      event?.target?.classList.remove('text-slate-400');
+
+      const tb = document.getElementById('ss-topbar');
+      tb.classList.remove('hidden');
+      tb.classList.add('flex');
+      document.getElementById('ss-bread-subject').textContent = subject;
+      document.getElementById('ss-bread-topic').textContent = topic;
+      document.getElementById('ss-counter').textContent = (idx + 1) + ' / ' + total;
+      document.getElementById('ss-open-btn').href = path;
+      document.getElementById('ss-prev').disabled = idx === 0;
+      document.getElementById('ss-next').disabled = idx === total - 1;
+      document.getElementById('ss-iframe').src = path;
+      document.getElementById('ss-empty').classList.add('hidden');
+      document.getElementById('ss-viewer').classList.remove('hidden');
+      document.getElementById('ss-viewer').classList.add('flex');
+    }
+
+    function ssNav(dir) {
+      const id = ss_currentSubjectId;
+      if (!id) return;
+      const btns = document.getElementById(id).querySelectorAll('.ss-topic-btn');
+      const next = ss_currentIdx + dir;
+      if (next >= 0 && next < btns.length) {
+        btns[next].click();
+        btns[next].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    setInterval(updateSchoolClock, 30000);
+
+    /* ── THEME (System / Hell / Dunkel) ── */
+    const THEMES = ['system', 'light', 'dark'];
+    const THEME_ICONS = { system: 'brightness_auto', light: 'light_mode', dark: 'dark_mode' };
+    const THEME_LABELS = { system: 'System', light: 'Hell', dark: 'Dunkel' };
+
+    function applyTheme(mode) {
+      const html = document.documentElement;
+      html.classList.remove('dark', 'light');
+      if (mode === 'dark') {
+        html.classList.add('dark');
+      } else if (mode === 'light') {
+        html.classList.add('light');
+      } else {
+        // system
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        html.classList.add(prefersDark ? 'dark' : 'light');
+      }
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (icon) icon.textContent = THEME_ICONS[mode];
+      if (label) label.textContent = THEME_LABELS[mode];
+    }
+
+    let _themeMode = localStorage.getItem('hub-theme') || 'system';
+
+    function cycleTheme() {
+      const idx = THEMES.indexOf(_themeMode);
+      _themeMode = THEMES[(idx + 1) % THEMES.length];
+      localStorage.setItem('hub-theme', _themeMode);
+      applyTheme(_themeMode);
+    }
+
+    // Listen for system preference changes (relevant in system mode)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (_themeMode === 'system') applyTheme('system');
+    });
+
+    /* ── SIDEBAR TOGGLE ── */
+    let _sidebarCollapsed = localStorage.getItem('hub-sidebar') === 'collapsed';
+
+    function toggleSidebar() {
+      _sidebarCollapsed = !_sidebarCollapsed;
+      localStorage.setItem('hub-sidebar', _sidebarCollapsed ? 'collapsed' : 'open');
+      applySidebarState();
+    }
+
+    function applySidebarState() {
+      const sidebar = document.getElementById('main-sidebar');
+      const openBtn = document.getElementById('sidebar-open-btn');
+      const toggleIcon = document.getElementById('sidebar-toggle-icon');
+      if (_sidebarCollapsed) {
+        sidebar.style.width = '4rem';
+        sidebar.classList.add('collapsed');
+        sidebar.querySelectorAll('.sidebar-label').forEach(el => { el.style.display = 'none'; });
+        // Hide the toggle button itself (open via header button)
+        if (toggleIcon) toggleIcon.closest('button').style.display = 'none';
+        if (openBtn) openBtn.classList.remove('hidden');
+        // Center nav icons
+        sidebar.querySelectorAll('.nav-item').forEach(el => {
+          el.style.justifyContent = 'center';
+          el.style.paddingLeft = '0';
+          el.style.paddingRight = '0';
+        });
+        // Fix bottom theme button
+        const themeBtn = document.querySelector('#main-sidebar .border-t button');
+        if (themeBtn) { themeBtn.style.justifyContent = 'center'; themeBtn.style.paddingLeft = '0'; themeBtn.style.paddingRight = '0'; }
+      } else {
+        sidebar.style.width = '16rem';
+        sidebar.classList.remove('collapsed');
+        sidebar.querySelectorAll('.sidebar-label').forEach(el => { el.style.display = ''; });
+        if (toggleIcon) toggleIcon.closest('button').style.display = '';
+        if (toggleIcon) toggleIcon.textContent = 'chevron_left';
+        if (openBtn) openBtn.classList.add('hidden');
+        sidebar.querySelectorAll('.nav-item').forEach(el => {
+          el.style.justifyContent = '';
+          el.style.paddingLeft = '';
+          el.style.paddingRight = '';
+        });
+        const themeBtn = document.querySelector('#main-sidebar .border-t button');
+        if (themeBtn) { themeBtn.style.justifyContent = ''; themeBtn.style.paddingLeft = ''; themeBtn.style.paddingRight = ''; }
+      }
+    }
+
+    /* ══════════════════════════════════════
+       NEWSFEED — KI-powered via Anthropic API
+       ══════════════════════════════════════ */
+    const NEWS_CATS = {
+      it:           { label: 'IT & Tech',     emoji: '💻', prompt: 'IT, Cybersecurity, KI, Software-Entwicklung, neue Technologien, Startups und die Tech-Branche' },
+      allgemein:    { label: 'Allgemein',      emoji: '🌍', prompt: 'Weltpolitik, internationale Ereignisse, Gesellschaft und allgemeine Nachrichten aus Deutschland und der Welt' },
+      sport:        { label: 'Sport',          emoji: '⚽', prompt: 'Fußball (Bundesliga, Champions League), Formel 1, Tennis, Olympia und weitere populäre Sportarten' },
+      wissenschaft: { label: 'Wissenschaft',   emoji: '🔬', prompt: 'Wissenschaft, Raumfahrt, Medizin, Klimaforschung, neue Entdeckungen und wissenschaftliche Durchbrüche' },
+      wirtschaft:   { label: 'Wirtschaft',     emoji: '📈', prompt: 'Wirtschaft, Finanzmärkte, DAX, internationale Unternehmen, Konjunktur und Wirtschaftspolitik' },
+    };
+
+    let _newsCat = 'it';
+    let _newsCache = {};
+
+    function newsSetCat(cat) {
+      _newsCat = cat;
+      document.querySelectorAll('.news-tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.cat === cat);
+      });
+      if (_newsCache[cat]) {
+        renderNewsArticles(_newsCache[cat]);
+      } else {
+        loadNews();
+      }
+    }
+
+    async function loadNews() {
+      const grid = document.getElementById('news-grid');
+      const loading = document.getElementById('news-loading');
+      const errorEl = document.getElementById('news-error');
+      const refreshIcon = document.getElementById('news-refresh-icon');
+
+      grid.innerHTML = '';
+      errorEl.classList.add('hidden');
+      loading.classList.remove('hidden');
+      refreshIcon.style.animation = 'spin .8s linear infinite';
+
+      const cat = NEWS_CATS[_newsCat];
+      const today = new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      const systemPrompt = `Du bist ein kompakter Nachrichten-Assistent. Antworte NUR mit einem validen JSON-Array. Keine Einleitung, kein Markdown, keine Erklärungen.`;
+
+      const userPrompt = `Erstelle 8 plausible, typische Nachrichten-Schlagzeilen aus dem Bereich "${cat.prompt}" für das Datum ${today}.
+Antworte NUR mit diesem JSON-Format (kein Markdown, keine Backticks):
+[
+  {
+    "headline": "Kurze, prägnante Schlagzeile",
+    "summary": "2-3 Sätze Zusammenfassung des Artikels.",
+    "tag": "Ein Wort als Kategorie-Tag (z.B. Sicherheit, KI, Formel 1 etc.)",
+    "icon": "Ein passendes Emoji"
+  }
+]
+Wichtig: Realistische, journalistische Formulierungen auf Deutsch. Keine erfundenen Personen mit echten Namen.`;
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userPrompt }]
+          })
+        });
+
+        if (!resp.ok) throw new Error('API ' + resp.status);
+
+        const data = await resp.json();
+        const text = data.content?.find(b => b.type === 'text')?.text || '[]';
+        const clean = text.replace(/```json|```/g, '').trim();
+        const articles = JSON.parse(clean);
+
+        _newsCache[_newsCat] = articles;
+        loading.classList.add('hidden');
+        renderNewsArticles(articles);
+      } catch (e) {
+        loading.classList.add('hidden');
+        errorEl.classList.remove('hidden');
+        document.getElementById('news-error-msg').textContent = 'Fehler beim Laden: ' + e.message;
+      } finally {
+        refreshIcon.style.animation = '';
+      }
+    }
+
+    function renderNewsArticles(articles) {
+      const grid = document.getElementById('news-grid');
+      const tagColors = ['#ddb7ff','#4edea3','#adc6ff','#ffb4ab','#ffd166','#06d6a0'];
+      grid.innerHTML = '';
+
+      articles.forEach((a, i) => {
+        const color = tagColors[i % tagColors.length];
+        const card = document.createElement('div');
+        card.className = 'news-card glass-card rounded-xl p-md flex flex-col gap-sm';
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-xs">
+            <span style="font-size:24px;line-height:1;">${a.icon || '📰'}</span>
+            <span class="text-[10px] font-bold px-sm py-xs rounded-full flex-shrink-0" style="background:${color}18;color:${color};border:1px solid ${color}30;">${a.tag || ''}</span>
+          </div>
+          <p class="text-on-surface font-semibold text-sm leading-tight">${a.headline}</p>
+          <p class="text-xs text-slate-500 leading-relaxed flex-1">${a.summary}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ── INIT ── */
+    applyTheme(_themeMode);
+    applySidebarState();
+    updateClock(); updateFerien(); updateStunden(); showQuote(); showFact(); loadWeather(); updateSchoolClock(); loadNews();
+    setInterval(updateClock, 30000); setInterval(updateStunden, 60000);
+
+    /* ══════════════════════════════════════
+       ATEMPAUSE — Box Breathing (4-4-4-4)
+       Phasen: Einatmen → Halten → Ausatmen → Halten
+       Gesamtdauer: 60 Sek = ~3,75 Zyklen
+       ══════════════════════════════════════ */
+    const ATEM_PHASES = [
+      { name: 'Einatmen', hint: 'Durch die Nase, tief in den Bauch', dur: 4, expand: true },
+      { name: 'Halten', hint: 'Luft sanft anhalten', dur: 4, expand: null },
+      { name: 'Ausatmen', hint: 'Langsam durch den Mund', dur: 4, expand: false },
+      { name: 'Halten', hint: 'Entspannt warten', dur: 4, expand: null },
+    ];
+    const ATEM_TOTAL = 60;
+
+    let _atemRunning = false;
+    let _atemTimer = null;
+    let _atemTick = null;
+    let _atemElapsed = 0;
+    let _atemPhaseIdx = 0;
+    let _atemPhaseEl = 0; // seconds elapsed in current phase
+
+    function openAtemPause() {
+      const overlay = document.getElementById('atem-overlay');
+      overlay.style.display = 'flex';
+      resetAtem();
+    }
+
+    function closeAtemPause(e) {
+      if (e && e.target !== document.getElementById('atem-overlay')) return;
+      document.getElementById('atem-overlay').style.display = 'none';
+      stopAtem();
+      resetAtem();
+    }
+
+    function closeAtemPause() {
+      document.getElementById('atem-overlay').style.display = 'none';
+      stopAtem();
+      resetAtem();
+    }
+
+    function resetAtem() {
+      stopAtem();
+      _atemElapsed = 0;
+      _atemPhaseIdx = 0;
+      _atemPhaseEl = 0;
+      _atemRunning = false;
+      document.getElementById('atem-btn').textContent = 'Start';
+      document.getElementById('atem-title').textContent = 'Bereit?';
+      document.getElementById('atem-subtitle').textContent = '1 Minute Atemübung · Box Breathing';
+      document.getElementById('atem-phase').textContent = 'Einatmen';
+      document.getElementById('atem-hint').textContent = 'Durch die Nase, tief in den Bauch';
+      document.getElementById('atem-count').textContent = '4';
+      document.getElementById('atem-progress').style.width = '0%';
+      document.getElementById('atem-timeleft').textContent = '60 Sek. verbleibend';
+      document.getElementById('atem-ring').style.strokeDashoffset = '502';
+      setCircleSize(false, 0);
+    }
+
+    function setCircleSize(expanding, progress) {
+      const circle = document.getElementById('atem-circle');
+      // expand to 130px, contract to 70px
+      const big = 130, small = 70;
+      let size;
+      if (expanding === true) size = small + (big - small) * progress;
+      else if (expanding === false) size = big - (big - small) * progress;
+      else size = 100; // hold
+      circle.style.width = size + 'px';
+      circle.style.height = size + 'px';
+      const glow = expanding === true ? 0.1 + 0.3 * progress : 0.4 - 0.3 * progress;
+      circle.style.boxShadow = `0 0 ${20 + 30 * glow}px rgba(78,222,163,${glow})`;
+    }
+
+    function toggleAtemPause() {
+      if (_atemRunning) {
+        stopAtem();
+        document.getElementById('atem-btn').textContent = 'Fortsetzen';
+      } else {
+        startAtem();
+        document.getElementById('atem-btn').textContent = 'Pause';
+        document.getElementById('atem-title').textContent = 'Atme mit mir';
+        document.getElementById('atem-subtitle').textContent = 'Lass deine Gedanken los…';
+      }
+    }
+
+    function stopAtem() {
+      _atemRunning = false;
+      clearInterval(_atemTimer);
+      clearInterval(_atemTick);
+      _atemTimer = null;
+      _atemTick = null;
+    }
+
+    function startAtem() {
+      _atemRunning = true;
+
+      // Fine tick for smooth animation (every 50ms)
+      _atemTick = setInterval(() => {
+        if (!_atemRunning) return;
+        const phase = ATEM_PHASES[_atemPhaseIdx];
+        const phaseProg = _atemPhaseEl / phase.dur; // 0→1
+
+        // Animate circle
+        setCircleSize(phase.expand, phaseProg);
+
+        // Animate ring progress (overall)
+        const totalProg = _atemElapsed / ATEM_TOTAL;
+        const ringOffset = 502 - (502 * totalProg);
+        document.getElementById('atem-ring').style.strokeDashoffset = ringOffset;
+
+        // Countdown number
+        const remaining = Math.ceil(phase.dur - _atemPhaseEl);
+        document.getElementById('atem-count').textContent = remaining;
+      }, 50);
+
+      // 1-second master tick
+      _atemTimer = setInterval(() => {
+        if (!_atemRunning) return;
+        _atemElapsed++;
+        _atemPhaseEl++;
+
+        // Overall progress
+        const pct = Math.min((_atemElapsed / ATEM_TOTAL) * 100, 100);
+        document.getElementById('atem-progress').style.width = pct + '%';
+        const left = Math.max(ATEM_TOTAL - _atemElapsed, 0);
+        document.getElementById('atem-timeleft').textContent = left + ' Sek. verbleibend';
+
+        // Phase advance
+        const phase = ATEM_PHASES[_atemPhaseIdx];
+        if (_atemPhaseEl >= phase.dur) {
+          _atemPhaseEl = 0;
+          _atemPhaseIdx = (_atemPhaseIdx + 1) % ATEM_PHASES.length;
+          const next = ATEM_PHASES[_atemPhaseIdx];
+          document.getElementById('atem-phase').textContent = next.name;
+          document.getElementById('atem-hint').textContent = next.hint;
+        }
+
+        // Done
+        if (_atemElapsed >= ATEM_TOTAL) {
+          stopAtem();
+          document.getElementById('atem-title').textContent = '✨ Geschafft!';
+          document.getElementById('atem-subtitle').textContent = 'Du hast 1 Minute durchgeatmet.';
+          document.getElementById('atem-phase').textContent = 'Wunderbar 🌿';
+          document.getElementById('atem-hint').textContent = 'Fühl wie sich dein Körper entspannt hat.';
+          document.getElementById('atem-count').textContent = '✓';
+          document.getElementById('atem-btn').textContent = 'Nochmal';
+          document.getElementById('atem-btn').onclick = () => { resetAtem(); startAtem(); document.getElementById('atem-btn').textContent = 'Pause'; document.getElementById('atem-btn').onclick = toggleAtemPause; };
+          document.getElementById('atem-progress').style.width = '100%';
+          document.getElementById('atem-timeleft').textContent = 'Abgeschlossen';
+          setCircleSize(null, 0);
+        }
+      }, 1000);
+    }
+
+  </script>
+
+  <!-- ══════════════════════════════════
+     ATEMPAUSE POPUP
+     ══════════════════════════════════ -->
+  <div id="atem-overlay" onclick="if(event.target===this)closeAtemPause()"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,14,32,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+    <div
+      style="position:relative;width:min(400px,92vw);padding:2.5rem 2rem 2rem;border-radius:1.5rem;background:linear-gradient(145deg,rgba(23,31,51,0.98) 0%,rgba(11,19,38,0.99) 100%);border:1px solid rgba(78,222,163,0.12);box-shadow:0 0 80px rgba(78,222,163,0.06),0 30px 80px rgba(0,0,0,0.6);text-align:center;"
+      onclick="event.stopPropagation()">
+
+      <button onclick="closeAtemPause()"
+        style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:#4b5563;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;"
+        onmouseover="this.style.color='#dae2fd';this.style.background='rgba(255,255,255,0.08)'"
+        onmouseout="this.style.color='#4b5563';this.style.background='rgba(255,255,255,0.04)'">✕</button>
+
+      <p
+        style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4edea3;margin-bottom:0.5rem;">
+        Atempause</p>
+      <h2 id="atem-title" style="font-size:21px;font-weight:700;color:#dae2fd;margin-bottom:0.25rem;">Bereit?</h2>
+      <p id="atem-subtitle" style="font-size:12px;color:#4b5563;margin-bottom:2rem;">1 Minute Atemübung · Box Breathing
+      </p>
+
+      <!-- Animated circle -->
+      <div style="position:relative;width:190px;height:190px;margin:0 auto 2rem;">
+        <svg viewBox="0 0 190 190" style="position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);">
+          <circle cx="95" cy="95" r="85" fill="none" stroke="rgba(78,222,163,0.06)" stroke-width="2.5" />
+          <circle id="atem-ring" cx="95" cy="95" r="85" fill="none" stroke="url(#atem-grad)" stroke-width="2.5"
+            stroke-dasharray="534" stroke-dashoffset="534" stroke-linecap="round" />
+          <defs>
+            <linearGradient id="atem-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#4edea3" />
+              <stop offset="100%" stop-color="#adc6ff" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div id="atem-circle"
+          style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;background:radial-gradient(circle,rgba(78,222,163,0.2) 0%,rgba(78,222,163,0.03) 75%);border:1.5px solid rgba(78,222,163,0.35);transition:width 4s cubic-bezier(.37,0,.63,1),height 4s cubic-bezier(.37,0,.63,1),box-shadow 4s ease;box-shadow:0 0 18px rgba(78,222,163,0.08);display:flex;align-items:center;justify-content:center;">
+          <span id="atem-count"
+            style="font-size:30px;font-weight:800;color:#4edea3;font-variant-numeric:tabular-nums;">4</span>
+        </div>
+      </div>
+
+      <p id="atem-phase"
+        style="font-size:17px;font-weight:700;color:#dae2fd;letter-spacing:0.01em;min-height:26px;margin-bottom:0.3rem;">
+        Einatmen</p>
+      <p id="atem-hint" style="font-size:11.5px;color:#4b5563;min-height:18px;margin-bottom:1.75rem;">Durch die Nase,
+        tief in den Bauch</p>
+
+      <div
+        style="height:2px;background:rgba(255,255,255,0.04);border-radius:9999px;overflow:hidden;margin-bottom:0.75rem;">
+        <div id="atem-progress"
+          style="height:100%;background:linear-gradient(90deg,#4edea3,#adc6ff);border-radius:9999px;width:0%;transition:width 1s linear;">
+        </div>
+      </div>
+      <p id="atem-timeleft"
+        style="font-size:10px;font-weight:600;color:#374151;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.75rem;">
+        60 Sek. verbleibend</p>
+
+      <button id="atem-btn" onclick="toggleAtemPause()"
+        style="padding:0.7rem 2.5rem;border-radius:9999px;border:none;background:linear-gradient(135deg,#4edea3,#adc6ff);color:#0b1326;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:0.04em;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 24px rgba(78,222,163,0.2);"
+        onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 30px rgba(78,222,163,0.35)'"
+        onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 24px rgba(78,222,163,0.2)'">
+        Start
+      </button>
+    </div>
+  </div>
+  <!-- ══════════════════════════════════
+     FUN FACT POPUP
+     ══════════════════════════════════ -->
+  <div id="fact-overlay" onclick="if(event.target===this)closeFactPopup()"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,14,32,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+    <div
+      style="position:relative;width:min(420px,92vw);padding:2.5rem 2rem 2rem;border-radius:1.5rem;background:linear-gradient(145deg,rgba(23,31,51,0.98) 0%,rgba(11,19,38,0.99) 100%);border:1px solid rgba(221,183,255,0.12);box-shadow:0 0 80px rgba(221,183,255,0.06),0 30px 80px rgba(0,0,0,0.6);text-align:center;"
+      onclick="event.stopPropagation()">
+      <button onclick="closeFactPopup()"
+        style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:#4b5563;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;"
+        onmouseover="this.style.color='#dae2fd'" onmouseout="this.style.color='#4b5563'">✕</button>
+      <div id="fact-popup-emoji" style="font-size:52px;margin-bottom:1rem;line-height:1;">🍯</div>
+      <p
+        style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#ddb7ff;margin-bottom:0.75rem;">
+        Fun Fact ✦</p>
+      <p id="fact-popup-text" style="font-size:15px;line-height:1.7;color:#dae2fd;margin-bottom:2rem;font-weight:500;">
+      </p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;">
+        <button onclick="openFactPopup()"
+          style="padding:0.65rem 1.75rem;border-radius:9999px;border:none;background:linear-gradient(135deg,#ddb7ff,#adc6ff);color:#0b1326;font-weight:800;font-size:13px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 20px rgba(221,183,255,0.2);"
+          onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Nächster Fakt
+          →</button>
+        <button onclick="closeFactPopup()"
+          style="padding:0.65rem 1.5rem;border-radius:9999px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#4b5563;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;"
+          onmouseover="this.style.color='#dae2fd';this.style.borderColor='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.color='#4b5563';this.style.borderColor='rgba(255,255,255,0.08)'">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+     POMODORO POPUP
+     ══════════════════════════════════ -->
+  <div id="pomo-overlay" onclick="if(event.target===this)closePomodoro()"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,14,32,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+    <div id="pomo-modal"
+      style="position:relative;width:min(400px,92vw);padding:2.5rem 2rem 2rem;border-radius:1.5rem;background:linear-gradient(145deg,rgba(23,31,51,0.98) 0%,rgba(11,19,38,0.99) 100%);border:1px solid rgba(221,183,255,0.1);box-shadow:0 0 80px rgba(221,183,255,0.06),0 30px 80px rgba(0,0,0,0.6);text-align:center;transition:box-shadow .8s ease;"
+      onclick="event.stopPropagation()">
+      <button onclick="closePomodoro()"
+        style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:#4b5563;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;"
+        onmouseover="this.style.color='#dae2fd'" onmouseout="this.style.color='#4b5563'">✕</button>
+
+      <p
+        style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#ddb7ff;margin-bottom:1rem;">
+        Pomodoro Timer</p>
+
+      <!-- Mode tabs -->
+      <div
+        style="display:flex;gap:0.375rem;background:rgba(0,0,0,0.25);border-radius:0.75rem;padding:0.3rem;margin-bottom:1.75rem;">
+        <button class="pomo-tab" data-mode="work" onclick="pomoSetMode('work')"
+          style="flex:1;padding:0.4rem 0.5rem;border-radius:0.5rem;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:0.04em;transition:all .2s;background:rgba(255,255,255,0.1);color:#dae2fd;">Fokus</button>
+        <button class="pomo-tab" data-mode="shortBreak" onclick="pomoSetMode('shortBreak')"
+          style="flex:1;padding:0.4rem 0.5rem;border-radius:0.5rem;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:0.04em;transition:all .2s;background:transparent;color:#4b5563;">K.
+          Pause</button>
+        <button class="pomo-tab" data-mode="longBreak" onclick="pomoSetMode('longBreak')"
+          style="flex:1;padding:0.4rem 0.5rem;border-radius:0.5rem;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:0.04em;transition:all .2s;background:transparent;color:#4b5563;">L.
+          Pause</button>
+      </div>
+
+      <!-- Ring + Timer -->
+      <div style="position:relative;width:190px;height:190px;margin:0 auto 1.5rem;">
+        <svg viewBox="0 0 190 190" style="position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);">
+          <circle cx="95" cy="95" r="85" fill="none" stroke="rgba(221,183,255,0.07)" stroke-width="3" />
+          <circle id="pomo-ring" cx="95" cy="95" r="85" fill="none" stroke="#ddb7ff" stroke-width="3"
+            stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"
+            style="transition:stroke-dashoffset 1s linear,stroke .5s ease;" />
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+          <div id="pomo-time"
+            style="font-size:38px;font-weight:800;color:#ddb7ff;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;line-height:1;">
+            25:00</div>
+          <div id="pomo-label"
+            style="font-size:11px;font-weight:600;color:#4b5563;letter-spacing:0.06em;text-transform:uppercase;margin-top:4px;">
+            Fokus-Phase</div>
+        </div>
+      </div>
+
+      <!-- Tomatoes -->
+      <p id="pomo-rounds" style="font-size:15px;min-height:22px;margin-bottom:1.5rem;letter-spacing:0.05em;">—</p>
+
+      <!-- Buttons -->
+      <div style="display:flex;gap:0.625rem;justify-content:center;align-items:center;">
+        <button onclick="resetPomodoro()" title="Reset"
+          style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#4b5563;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;"
+          onmouseover="this.style.color='#dae2fd';this.style.borderColor='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.color='#4b5563';this.style.borderColor='rgba(255,255,255,0.08)'">↺</button>
+        <button id="pomo-btn" onclick="togglePomodoro()"
+          style="padding:0.7rem 2.5rem;border-radius:9999px;border:none;background:linear-gradient(135deg,#ddb7ff,#adc6ff);color:#0b1326;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:0.04em;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 24px rgba(221,183,255,0.2);"
+          onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Start</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+     FOKUS-MUSIK POPUP
+     ══════════════════════════════════ -->
+  <div id="musik-overlay" onclick="if(event.target===this)closeFokusMusik()"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,14,32,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+    <div
+      style="position:relative;width:min(420px,92vw);padding:2.5rem 2rem 2rem;border-radius:1.5rem;background:linear-gradient(145deg,rgba(23,31,51,0.98) 0%,rgba(11,19,38,0.99) 100%);border:1px solid rgba(221,183,255,0.1);box-shadow:0 0 80px rgba(221,183,255,0.05),0 30px 80px rgba(0,0,0,0.6);text-align:center;"
+      onclick="event.stopPropagation()">
+      <button onclick="closeFokusMusik()"
+        style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:#4b5563;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;"
+        onmouseover="this.style.color='#dae2fd'" onmouseout="this.style.color='#4b5563'">✕</button>
+
+      <p
+        style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#ddb7ff;margin-bottom:0.5rem;">
+        Fokus-Musik</p>
+      <h2 id="musik-title" style="font-size:18px;font-weight:700;color:#dae2fd;margin-bottom:0.25rem;"></h2>
+      <p id="musik-sub" style="font-size:12px;color:#4b5563;margin-bottom:1.5rem;"></p>
+
+      <!-- Album art placeholder + play button -->
+      <div
+        style="position:relative;width:160px;height:160px;margin:0 auto 1.5rem;border-radius:1rem;overflow:hidden;background:linear-gradient(135deg,rgba(221,183,255,0.08),rgba(173,198,255,0.08));border:1px solid rgba(221,183,255,0.1);">
+        <!-- Visualizer bars (decorative) -->
+        <div
+          style="position:absolute;bottom:0;left:0;right:0;height:50%;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 16px 10px;">
+          <div
+            style="flex:1;border-radius:2px;background:rgba(221,183,255,0.3);animation:bar1 1.2s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(173,198,255,0.3);animation:bar2 0.9s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(78,222,163,0.3);animation:bar3 1.5s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(221,183,255,0.3);animation:bar1 0.8s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(173,198,255,0.3);animation:bar2 1.3s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(78,222,163,0.3);animation:bar3 1.0s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(221,183,255,0.3);animation:bar1 1.4s ease-in-out infinite alternate;">
+          </div>
+          <div
+            style="flex:1;border-radius:2px;background:rgba(173,198,255,0.3);animation:bar2 0.7s ease-in-out infinite alternate;">
+          </div>
+        </div>
+        <div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);font-size:42px;">🎵</div>
+        <!-- Play button overlay -->
+        <button id="musik-play-btn" onclick="playMusik()"
+          style="position:absolute;inset:0;width:100%;height:100%;background:rgba(0,0,0,0.4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:1rem;transition:background .2s;"
+          onmouseover="this.style.background='rgba(0,0,0,0.55)'" onmouseout="this.style.background='rgba(0,0,0,0.4)'">
+          <div
+            style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#ddb7ff,#adc6ff);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(221,183,255,0.3);">
+            <span style="color:#0b1326;font-size:18px;margin-left:3px;">▶</span>
+          </div>
+        </button>
+        <!-- YouTube embed (hidden until play) -->
+        <div id="musik-player-wrap" style="display:none;position:absolute;inset:0;border-radius:1rem;overflow:hidden;">
+          <iframe id="musik-iframe" width="100%" height="100%" frameborder="0" allow="autoplay;encrypted-media"
+            allowfullscreen style="border-radius:1rem;"></iframe>
+        </div>
+      </div>
+
+      <style>
+        @keyframes bar1 {
+          from {
+            height: 15%
+          }
+
+          to {
+            height: 70%
+          }
+        }
+
+        @keyframes bar2 {
+          from {
+            height: 30%
+          }
+
+          to {
+            height: 90%
+          }
+        }
+
+        @keyframes bar3 {
+          from {
+            height: 10%
+          }
+
+          to {
+            height: 55%
+          }
+        }
+      </style>
+
+      <!-- Navigation -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.25rem;margin-bottom:1.25rem;">
+        <button onclick="musikNav(-1)"
+          style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#6b7280;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;"
+          onmouseover="this.style.color='#dae2fd';this.style.borderColor='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.color='#6b7280';this.style.borderColor='rgba(255,255,255,0.08)'">‹</button>
+        <span id="musik-counter" style="font-size:11px;font-weight:600;color:#374151;letter-spacing:0.08em;">1 /
+          6</span>
+        <button onclick="musikNav(1)"
+          style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#6b7280;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;"
+          onmouseover="this.style.color='#dae2fd';this.style.borderColor='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.color='#6b7280';this.style.borderColor='rgba(255,255,255,0.08)'">›</button>
+      </div>
+
+      <!-- Dots -->
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:1.75rem;">
+        <div class="musik-dot"
+          style="height:6px;width:18px;border-radius:9999px;background:#ddb7ff;transition:all .3s;"></div>
+        <div class="musik-dot"
+          style="height:6px;width:6px;border-radius:9999px;background:rgba(255,255,255,0.15);transition:all .3s;"></div>
+        <div class="musik-dot"
+          style="height:6px;width:6px;border-radius:9999px;background:rgba(255,255,255,0.15);transition:all .3s;"></div>
+        <div class="musik-dot"
+          style="height:6px;width:6px;border-radius:9999px;background:rgba(255,255,255,0.15);transition:all .3s;"></div>
+        <div class="musik-dot"
+          style="height:6px;width:6px;border-radius:9999px;background:rgba(255,255,255,0.15);transition:all .3s;"></div>
+        <div class="musik-dot"
+          style="height:6px;width:6px;border-radius:9999px;background:rgba(255,255,255,0.15);transition:all .3s;"></div>
+      </div>
+
+      <p style="font-size:10.5px;color:#374151;line-height:1.5;">Öffnet YouTube im Popup · Ton über Browser</p>
+    </div>
+  </div>
+
+</body>
+
+</html>

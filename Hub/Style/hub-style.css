@@ -18,23 +18,33 @@
 :root {
 
   /* --- Dark Theme (Neon / Arcade) --- */
-  --dark-bg:          #2e283a;          /* Seitenhintergrund       */
-  --dark-surface:     #12121e;          /* Karten-/Card-Hintergrund */
-  --dark-accent-1:    #ff2d75;          /* Primäre Akzentfarbe (Pink/Rot) */
-  --dark-accent-2:    #00f0ff;          /* Sekundäre Akzentfarbe (Cyan) */
-  --dark-accent-3:    #ffe156;          /* Tertiäre Akzentfarbe (Gelb) */
-  --dark-muted:       #6b6880;          /* Gedämpfter Text / Labels */
-  --dark-text:        #e8e6f0;          /* Haupttextfarbe */
+  --dark-bg:          #1a1825;          /* Seitenhintergrund – tiefer, ruhiger */
+  --dark-surface:     #13111f;          /* Karten-/Card-Hintergrund            */
+  --dark-accent-1:    #f0316e;          /* Pink/Rot – etwas gedämpfter         */
+  --dark-accent-2:    #00d9e8;          /* Cyan – weniger grell                */
+  --dark-accent-3:    #f5d020;          /* Gelb – wärmer                       */
+  --dark-muted:       #7a7895;          /* Gedämpfter Text / Labels            */
+  --dark-text:        #ddd9ee;          /* Haupttextfarbe – softer als #fff    */
 
   /* --- Light Theme (Clean / School) --- */
-  --light-bg:         #f5f6fa;          /* Seitenhintergrund       */
-  --light-surface:    #ffffff;          /* Karten-/Card-Hintergrund */
-  --light-accent:     #2563eb;          /* Primäre Akzentfarbe (Blau) */
-  --light-accent-lt:  #eff6ff;          /* Helle Akzent-Fläche     */
-  --light-accent-md:  #bfdbfe;          /* Mittlere Akzent-Fläche  */
-  --light-text:       #1e1b4b;          /* Haupttextfarbe          */
-  --light-muted:      #64748b;          /* Gedämpfter Text / Labels */
-  --light-border:     #e2e8f0;          /* Rahmenfarbe             */
+  --light-bg:         #f0f2f8;          /* Seitenhintergrund – leicht bläulich */
+  --light-surface:    #ffffff;          /* Karten-/Card-Hintergrund            */
+  --light-accent:     #2563eb;          /* Primäre Akzentfarbe (Blau)          */
+  --light-accent-lt:  #eff6ff;          /* Helle Akzent-Fläche                 */
+  --light-accent-md:  #bfdbfe;          /* Mittlere Akzent-Fläche              */
+  --light-text:       #1a1f36;          /* Haupttextfarbe – dunkleres Navy     */
+  --light-muted:      #5e6a85;          /* Gedämpfter Text / Labels            */
+  --light-border:     #dde2ee;          /* Rahmenfarbe                         */
+
+  /* --- Dark School Theme (Slate / Indigo) --- */
+  --school-dark-bg:        #0f1626;    /* Seitenhintergrund    */
+  --school-dark-surface:   #172033;    /* Karten-Hintergrund   */
+  --school-dark-surface2:  #1e2d45;    /* Hover / Sekundär     */
+  --school-dark-border:    rgba(99,130,190,0.18); /* Rahmen   */
+  --school-dark-accent:    #4f8ef7;    /* Blau-Akzent          */
+  --school-dark-accent-lt: rgba(79,142,247,0.12); /* leicht   */
+  --school-dark-text:      #ccd6f0;    /* Haupttext            */
+  --school-dark-muted:     #5a6a8a;    /* gedämpfter Text      */
 
   /* --- Gemeinsame Werte --- */
   --radius-sm:        8px;
@@ -202,7 +212,7 @@ nav {
 
 /* Dark Background */
 .bg-dark {
-  background: #0f0d16;
+  background: #0e0c1a;
   color: var(--dark-text);
 }
 
@@ -280,7 +290,7 @@ nav {
 /* Dunkle Karte */
 .card-dark {
   background: var(--dark-surface);
-  border: 2px outset rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .card-dark:hover {
@@ -649,4 +659,1323 @@ nav {
   .col-span-4 {
     grid-column: span 1;
   }
+}
+
+
+/* ============================================================
+   15. LANDING PAGE
+   ============================================================ */
+
+.land-body {
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 2rem 2rem;
+  position: relative;
+  z-index: 1;
+  gap: 1.2rem;
+}
+
+.land-header {
+  text-align: center;
+}
+
+.land-eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--dark-muted);
+  margin-bottom: 0.5rem;
+}
+
+.land-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  letter-spacing: 0.15em;
+  line-height: 1.4;
+  background: linear-gradient(135deg, var(--dark-accent-2), var(--dark-accent-1), var(--dark-accent-3));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 5s ease infinite;
+  margin-bottom: 0.3rem;
+}
+
+/* Landing Nav Cards */
+.land-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.land-card {
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.3rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.land-card-school {
+  background: linear-gradient(145deg, #1e3a5f, #1e293b);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
+.land-card-arcade {
+  background: linear-gradient(145deg, #2e1a3a, #1a0d2e);
+  border: 1px solid rgba(255, 45, 117, 0.25);
+}
+
+.land-card-schulstoff {
+  background: linear-gradient(145deg, #1a1233, #0f0d1e);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+}
+
+.land-card:hover {
+  transform: translateY(-6px);
+}
+
+.land-card-school:hover  { box-shadow: 0 16px 48px rgba(37, 99, 235, 0.25); }
+.land-card-arcade:hover  { box-shadow: 0 16px 48px rgba(255, 45, 117, 0.25); }
+.land-card-schulstoff:hover { box-shadow: 0 16px 48px rgba(167, 139, 250, 0.18); }
+
+/* Badge-Varianten für Landing Cards */
+.land-card-school .card-badge {
+  background: rgba(96, 165, 250, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.land-card-arcade .card-badge {
+  background: rgba(255, 45, 117, 0.12);
+  color: #ff7aaa;
+  border: 1px solid rgba(255, 45, 117, 0.3);
+}
+
+.land-card-schulstoff .card-badge {
+  background: rgba(167, 139, 250, 0.12);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.28);
+}
+
+.land-icon {
+  font-size: 2rem;
+  margin: 0.2rem 0;
+}
+
+.land-cardtitle {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.land-carddesc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+}
+
+.land-arrow {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0.45;
+  transition: opacity 0.2s, gap 0.2s;
+}
+
+.land-card-school .land-arrow    { color: #93c5fd; }
+.land-card-arcade .land-arrow    { color: var(--dark-accent-1); }
+.land-card-schulstoff .land-arrow { color: #a78bfa; }
+
+.land-card:hover .land-arrow {
+  opacity: 1;
+  gap: 0.7rem;
+}
+
+
+/* ============================================================
+   16. WIDGET-INHALTE (Landing Dashboard)
+   ============================================================ */
+
+/* l-span4 – volle Breite im widget-grid */
+.l-span4 { grid-column: span 4; }
+
+/* CLOCK */
+.l-clock-time {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--dark-accent-2), #fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.l-clock-kw {
+  font-size: 0.62rem;
+  color: var(--dark-muted);
+  margin-top: 0.15rem;
+  letter-spacing: 0.05em;
+}
+
+/* WEATHER */
+.l-weather-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.05rem;
+}
+
+.l-weather-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.l-weather-temp {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.l-weather-desc {
+  font-size: 0.67rem;
+  color: var(--dark-muted);
+  margin-top: 0.1rem;
+}
+
+/* FERIEN COUNTDOWN */
+.l-countdown-days {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--dark-accent-3), #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.l-ferien-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark-accent-3);
+  margin-top: 0.1rem;
+}
+
+/* SCHULSTUNDEN */
+.l-stunde-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin-top: 0.1rem;
+}
+
+.l-stunde-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.l-stunde-item.current {
+  background: rgba(0, 240, 255, 0.09);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.l-stunde-time {
+  color: var(--dark-muted);
+  font-size: 0.62rem;
+  font-family: 'Orbitron', monospace;
+}
+
+.l-stunde-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* QUOTE */
+.l-quote-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.15rem;
+  font-style: italic;
+}
+
+.l-quote-author {
+  font-size: 0.62rem;
+  color: var(--dark-muted);
+  margin-top: 0.25rem;
+}
+
+/* FUN FACT */
+.l-fact-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-top: 0.15rem;
+}
+
+.l-fact-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--dark-accent-2);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.35rem;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.l-fact-btn:hover {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: var(--dark-accent-2);
+}
+
+
+/* ============================================================
+   17. SCHOOL LAYOUT
+   ============================================================ */
+
+.sch-body {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 2rem 5rem;
+}
+
+.sch-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+}
+
+.sch-hero-text h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.sch-hero-text p {
+  color: var(--light-muted);
+  font-size: 0.95rem;
+}
+
+.sch-date-chip {
+  background: var(--light-surface);
+  border: 1px solid var(--light-accent-md);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.4rem;
+  text-align: center;
+  min-width: 130px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.08);
+}
+
+.date-day {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--light-accent);
+  line-height: 1;
+}
+
+.date-label {
+  font-size: 0.68rem;
+  color: var(--light-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.3rem;
+}
+
+.sch-quick {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+/* nth-child Farbvarianten – Standard */
+.sch-grid .card:nth-child(4n+1) { --card-color: #2563eb }
+.sch-grid .card:nth-child(4n+2) { --card-color: #4f46e5 }
+.sch-grid .card:nth-child(4n+3) { --card-color: #0d9488 }
+.sch-grid .card:nth-child(4n+4) { --card-color: #d97706 }
+
+/* nth-child Farbvarianten – IT-Kategorie */
+.sch-grid.it .card:nth-child(4n+1) { --card-color: #059669 }
+.sch-grid.it .card:nth-child(4n+2) { --card-color: #0284c7 }
+.sch-grid.it .card:nth-child(4n+3) { --card-color: #7c3aed }
+.sch-grid.it .card:nth-child(4n+4) { --card-color: #db2777 }
+
+.sch-footer {
+  text-align: center;
+  color: var(--light-muted);
+  font-size: 0.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--light-border);
+}
+
+
+/* ============================================================
+   18. ARCADE LAYOUT
+   ============================================================ */
+
+.arc-body {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.arc-head {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.arc-head h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1rem, 3.5vw, 1.9rem);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.7rem;
+  background: linear-gradient(135deg, var(--dark-accent-2), var(--dark-accent-1), var(--dark-accent-3));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.arc-head p {
+  color: var(--dark-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.arc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* nth-child Farbvarianten – Arcade */
+.arc-grid .card:nth-child(4n+1) { --card-color: #ff2d75 }
+.arc-grid .card:nth-child(4n+2) { --card-color: #00f0ff }
+.arc-grid .card:nth-child(4n+3) { --card-color: #ffe156 }
+.arc-grid .card:nth-child(4n+4) { --card-color: #39ff14 }
+
+.arc-desc {
+  color: var(--dark-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.arc-foot {
+  text-align: center;
+  margin-top: 4rem;
+  color: var(--dark-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.arc-foot span { color: var(--dark-accent-1); }
+
+
+/* ============================================================
+   19. KATEGORIE-GRUPPEN (School)
+   ============================================================ */
+
+.cat-group {
+  margin-bottom: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--light-border);
+  background: var(--light-surface);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.cat-header {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.3rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: background var(--transition-fast);
+  text-align: left;
+}
+
+.cat-header:hover { background: #f8fafc; }
+
+.cat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex: 1;
+}
+
+.cat-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cat-icon-wrap.blue   { background: var(--light-accent-lt); }
+.cat-icon-wrap.green  { background: #f0fdf4; }
+.cat-icon-wrap.purple { background: #faf5ff; }
+.cat-icon-wrap.amber  { background: #fffbeb; }
+.cat-icon-wrap.teal   { background: #f0fdfa; }
+
+.cat-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--light-text);
+}
+
+.cat-subtitle {
+  font-size: 0.72rem;
+  color: var(--light-muted);
+  margin-top: 0.1rem;
+}
+
+.cat-count {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: var(--light-accent-lt);
+  color: var(--light-accent);
+  border: 1px solid var(--light-accent-md);
+  border-radius: 100px;
+  padding: 0.15rem 0.6rem;
+  flex-shrink: 0;
+}
+
+.cat-chevron {
+  font-size: 1rem;
+  color: var(--light-muted);
+  transition: transform var(--transition-base);
+  flex-shrink: 0;
+}
+
+.cat-group.collapsed .cat-chevron { transform: rotate(-90deg); }
+
+.cat-body {
+  border-top: 1px solid var(--light-border);
+  padding: 1.2rem;
+  display: none;
+}
+
+.cat-body.open { display: block; }
+
+.cat-body .sch-grid { margin-bottom: 0; }
+
+
+/* ============================================================
+   20. SCHULSTOFF PAGE
+   ============================================================ */
+
+#schulstoff {
+  background: #0f1117;
+  color: #e2e8f0;
+}
+
+#schulstoff nav {
+  background: rgba(10, 10, 18, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+#schulstoff .nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: #a78bfa;
+  -webkit-text-fill-color: #a78bfa;
+}
+
+#schulstoff .nav-btn {
+  color: var(--dark-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#schulstoff .nav-btn:hover {
+  color: var(--dark-text);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+#schulstoff .nav-btn.cur {
+  color: #a78bfa;
+  border-color: #a78bfa;
+}
+
+.ss-layout {
+  display: flex;
+  height: calc(100vh - var(--nav-height));
+  overflow: hidden;
+}
+
+.ss-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: #0a0a12;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ss-sidebar-header {
+  padding: 1.2rem 1.1rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.ss-sidebar-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+  margin-bottom: 0.1rem;
+}
+
+.ss-sidebar-sub {
+  font-size: 0.66rem;
+  color: #374151;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ss-sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.6rem 0.5rem;
+}
+
+.ss-sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.ss-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.ss-subject { margin-bottom: 0.2rem; }
+
+.ss-subject-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  background: none;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.ss-subject-btn:hover        { background: rgba(255, 255, 255, 0.05); }
+.ss-subject-btn.open         { background: rgba(167, 139, 250, 0.08); }
+
+.ss-subject-icon {
+  font-size: 1rem;
+  width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ss-subject-name {
+  font-size: 0.81rem;
+  font-weight: 600;
+  color: #d1d5db;
+  flex: 1;
+}
+
+.ss-subject-count {
+  font-size: 0.6rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #6b7280;
+  border-radius: 100px;
+  padding: 0.1rem 0.42rem;
+}
+
+.ss-chevron {
+  font-size: 0.6rem;
+  color: #374151;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.ss-subject-btn.open .ss-chevron { transform: rotate(90deg); }
+
+.ss-topics {
+  display: none;
+  flex-direction: column;
+  padding: 0.1rem 0 0.2rem 0.5rem;
+}
+
+.ss-topics.open { display: flex; }
+
+.ss-topic-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.65rem;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.76rem;
+  color: #6b7280;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.ss-topic-btn::before {
+  content: '';
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.ss-topic-btn:hover              { color: #c4b5fd; background: rgba(255, 255, 255, 0.04); }
+.ss-topic-btn:hover::before      { background: rgba(167, 139, 250, 0.4); }
+.ss-topic-btn.active             { color: #c4b5fd; font-weight: 600; background: rgba(167, 139, 250, 0.1); }
+.ss-topic-btn.active::before     { background: #a78bfa; }
+
+.ss-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ss-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 1rem;
+  background: #0a0a12;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.ss-topbar-breadcrumb {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  overflow: hidden;
+}
+
+.ss-breadcrumb-subject { color: #4b5563; white-space: nowrap; }
+.ss-breadcrumb-sep     { color: #1f2937; }
+.ss-breadcrumb-topic   { color: #c4b5fd; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ss-nav-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 7px;
+  padding: 0.28rem 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.ss-nav-btn:hover:not(:disabled) {
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.5);
+  color: #c4b5fd;
+}
+
+.ss-nav-btn:disabled { opacity: 0.22; cursor: default; }
+
+.ss-open-btn {
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 7px;
+  padding: 0.28rem 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.ss-open-btn:hover { background: rgba(167, 139, 250, 0.2); border-color: #a78bfa; }
+
+.ss-counter {
+  font-size: 0.65rem;
+  color: #374151;
+  font-family: 'Orbitron', monospace;
+  white-space: nowrap;
+}
+
+.ss-viewer {
+  flex: 1;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+
+.ss-viewer iframe { width: 100%; height: 100%; border: none; display: block; }
+
+.ss-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: #0f1117;
+}
+
+.ss-empty-icon { font-size: 3.5rem; opacity: 0.3; }
+
+.ss-empty-text {
+  font-size: 0.82rem;
+  color: #374151;
+  text-align: center;
+  line-height: 1.7;
+}
+
+
+/* ============================================================
+   21. PDF-VIEWER (Schulstoff Legacy)
+   ============================================================ */
+
+.pdf-viewer-wrap {
+  background: var(--light-surface);
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+}
+
+.pdf-tabs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--light-border);
+}
+
+.pdf-tab {
+  background: none;
+  border: 1px solid var(--light-border);
+  border-radius: 8px;
+  padding: 0.3rem 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--light-muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.pdf-tab:hover {
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+  color: var(--light-accent);
+}
+
+.pdf-tab.active {
+  background: var(--light-accent);
+  border-color: var(--light-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--light-border);
+  background: var(--light-surface);
+}
+
+.pdf-nav-btn {
+  background: none;
+  border: 1px solid var(--light-border);
+  border-radius: 7px;
+  padding: 0.3rem 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--light-text);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.pdf-nav-btn:hover:not(:disabled) {
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+  color: var(--light-accent);
+}
+
+.pdf-nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+.pdf-title-label {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--light-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-counter {
+  font-size: 0.7rem;
+  color: var(--light-muted);
+  white-space: nowrap;
+}
+
+.pdf-open-btn {
+  background: none;
+  border: 1px solid var(--light-accent-md);
+  border-radius: 7px;
+  padding: 0.3rem 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--light-accent);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.18s;
+}
+
+.pdf-open-btn:hover { background: var(--light-accent); color: #fff; }
+
+.pdf-frame-container {
+  position: relative;
+  width: 100%;
+  height: 680px;
+}
+
+.pdf-frame-container iframe { width: 100%; height: 100%; border: none; display: block; }
+
+
+/* ============================================================
+   22. THEME TOGGLE BUTTON
+   ============================================================ */
+
+.theme-toggle-btn {
+  margin-left: 0.4rem;
+  font-size: 1rem !important;
+  padding: 0.3rem 0.65rem !important;
+  border-radius: 8px;
+  opacity: 0.75;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.theme-toggle-btn:hover { opacity: 1 !important; }
+
+
+/* ============================================================
+   23. THEME OVERRIDES
+   Standard (kein Toggle / body.theme-dark):
+     - Landing / Arcade  → dunkel  (immer)
+     - Schule            → dunkel  (Slate/Indigo)
+   body.theme-light (nach Toggle):
+     - Landing / Arcade  → hell
+     - Schule            → hell    (kein Eingriff nötig, Standard schon hell)
+   ============================================================ */
+
+/* ── 23a. Schule DUNKEL  (body.theme-dark = Standard) ───────── */
+body.theme-dark #school {
+  background: var(--school-dark-bg);
+  color: var(--school-dark-text);
+}
+
+body.theme-dark #school .nav-light {
+  background: rgba(15, 22, 38, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--school-dark-border);
+  box-shadow: 0 1px 16px rgba(0,0,0,0.3);
+}
+
+body.theme-dark #school .nav-logo-light {
+  color: var(--school-dark-accent);
+  -webkit-text-fill-color: var(--school-dark-accent);
+}
+
+body.theme-dark #school .nav-btn {
+  color: var(--school-dark-muted);
+  border: 1px solid transparent;
+}
+body.theme-dark #school .nav-btn:hover {
+  color: var(--school-dark-text);
+  background: var(--school-dark-accent-lt);
+}
+body.theme-dark #school .nav-btn.cur {
+  color: var(--school-dark-accent);
+  background: var(--school-dark-accent-lt);
+  border-color: rgba(79,142,247,0.35);
+  font-weight: 600;
+}
+
+body.theme-dark .sch-hero-text h1 { color: var(--school-dark-text); }
+body.theme-dark .sch-hero-text p  { color: var(--school-dark-muted); }
+
+body.theme-dark .sch-date-chip {
+  background: var(--school-dark-surface);
+  border-color: rgba(79,142,247,0.3);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+body.theme-dark .date-day   { color: var(--school-dark-accent); }
+body.theme-dark .date-label { color: var(--school-dark-muted); }
+
+body.theme-dark .stat-tile {
+  background: var(--school-dark-surface);
+  border-color: var(--school-dark-border);
+}
+body.theme-dark .stat-tile:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+body.theme-dark .stat-label { color: var(--school-dark-muted); }
+body.theme-dark .stat-value { color: var(--school-dark-text); }
+body.theme-dark .stat-icon-blue   { background: rgba(79,142,247,0.12); }
+body.theme-dark .stat-icon-teal   { background: rgba(20,184,166,0.10); }
+body.theme-dark .stat-icon-amber  { background: rgba(245,158,11,0.10); }
+
+body.theme-dark .section-label { color: var(--school-dark-muted); }
+body.theme-dark .section-label::after { background: var(--school-dark-border); }
+
+body.theme-dark .cat-group {
+  background: var(--school-dark-surface);
+  border-color: var(--school-dark-border);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+}
+body.theme-dark .cat-header:hover { background: var(--school-dark-surface2); }
+body.theme-dark .cat-title    { color: var(--school-dark-text); }
+body.theme-dark .cat-subtitle { color: var(--school-dark-muted); }
+body.theme-dark .cat-chevron  { color: var(--school-dark-muted); }
+body.theme-dark .cat-count {
+  background: var(--school-dark-accent-lt);
+  color: var(--school-dark-accent);
+  border-color: rgba(79,142,247,0.3);
+}
+body.theme-dark .cat-body { border-top-color: var(--school-dark-border); }
+body.theme-dark .cat-icon-wrap.blue   { background: rgba(79,142,247,0.12); }
+body.theme-dark .cat-icon-wrap.green  { background: rgba(34,197,94,0.10); }
+body.theme-dark .cat-icon-wrap.purple { background: rgba(139,92,246,0.12); }
+body.theme-dark .cat-icon-wrap.amber  { background: rgba(245,158,11,0.10); }
+body.theme-dark .cat-icon-wrap.teal   { background: rgba(20,184,166,0.10); }
+
+body.theme-dark .card.card-light {
+  background: var(--school-dark-surface);
+  border-color: var(--school-dark-border);
+  color: var(--school-dark-text);
+}
+body.theme-dark .card.card-light:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  border-color: var(--card-color, var(--school-dark-accent));
+}
+body.theme-dark .card.card-light h3 { color: var(--school-dark-text); }
+body.theme-dark .card.card-light p  { color: var(--school-dark-muted); }
+body.theme-dark .card-icon-light {
+  background: var(--school-dark-surface2);
+  border-color: var(--school-dark-border);
+}
+body.theme-dark .sch-footer {
+  color: var(--school-dark-muted);
+  border-top-color: var(--school-dark-border);
+}
+
+
+/* ── 23b. Landing + Arcade HELL  (body.theme-light) ─────────── */
+body.theme-light #landing,
+body.theme-light #gaming {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+body.theme-light #landing::before,
+body.theme-light #gaming::before { display: none; }
+
+body.theme-light #landing nav,
+body.theme-light #gaming nav {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--light-border);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+}
+
+body.theme-light #landing .nav-logo,
+body.theme-light #gaming .nav-logo {
+  font-family: 'DM Serif Display', serif;
+  background: none;
+  -webkit-text-fill-color: var(--light-accent);
+  color: var(--light-accent);
+}
+
+body.theme-light #landing .nav-btn,
+body.theme-light #gaming .nav-btn {
+  color: var(--light-muted);
+  border: 1px solid transparent;
+}
+body.theme-light #landing .nav-btn:hover,
+body.theme-light #gaming .nav-btn:hover {
+  color: var(--light-text);
+  background: var(--light-accent-lt);
+}
+body.theme-light #landing .nav-btn.cur,
+body.theme-light #gaming .nav-btn.cur {
+  color: var(--light-accent);
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+}
+
+/* Widgets → hell */
+body.theme-light .widget       { background: #ffffff; border-color: var(--light-border); }
+body.theme-light .widget:hover { background: #f8fafc; border-color: var(--light-accent-md); }
+body.theme-light .widget-label { color: var(--light-muted); }
+body.theme-light .widget-sub   { color: var(--light-muted); }
+
+body.theme-light .l-clock-time {
+  background: linear-gradient(135deg, var(--light-accent), #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.theme-light .l-weather-temp { color: var(--light-text); }
+body.theme-light .l-weather-desc { color: var(--light-muted); }
+
+body.theme-light .l-countdown-days {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.theme-light .l-ferien-name  { color: #d97706; }
+body.theme-light .progress-track { background: var(--light-border); }
+body.theme-light .progress-bar   { background: linear-gradient(90deg, #f59e0b, #ea580c); }
+
+body.theme-light .l-stunde-item         { background: #f1f5f9; }
+body.theme-light .l-stunde-item.current { background: var(--light-accent-lt); border-color: var(--light-accent-md); }
+body.theme-light .l-stunde-name         { color: var(--light-text); }
+body.theme-light .l-stunde-time         { color: var(--light-muted); }
+
+/* Spruch + Fakt: gut lesbar im hellen Modus */
+body.theme-light .l-quote-text   { color: var(--light-text); }
+body.theme-light .l-quote-author { color: var(--light-muted); }
+body.theme-light .l-fact-text    { color: var(--light-text); }
+body.theme-light .l-fact-btn {
+  color: var(--light-accent);
+  border-color: var(--light-accent-md);
+  background: var(--light-accent-lt);
+}
+body.theme-light .l-fact-btn:hover {
+  background: var(--light-accent);
+  color: #fff;
+  border-color: var(--light-accent);
+}
+
+body.theme-light .land-title {
+  background: linear-gradient(135deg, var(--light-accent), #6d28d9, #db2777);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.theme-light .land-eyebrow { color: var(--light-muted); }
+body.theme-light .land-carddesc { color: rgba(30,31,54,0.55); }
+
+/* Arcade-Cards → hell */
+body.theme-light .card.card-dark {
+  background: #ffffff;
+  border: 1px solid var(--light-border);
+  color: var(--light-text);
+}
+body.theme-light .card.card-dark:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+body.theme-light .arc-desc   { color: var(--light-muted); }
+body.theme-light .arc-head p { color: var(--light-muted); }
+body.theme-light .arc-foot   { color: var(--light-muted); }
+body.theme-light .arc-foot span { color: var(--light-accent); }
+body.theme-light .card-icon-dark {
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+}
+
+/* ── 23c. Schulstoff HELL  (body.theme-light) ───────────────── */
+body.theme-light #schulstoff {
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+body.theme-light #schulstoff::before { display: none; }
+
+body.theme-light #schulstoff .nav-dark {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--light-border);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+}
+
+body.theme-light #schulstoff .nav-logo-dark {
+  font-family: 'DM Serif Display', serif;
+  background: none;
+  -webkit-text-fill-color: var(--light-accent);
+  color: var(--light-accent);
+}
+
+body.theme-light #schulstoff .nav-dark .nav-btn {
+  color: var(--light-muted);
+  border: 1px solid transparent;
+}
+body.theme-light #schulstoff .nav-dark .nav-btn:hover {
+  color: var(--light-text);
+  background: var(--light-accent-lt);
+  border-color: transparent;
+}
+body.theme-light #schulstoff .nav-dark .nav-btn.cur {
+  color: var(--light-accent);
+  background: var(--light-accent-lt);
+  border-color: var(--light-accent-md);
+}
+
+body.theme-light .ss-sidebar {
+  background: var(--light-surface);
+  border-right-color: var(--light-border);
+}
+body.theme-light .ss-sidebar-title   { color: var(--light-text); }
+body.theme-light .ss-sidebar-sub     { color: var(--light-muted); }
+body.theme-light .ss-subject-btn     { color: var(--light-text); }
+body.theme-light .ss-subject-btn:hover { background: var(--light-accent-lt); }
+body.theme-light .ss-subject-btn.open { color: var(--light-accent); }
+body.theme-light .ss-subject-count   { background: var(--light-accent-lt); color: var(--light-accent); }
+body.theme-light .ss-chevron         { color: var(--light-muted); }
+body.theme-light .ss-topic-btn       { color: var(--light-muted); }
+body.theme-light .ss-topic-btn:hover { color: var(--light-text); background: var(--light-accent-lt); }
+body.theme-light .ss-topic-btn.active { color: var(--light-accent); background: var(--light-accent-lt); border-left-color: var(--light-accent); }
+
+body.theme-light .ss-topbar {
+  background: var(--light-surface);
+  border-bottom-color: var(--light-border);
+}
+body.theme-light .ss-nav-btn {
+  background: var(--light-accent-lt);
+  color: var(--light-accent);
+  border-color: var(--light-accent-md);
+}
+body.theme-light .ss-nav-btn:hover:not(:disabled) { background: var(--light-accent); color: #fff; }
+body.theme-light .ss-breadcrumb-subject { color: var(--light-text); }
+body.theme-light .ss-breadcrumb-sep     { color: var(--light-muted); }
+body.theme-light .ss-breadcrumb-topic   { color: var(--light-accent); }
+body.theme-light .ss-counter            { color: var(--light-muted); }
+body.theme-light .ss-open-btn { background: var(--light-accent); }
+
+body.theme-light .ss-empty-text { color: var(--light-muted); }
+
+
+/* ── 25. UTILITY KLASSEN ─────────────────────────────────────── */
+
+/* Inline-Code in Karten – passt sich dem Theme an */
+.card-code {
+  font-size: 0.72rem;
+  background: rgba(255,255,255,0.08);
+  color: var(--dark-accent-2);
+  padding: 0 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+body.theme-light .card-code,
+.card-light .card-code {
+  background: #f1f5f9;
+  color: var(--light-accent);
+}
+
+/* Gedämpfter Text in Stunden-Widget – ohne hardcodierte Farbe */
+.l-stunde-muted {
+  color: var(--dark-muted);
+}
+body.theme-light .l-stunde-muted {
+  color: var(--light-muted);
+}
+
+
+/* ============================================================
+   24. RESPONSIVE ERGÄNZUNGEN
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .land-cards { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .land-cards,
+  .sch-quick,
+  .arc-grid,
+  .sch-grid   { grid-template-columns: 1fr; }
+
+  .sch-hero   { flex-direction: column; align-items: flex-start; }
+
+  .card-action { opacity: 1; transform: none; }
+}
+
+@media (max-width: 540px) {
+  .land-cards  { grid-template-columns: 1fr; }
+  .ss-sidebar  { width: 200px; }
 }
