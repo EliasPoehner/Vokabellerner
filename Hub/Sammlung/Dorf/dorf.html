@@ -1400,13 +1400,13 @@
       {
         id: 'waldarbeiter', name: 'Waldarbeiter', cat: 'produktion',
         desc: '1 Arbeiter schlägt Holz und verkauft Späne.',
-        cost: { holz: 0, nahrung: 2 }, costMult: 1.3, prod: { holz: 0.6, gold: -0.07 }, workers: 1, requires: {},
+        cost: { holz: 0, nahrung: 2 }, costMult: 1.3, prod: { holz: 0.4, gold: -0.07 }, workers: 1, requires: {},
         color3d: 0x5a8a40, shape: 'hut', height: 1.0
       },
       {
         id: 'steinbruch', name: 'Steinbruch', cat: 'produktion',
         desc: '1 Arbeiter bricht Stein und verkauft Ausschuss.',
-        cost: { holz: 6, nahrung: 2 }, costMult: 1.3, prod: { stein: 0.45, gold: -0.05 }, workers: 1, requires: {},
+        cost: { holz: 6, nahrung: 2 }, costMult: 1.3, prod: { stein: 0.3, gold: -0.05 }, workers: 1, requires: {},
         color3d: 0x8a7a60, shape: 'quarry', height: 0.8
       },
       {
@@ -1442,24 +1442,24 @@
       {
         id: 'bergwerk', name: 'Tiefbergwerk', cat: 'verarbeitung',
         desc: '3 Arbeiter – tiefer Steinabbau.',
-        cost: { holz: 22, stein: 14, gold: 10 }, costMult: 1.55, prod: { stein: 0.8, holz: -0.5 }, workers: 3, requires: { steinbruch_count: 2 },
+        cost: { holz: 22, stein: 14, gold: 10 }, costMult: 1.55, prod: { stein: 1, holz: -0.5, gold: -0.08 }, workers: 3, requires: { steinbruch_count: 2 },
         color3d: 0x5a4a30, shape: 'mine', height: 1.0
       },
       {
         id: 'baeckerei', name: 'Bäckerei', cat: 'verarbeitung',
-        desc: '1 Bäcker – verarbeitet Nahrung. Bev. wächst schneller.',
+        desc: '1 Bäcker – verarbeitet Nahrung. Bev. wächst schneller. Mindestens 3 Felder',
         cost: { holz: 8, stein: 12, gold: 10 }, costMult: 1.4, prod: { nahrung: -2, gold: 0.2 }, special: 'popBoost', workers: 1, requires: { feld_count: 3 },
         color3d: 0xe8a050, shape: 'bakery', height: 1.1
       },
       {
         id: 'brauerei', name: 'Brauerei', cat: 'verarbeitung',
-        desc: '2 Brauer – Bier hebt Stimmung & bringt Gold.',
+        desc: '2 Brauer – Bier hebt Stimmung & bringt Gold. Mindestens 2 Felder und 1 Markt',
         cost: { holz: 16, stein: 14, gold: 12 }, costMult: 1.5, prod: { nahrung: -1, gold: 0.45 }, special: 'brauerei', workers: 2, requires: { feld_count: 2, markt_count: 1 },
         color3d: 0xa06820, shape: 'brewery', height: 1.5
       },
       {
         id: 'schmelze', name: 'Schmelze', cat: 'verarbeitung',
-        desc: '3 Arbeiter – verhüttet Eisen. Braucht Metallurgie.',
+        desc: '3 Arbeiter – verhüttet Eisen. Braucht Metallurgie. Mindestens 5 Steinbrüche',
         cost: { holz: 25, stein: 25, gold: 18 }, costMult: 1.7, prod: { eisen: 0.3, kohle: -0.5 }, workers: 3, requires: { steinbruch_count: 5, research: 'metallurgie' },
         color3d: 0xe06030, shape: 'smelter', height: 1.6
       },
@@ -1471,7 +1471,7 @@
       },
       {
         id: 'mauer', name: 'Stadtmauer', cat: 'militaer',
-        desc: '3 Wächter – starke Befestigung. Moral +10.',
+        desc: '3 Wächter – starke Befestigung. Moral +10. Mindestens 2 Wachen',
         cost: { holz: 20, stein: 50, gold: 22 }, costMult: 1.9, prod: {}, special: 'defense2', workers: 3, requires: { wache_count: 2, research: 'taktik' },
         color3d: 0x708090, shape: 'wall', height: 2.0
       },
@@ -1490,7 +1490,7 @@
       {
         id: 'markt', name: 'Markt', cat: 'gesellschaft',
         desc: '2 Händler – Hauptgoldquelle.',
-        cost: { holz: 12, stein: 6 }, costMult: 1.4, prod: { gold: 0.55 }, workers: 2, requires: { feld_count: 1 },
+        cost: { holz: 12, stein: 6 }, costMult: 1.4, prod: { gold: 0.55, holz: -0.4, stein: -0.4 }, workers: 2, requires: { feld_count: 1 },
         color3d: 0xd4a840, shape: 'market', height: 1.0
       },
       {
