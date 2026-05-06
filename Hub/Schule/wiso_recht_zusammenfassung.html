@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WiSo – Recht Zusammenfassung</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --accent: #c0392b;
+    --gold: #d4a017;
+    --muted: #7a7068;
+    --card: #ffffff;
+    --border: #ddd8cc;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c0392b' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    border: 80px solid rgba(192,57,43,0.15);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .header-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.1;
+    font-style: italic;
+  }
+
+  header h1 em {
+    color: var(--gold);
+    font-style: normal;
+  }
+
+  header p {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    color: #a09888;
+    max-width: 480px;
+  }
+
+  nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 1rem 2rem;
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  nav button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.45rem 1rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: #a09888;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  nav button:hover, nav button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .section { display: none; }
+  .section.visible { display: block; }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.45rem;
+    margin-bottom: 0.8rem;
+    color: var(--ink);
+  }
+
+  .card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 1rem 0 0.4rem;
+    color: var(--ink);
+  }
+
+  .card p, .card li {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #3a3530;
+  }
+
+  .card ul, .card ol {
+    padding-left: 1.2rem;
+    margin-top: 0.3rem;
+  }
+
+  .card li { margin-bottom: 0.25rem; }
+
+  .tag {
+    display: inline-block;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin: 0.2rem 0.2rem 0 0;
+  }
+
+  .tag.red { background: #fdf0ef; border-color: #f5c6c3; color: var(--accent); }
+  .tag.gold { background: #fdf8e7; border-color: #f0dfa0; color: #9a7900; }
+  .tag.green { background: #eef7ee; border-color: #b8ddb8; color: #2d6e2d; }
+
+  /* law-ref */
+  .law {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--paper);
+    border-left: 3px solid var(--gold);
+    padding: 0.3rem 0.7rem;
+    margin: 0.4rem 0;
+    display: inline-block;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* two-col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.6rem;
+  }
+
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .col-box {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem 1.1rem;
+  }
+
+  .col-box h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  /* table */
+  .tbl-wrap { overflow-x: auto; margin-top: 0.8rem; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+
+  th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  tr:nth-child(even) td { background: #fafaf7; }
+
+  /* quiz */
+  .quiz-q {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .quiz-q-head {
+    padding: 1rem 1.4rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    gap: 1rem;
+  }
+
+  .quiz-q-head:hover { background: var(--paper); }
+
+  .quiz-q-head .icon {
+    font-size: 1.1rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    transition: transform 0.25s;
+  }
+
+  .quiz-q.open .icon { transform: rotate(45deg); }
+
+  .quiz-answer {
+    display: none;
+    padding: 1rem 1.4rem;
+    border-top: 1px solid var(--border);
+    background: #fdf8f5;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #3a3530;
+  }
+
+  .quiz-q.open .quiz-answer { display: block; }
+
+  .quiz-cat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.5rem 0;
+    margin: 1.2rem 0 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quiz-cat-label.hidden, .quiz-q.hidden { display: none; }
+
+  /* Dark Pattern Cards */
+  .dp-box {
+    display: flex;
+    gap: 0.7rem;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.75rem 0.8rem;
+  }
+
+  .dp-nr {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    line-height: 1;
+    width: 1.4rem;
+    text-align: center;
+  }
+
+  .dp-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.02em;
+  }
+
+  .dp-desc {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #3a3530;
+  }
+
+  .dp-ex {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    #dsa .card div[style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* section title */
+  .sec-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .sec-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .accent-bar {
+    width: 3px;
+    height: 1.6rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* highlight box */
+  .highlight {
+    border-left: 3px solid var(--accent);
+    background: #fdf0ef;
+    padding: 0.8rem 1.1rem;
+    border-radius: 0 3px 3px 0;
+    margin-top: 0.8rem;
+    font-size: 0.87rem;
+    line-height: 1.65;
+  }
+
+  .highlight strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">WiSo · Wirtschaft &amp; Soziales</div>
+  <h1>Lernzusammenfassung<br><em>Recht</em></h1>
+  <p>Alle Themen aus dem Skript kompakt aufbereitet — von Grundlagen bis DSA/DMA und KI-Recht.</p>
+</header>
+
+<nav>
+  <button class="active" onclick="show('grundlagen', this)">Grundlagen</button>
+  <button onclick="show('bgb', this)">BGB &amp; Personen</button>
+  <button onclick="show('eigentum', this)">Geistiges Eigentum</button>
+  <button onclick="show('software', this)">Software &amp; Lizenzen</button>
+  <button onclick="show('dsa', this)">DSA / DMA</button>
+  <button onclick="show('quiz', this)">🧠 Lernkontrolle</button>
+</nav>
+
+<main>
+
+<!-- ====== GRUNDLAGEN ====== -->
+<div id="grundlagen" class="section visible">
+  <div class="sec-title"><span class="accent-bar"></span>Grundlagen des Rechts</div>
+
+  <div class="card">
+    <div class="card-label">3.1 — Was ist Recht?</div>
+    <h2>Recht &amp; Gerechtigkeit</h2>
+    <p>Recht ist Teil unseres Alltags. Werte, Religion und Sitten einer Gesellschaft prägen das Rechtssystem maßgeblich. Ein Recht wird anerkannt, wenn es dem subjektiven <strong>Gerechtigkeitsgefühl</strong> entspricht.</p>
+    <h3>Rechtsquellen</h3>
+    <ul>
+      <li><strong>Gesetztes Recht</strong> — in Gesetzen kodifiziert (z.B. BGB, StGB)</li>
+      <li><strong>Gewohnheitsrecht</strong> — ungeschrieben, aber allgemein anerkannt</li>
+      <li><strong>Richterrecht</strong> — durch Gerichtsurteile fortgebildetes Recht</li>
+    </ul>
+    <div class="law">Art. 20 Abs. 3 GG — Alle drei Staatsgewalten sind an Recht und Gesetz gebunden</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Exkurs</div>
+    <h2>Zwei große Rechtsgebiete</h2>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Privatrecht</h4>
+        <p>Regelt das Verhältnis <strong>Bürger ↔ Bürger</strong> (gleichberechtigte Rechtssubjekte)</p>
+        <ul style="margin-top:0.5rem">
+          <li>Allgemeines Privatrecht (BGB/Zivilrecht)</li>
+          <li>Sonstiges Privatrecht (Handels-, Arbeitsrecht…)</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Öffentliches Recht</h4>
+        <p>Regelt das Verhältnis <strong>Bürger ↔ Staat</strong></p>
+        <ul style="margin-top:0.5rem">
+          <li>Völkerrecht &amp; Europarecht</li>
+          <li>Staats- &amp; Verfassungsrecht</li>
+          <li>Verwaltungsrecht, Sozialrecht, Steuerrecht, Strafrecht</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight"><strong>Wichtig:</strong> Europarecht steht in der Normenhierarchie <em>oberhalb</em> des nationalen Verfassungsrechts.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3.1 — Grundgesetz</div>
+    <h2>Das Grundgesetz (GG)</h2>
+    <p>Das Grundgesetz ist die <strong>oberste Rechtsquelle</strong> für das innerstaatliche Recht der BRD. Alle anderen Gesetze müssen mit ihm vereinbar sein — andernfalls sind sie verfassungswidrig und werden vom <strong>Bundesverfassungsgericht für nichtig</strong> erklärt.</p>
+    <h3>Aufbau</h3>
+    <ul>
+      <li><strong>Art. 1–19 GG</strong>: Grundrechte (gelten für das Verhältnis Mensch ↔ Staat, nicht Mensch ↔ Mensch)</li>
+      <li><strong>Art. 20 GG</strong>: Staatsprinzipien (Demokratie, Rechtsstaat, Bundesstaat, Sozialstaat)</li>
+      <li><strong>Ab Art. 20 ff.</strong>: Staatsorganisationsrecht (Bundestag, Bundesrat, Regierung, Gerichte…)</li>
+    </ul>
+    <div class="two-col" style="margin-top:0.8rem">
+      <div class="col-box">
+        <h4>Menschenrechte</h4>
+        <p>„<em>Jeder hat das Recht…</em>"<br>Gelten für alle Menschen weltweit</p>
+      </div>
+      <div class="col-box">
+        <h4>Bürgerrechte</h4>
+        <p>„<em>Alle Deutschen haben das Recht…</em>"<br>Nur für deutsche Staatsbürger</p>
+      </div>
+    </div>
+    <div class="law">Art. 20 Abs. 3 GG — Alle drei Staatsgewalten sind an Gesetz und Recht gebunden</div>
+    <div class="law">Art. 79 Abs. 3 GG — „Ewigkeitsklausel": Art. 1 &amp; 20 GG sind unabänderlich</div>
+    <div class="highlight"><strong>Normenhierarchie:</strong> Europarecht &gt; Grundgesetz &gt; Bundesgesetze &gt; Landesgesetze</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Exkurs — Gewaltenteilung</div>
+    <h2>Die Teilung der Staatsgewalt</h2>
+    <p style="margin-bottom:1.2rem">Das Grundgesetz teilt die Staatsgewalt in drei voneinander unabhängige Gewalten, um Machtmissbrauch zu verhindern.</p>
+
+    <!-- Gewaltenteilung Diagramm -->
+    <div style="text-align:center; margin-bottom:1rem">
+      <div style="display:inline-block; background:var(--ink); color:var(--paper); padding:0.4rem 1.2rem; border-radius:3px; font-size:0.8rem; font-weight:600; letter-spacing:0.05em">GRUNDGESETZ</div>
+      <div style="display:flex; justify-content:center; gap:0; margin-top:0">
+        <div style="width:1px; height:30px; background:var(--muted); margin: 0 auto; display:block; position:relative; left: calc(-33% + 0px)"></div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.7rem; margin-bottom:1rem">
+      <!-- Legislative -->
+      <div>
+        <div style="background:#6b3fa0; color:white; text-align:center; padding:0.6rem 0.5rem; border-radius:4px 4px 0 0; font-size:0.78rem; font-weight:600">Gesetzgebende Gewalt<br><span style="font-weight:400; font-size:0.72rem">Legislative</span></div>
+        <div style="border:2px solid #6b3fa0; border-top:none; border-radius:0 0 4px 4px; padding:0.5rem; background:white">
+          <div style="background:#7c4db5; color:white; border-radius:3px; padding:0.4rem; text-align:center; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem">Bundesebene:<br>Bundestag + Bundesrat</div>
+          <div style="background:#9966cc; color:white; border-radius:3px; padding:0.35rem; text-align:center; font-size:0.77rem">Länderebene:<br>Parlamente der Länder</div>
+        </div>
+      </div>
+      <!-- Exekutive -->
+      <div>
+        <div style="background:#555; color:white; text-align:center; padding:0.6rem 0.5rem; border-radius:4px 4px 0 0; font-size:0.78rem; font-weight:600">Vollziehende Gewalt<br><span style="font-weight:400; font-size:0.72rem">Exekutive</span></div>
+        <div style="border:2px solid #555; border-top:none; border-radius:0 0 4px 4px; padding:0.5rem; background:white">
+          <div style="background:#666; color:white; border-radius:3px; padding:0.4rem; text-align:center; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem">Bundesebene:<br>Bundeskanzler &amp; Bundesregierung</div>
+          <div style="background:#777; color:white; border-radius:3px; padding:0.35rem; text-align:center; font-size:0.77rem; margin-bottom:0.3rem">Länderebene:<br>Länderregierungen</div>
+          <div style="background:#888; color:white; border-radius:3px; padding:0.35rem; text-align:center; font-size:0.75rem">Kommunal:<br>Kreis-, Stadt-, Gemeindeverwaltungen</div>
+        </div>
+      </div>
+      <!-- Judikative -->
+      <div>
+        <div style="background:#1a5fa8; color:white; text-align:center; padding:0.6rem 0.5rem; border-radius:4px 4px 0 0; font-size:0.78rem; font-weight:600">Rechtsprechende Gewalt<br><span style="font-weight:400; font-size:0.72rem">Judikative</span></div>
+        <div style="border:2px solid #1a5fa8; border-top:none; border-radius:0 0 4px 4px; padding:0.5rem; background:white">
+          <div style="background:#2266b5; color:white; border-radius:3px; padding:0.4rem; text-align:center; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem">Bundesebene:<br>BVerfG &amp; Oberste Gerichtshöfe</div>
+          <div style="background:#3377c6; color:white; border-radius:3px; padding:0.35rem; text-align:center; font-size:0.77rem">Länderebene:<br>Gerichte der Länder</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight"><strong>Zweck der Gewaltenteilung:</strong> Keine einzige Instanz soll alle Macht auf sich vereinen — gegenseitige Kontrolle und Hemmung (Checks &amp; Balances).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Grundbegriffe</div>
+    <h2>Wichtige Rechtsbegriffe</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Begriff</th><th>Definition</th><th>Rechtsgrundlage</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ordnungswidrigkeit</strong></td><td>Rechtswidrige Handlung, die mit einer <em>Geldbuße</em> belegt wird</td><td>§ 1 Abs. 1 S. 1 OWiG</td></tr>
+          <tr><td><strong>Verbrechen</strong></td><td>Rechtswidrige Tat, Mindeststrafe ≥ 1 Jahr Freiheitsstrafe</td><td>§ 12 Abs. 1 StGB</td></tr>
+          <tr><td><strong>Vergehen</strong></td><td>Rechtswidrige Tat, Mindeststrafe &lt; 1 Jahr oder Geldstrafe</td><td>§ 12 Abs. 2 StGB</td></tr>
+          <tr><td><strong>Eigentum</strong></td><td>Umfassende Herrschaft über eine Sache; kann andere ausschließen</td><td>§§ 903–924 BGB</td></tr>
+          <tr><td><strong>Besitz</strong></td><td>Tatsächliche Herrschaft über eine Sache (+ Besitzwille)</td><td>§§ 854–872 BGB</td></tr>
+          <tr><td><strong>Willenserklärung</strong></td><td>Äußerung mit dem Ziel, ein rechtliches Ergebnis herbeizuführen</td><td>§§ 116 ff. BGB</td></tr>
+          <tr><td><strong>Vertrag</strong></td><td>Vereinbarung zwischen mind. 2 Parteien; erzeugt Rechte &amp; Pflichten</td><td>§§ 145 ff. BGB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== BGB ====== -->
+<div id="bgb" class="section">
+  <div class="sec-title"><span class="accent-bar"></span>BGB &amp; Personen</div>
+
+  <div class="card">
+    <div class="card-label">3.2 — Grundprinzipien</div>
+    <h2>Privatautonomie im BGB</h2>
+    <p>Das BGB hat eine <strong>liberalistische, individualistische Grundhaltung</strong>. Jeder Mensch soll seine Lebensverhältnisse selbst regeln können.</p>
+    <h3>Die drei Säulen der Privatautonomie</h3>
+    <div class="col-box" style="margin-top:0.6rem">
+      <h4>a) Vertragsfreiheit</h4>
+      <ul>
+        <li><strong>Abschlussfreiheit</strong> — ob und mit wem</li>
+        <li><strong>Inhaltsfreiheit</strong> — was vereinbart wird</li>
+        <li><strong>Formfreiheit</strong> — jede Form zulässig</li>
+      </ul>
+      <p style="margin-top:0.4rem; font-size:0.82rem; color:var(--muted)">Ausnahmen: KfZ-Haftpflicht, Basiskonto, AGB…</p>
+    </div>
+    <div class="col-box" style="margin-top:0.6rem">
+      <h4>b) Testierfreiheit</h4>
+      <p>Recht, ein Testament frei zu gestalten. Einschränkung: Pflichtteilsrecht.</p>
+    </div>
+    <div class="col-box" style="margin-top:0.6rem">
+      <h4>c) Eigentumsfreiheit</h4>
+      <p>Art. 14 GG schützt Eigentum &amp; Erbrecht. Einschränkungen: Baurecht, staatliche Enteignung…</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3.2</div>
+    <h2>Natürliche vs. Juristische Person</h2>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Natürliche Person</h4>
+        <p>Jeder Mensch als Träger von Rechten &amp; Pflichten.</p>
+        <ul style="margin-top:0.4rem">
+          <li>Beginn: <strong>Geburt</strong></li>
+          <li>Ende: <strong>Tod</strong></li>
+        </ul>
+        <div class="law" style="margin-top:0.6rem">§§ 1 ff. BGB</div>
+      </div>
+      <div class="col-box">
+        <h4>Juristische Person</h4>
+        <p>Verein, GmbH, AG, Genossenschaft…</p>
+        <ul style="margin-top:0.4rem">
+          <li>Rechtsfähigkeit: durch <strong>Registereintragung</strong> (Handels-/Vereinsregister)</li>
+        </ul>
+        <div class="law" style="margin-top:0.6rem">§§ 21 ff. BGB</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3.3 — HGB</div>
+    <h2>Kaufmannseigenschaft</h2>
+    <p>Als Softwareentwickler liegt nicht automatisch eine Kaufmannseigenschaft vor:</p>
+    <ul>
+      <li>Kein Handel im klassischen Sinne</li>
+      <li>„Reines Programmieren" gilt als <strong>ingenieurähnliche Tätigkeit</strong> → eher kein Kaufmann</li>
+      <li>Abhängig von der <strong>Unternehmensform</strong> (Formkaufmann möglich)</li>
+    </ul>
+    <div class="highlight">Abgrenzung: <strong>Gewerbe</strong> (Kaufmann → IHK) vs. <strong>Freier Beruf</strong> (Arzt, Anwalt, Ingenieur → keine IHK-Pflicht)</div>
+  </div>
+</div>
+
+<!-- ====== GEISTIGES EIGENTUM ====== -->
+<div id="eigentum" class="section">
+  <div class="sec-title"><span class="accent-bar"></span>Geistiges Eigentum</div>
+
+  <div class="card">
+    <div class="card-label">3.5 — Definition</div>
+    <h2>Was ist geistiges Eigentum?</h2>
+    <p>Eigentumsrechte an Schöpfungen des menschlichen Intellekts: Erfindungen, Know-how, Software, Kunst, Literatur. International: <em>intellectual property (IP)</em>.</p>
+    <h3>Die fünf wichtigsten Schutzrechte</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem">
+      <span class="tag red">Urheberrecht</span>
+      <span class="tag red">Patentrecht</span>
+      <span class="tag red">Gebrauchsmuster</span>
+      <span class="tag red">Markenrecht</span>
+      <span class="tag red">Geschäftsgeheimnis</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Übersicht Schutzmöglichkeiten ⭐</div>
+    <h2>Schutzrechte im Vergleich</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Patent</th>
+            <th>Gebrauchsmuster</th>
+            <th>Urheberrecht</th>
+            <th>Markenrecht</th>
+            <th>Designmuster (ehem. Geschmacksmuster)</th>
+            <th>Geschäftsgeheimnis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Voraussetzungen</strong></td>
+            <td>Neuheit,<br>Erfindung (!=Entdeckung),<br>Gewerbliche Anwendbarkeit</td>
+            <td>Neuheit (d.h. über aktuellem Stand der Technik),<br>Erfindung, gewerbliche Anwendbarkeit</td>
+            <td>Unverwechselbares Werk,<br>Ergebnis persönlicher (d.h. Mensch) geistiger Schöpfung</td>
+            <td>Verschiedene Markenformen (als Zeichen Darstellbar)</td>
+            <td>neu, eigentümlich und gewerblich Anwendbarkeit</td>
+            <td>Geheimnis nur begrenztem Personenkreis zugänglich,<br>von wirtschaftlichem Wert</td>
+          </tr>
+          <tr>
+            <td><strong>Umfang der Schutzwirkung</strong></td>
+            <td>- 20 Jahre nach erfolgreicher Prüfung<br>- Quasi-Monopol<br>- Für jedes Land wo es wirken soll anzumelden</td>
+            <td>- Automatisch<br>- Max. 10 Jahre<br>- Für jedes Land wo es wirken soll anzumelden</td>
+            <td>- Wird automatisch geschützt<br>- Erlischt erst 70 Jahre nach Tod des Urhebers<br>- Je nach Land unterschiedliche Regelung möglich</td>
+            <td>- Für einzelnes Land oder ganze EU / weltweit möglich<br>- Für einzelnes Land oder ganze EU / weltweit möglich</td>
+            <td>- Für jedes Land wo es wirken soll anzumelden<br>- Farb- und Formgestaltungen von Erzeugnissen<br>- Laufzeit zunächst 5 Jahre, max. 25 Jahre</td>
+            <td>- Gültig bis nicht mehr geheim (aber nach 5 Jahren erhöhte Nachweispflicht z.B. Coca-Cola)<br>- Recht auf Geheimhaltung</td>
+          </tr>
+          <tr>
+            <td><strong>Kosten</strong></td>
+            <td>Abhängig von der Anzahl der Länder<br>Anwaltskosten<br>Relativ hoch</td>
+            <td>Billiger als Patent</td>
+            <td>Kostenlos (wenn dann Nachweis belegen z.B. durch hinterlegen bei Notar)</td>
+            <td>kostenpflichtig bei Eintragung<br><br>kostenfrei bei Markennutzung ohne Anmeldung</td>
+            <td>kostenpflichtig</td>
+            <td>- Direkt keine Kosten<br>- Indirekt evtl. schon (Schutzmaßnahmen) und auch als Nachweis der Ernsthaftigkeit des Geheimnisses sinnvoll</td>
+          </tr>
+          <tr>
+            <td><strong>Relevanz beim Schutz von Software</strong></td>
+            <td>In D/EU eher gering (nur wenn Teil einer technischen Erfindung (z.B. ABS))</td>
+            <td>gering (nur wenn Teil einer technischen Erfindung (ABS))<br>lt. jus-IT.de – Softwareschutz durch ein Gebrauchsmuster</td>
+            <td>Automatisch geschützt ab Erstellung (=&gt; Quellcode)<br><br>Grafische Oberfläche nicht schutzwürdig</td>
+            <td>Sehr üblich (auch aber nicht nur aus Marketinggründen)</td>
+            <td>durchaus möglich</td>
+            <td>Sehr hoch (außer bei Open Source)</td>
+          </tr>
+          <tr>
+            <td><strong>Sonstiges</strong></td>
+            <td>Patentamt prüft Antrag,<br>i.d.R. Offenlegung nach 18 Monaten</td>
+            <td>Prüfung auf Antrag eines Dritten (meist von Konkurrenz)</td>
+            <td></td>
+            <td>Geltungsbereich sog. „Nizza"-Klassifikationen<br><br>Hindernissgründe:<br>Unterscheidungskraft,<br>Freihaltungsbedürfnis,<br>Täuschung o. Ärgernis…</td>
+            <td>Überprüfung der Schutzwirkung erst im Streitfall</td>
+            <td>Präventivmaßnahmen sind entscheidend (Geheimhaltungsvereinbarungen etc.)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Patentverletzung — Beispiel</div>
+    <h2>Folgen bei Verstoß gegen geistiges Eigentum</h2>
+    <ul>
+      <li><strong>Unterlassungsanspruch</strong> — Verletzung muss gestoppt werden</li>
+      <li><strong>Schadensersatzanspruch</strong> — Lizenzgebühren × verkaufte Stücke + Strafe</li>
+      <li><strong>Auskunftsanspruch</strong> — Umfang der Verletzung muss offengelegt werden</li>
+      <li><strong>Vernichtungsanspruch</strong> — rechtsverletzende Produkte vernichten</li>
+    </ul>
+    <div class="highlight">Alternativ: Nachträgliche Lizenzvereinbarung möglich (wie Amazon ↔ Nokia beim 4K Fire Stick)</div>
+  </div>
+</div>
+
+<!-- ====== SOFTWARE ====== -->
+<div id="software" class="section">
+  <div class="sec-title"><span class="accent-bar"></span>Software &amp; Lizenzen</div>
+
+  <div class="card">
+    <div class="card-label">3.5.4 — Urheberrecht</div>
+    <h2>Schutz von Software</h2>
+    <p>Computerprogramme sind <strong>automatisch urheberrechtlich geschützt</strong> — ab dem Moment der Erstellung, ohne Registrierung.</p>
+    <h3>Geschützt ist:</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.4rem">
+      <span class="tag green">Quellcode</span>
+      <span class="tag green">Objektcode</span>
+      <span class="tag green">Entwurfsmaterial</span>
+      <span class="tag green">Handbücher</span>
+      <span class="tag green">Programmodule</span>
+    </div>
+    <h3>Nicht geschützt ist:</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.4rem">
+      <span class="tag">Algorithmen</span>
+      <span class="tag">Programmiersprachen</span>
+      <span class="tag">Grafische Oberfläche</span>
+      <span class="tag">Idee der Software</span>
+      <span class="tag">Schnittstellenspezifikationen</span>
+    </div>
+    <div class="highlight"><strong>Urheber</strong> = immer ein <em>Mensch</em>. Juristische Personen &amp; KI können <strong>keine</strong> Urheber sein!</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Angestellt vs. Freiberufler</div>
+    <h2>Wer hat die Rechte?</h2>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Arbeitnehmer (§ 69b UrhG)</h4>
+        <ul>
+          <li>Nutzungsrechte gehen <strong>automatisch</strong> auf Arbeitgeber über</li>
+          <li>„Bestsellerparagraph" § 32a UrhG: Anspruch auf Beteiligung bei offensichtlichem Missverhältnis</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Freier Mitarbeiter</h4>
+        <ul>
+          <li>Gilt <strong>nicht</strong> automatisch</li>
+          <li>Vertragliche Regelung notwendig</li>
+          <li>Ohne Vertrag: nur Minimalrechte werden übertragen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3.5.4 — Lizenzvertrag &amp; Nutzungsrechte ⭐</div>
+    <h2>Rechtlicher Schutz von Software — Nutzungsrechte</h2>
+    <p>Der Urheber kann Dritten <strong>Nutzungsrechte</strong> an einer Software einräumen (= Lizenz). Der „Lizenzvertrag" ist kein eigenständiger Vertragstyp, sondern richtet sich nach den BGB-Vertragstypen: i.d.R. Kauf-, Miet-, Werk- oder Dienstvertrag (oder Mischformen).</p>
+
+    <h3 style="margin-top:1rem">Die 4 Nutzungsrechte <span style="font-size:0.78rem; color:var(--accent); font-weight:400">(prüfungsrelevant — rot markiert im Skript)</span></h3>
+
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem">
+      <div style="border-left:4px solid #c0392b; background:#fdf0ef; padding:0.6rem 1rem; border-radius:0 3px 3px 0">
+        <div style="font-weight:700; color:#c0392b; margin-bottom:0.2rem">Vervielfältigung</div>
+        <div style="font-size:0.87rem">Laden, Anzeigen, Ablaufen, Übertragen oder Speichern des Computerprogramms. Auch das (vorübergehende) Laden in den Arbeitsspeicher ist ein Vervielfältigungsvorgang.</div>
+      </div>
+      <div style="border-left:4px solid #c0392b; background:#fdf0ef; padding:0.6rem 1rem; border-radius:0 3px 3px 0">
+        <div style="font-weight:700; color:#c0392b; margin-bottom:0.2rem">Verbreitung</div>
+        <div style="font-size:0.87rem">Vertrieb des Original-Programms oder von Vervielfältigungsstücken im Handel, z.B. per Datenträger (CD-Rom).</div>
+      </div>
+      <div style="border-left:4px solid #c0392b; background:#fdf0ef; padding:0.6rem 1rem; border-radius:0 3px 3px 0">
+        <div style="font-weight:700; color:#c0392b; margin-bottom:0.2rem">Recht der öffentlichen Zugänglichmachung</div>
+        <div style="font-size:0.87rem">Software, die über das Internet heruntergeladen werden kann.</div>
+      </div>
+      <div style="border-left:4px solid #c0392b; background:#fdf0ef; padding:0.6rem 1rem; border-radius:0 3px 3px 0">
+        <div style="font-weight:700; color:#c0392b; margin-bottom:0.2rem">Umarbeitung</div>
+        <div style="font-size:0.87rem">Erweiterungen des Funktionsumfangs, Wartung, Updates, Upgrades, Aktualisierungen. Auch Übersetzung in eine andere Programmiersprache sowie Quellcode → Objektcode und umgekehrt („Kompilation").</div>
+      </div>
+    </div>
+
+  <div class="card">
+    <div class="card-label">3.5.4 — Lizenztypen</div>
+    <h2>Arten von Softwarelizenzen</h2>
+    <div class="col-box" style="margin-bottom:0.7rem">
+      <h4>Proprietäre Lizenz</h4>
+      <p>Nutzer darf Software nutzen, aber <strong>nicht verändern oder weiterverteilen</strong>.</p>
+    </div>
+    <div class="col-box" style="margin-bottom:0.7rem">
+      <h4>Open-Source-Lizenz</h4>
+      <p>Nutzer darf Software nutzen, verändern und unter Bedingungen <strong>weiterverteilen</strong>.</p>
+    </div>
+    <div class="col-box">
+      <h4>SaaS (Software as a Service)</h4>
+      <p>Software wird nicht gekauft, sondern als Dienstleistung bereitgestellt — monatliche/jährliche Gebühr.</p>
+    </div>
+    <h3>Wichtige Punkte im Lizenzvertrag (mind. 5 kennen):</h3>
+    <p style="margin-top:0.4rem">Vertragsgegenstand · Rechtseinräumung · Preis &amp; Zahlung · Haftung · Updates · Datenschutz · Gerichtsstand</p>
+
+    <h3 style="margin-top:1rem">Wichtige Aspekte im Softwarelizenzvertrag &amp; AGB ⭐</h3>
+    <ul style="margin-top:0.4rem">
+      <li><strong>Nutzungsrechte:</strong> Genaue Definition, in welchem Umfang die Software genutzt werden darf (vgl. die 4 Rechte: Vervielfältigung, Verbreitung, Zugänglichmachung, Umarbeitung)</li>
+      <li><strong>Gewährleistung:</strong> Regelungen zur Haftung für Mängel und zur Bereitstellung von Updates und Support</li>
+      <li><strong>Haftung und Schadensersatz:</strong> Festlegung der Verantwortlichkeiten und möglicher Kompensation bei Vertragsverletzungen</li>
+      <li><strong>Vertragsdauer und Kündigung:</strong> Bestimmungen zur Laufzeit des Vertrags und den Bedingungen für eine Kündigung</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-label">USA vs. EU</div>
+    <h2>Software-Patent: USA vs. Deutschland</h2>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Deutschland / EU</h4>
+        <p>Software als solche <strong>nicht patentierbar</strong>. Ausnahme: Software, die unmittelbar einen technischen Effekt auslöst (z.B. ABS-Steuerung).</p>
+      </div>
+      <div class="col-box">
+        <h4>USA</h4>
+        <p>Patentfähigkeit einfacher durch den <strong>Alice/Mayo-Test</strong>: Software patentierbar, wenn sie über das bloße Replizieren einer abstrakten Idee hinausgeht.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DSA/DMA ====== -->
+<div id="dsa" class="section">
+  <div class="sec-title"><span class="accent-bar"></span>DSA &amp; DMA</div>
+
+  <!-- DMA ÜBERBLICK -->
+  <div class="card">
+    <div class="card-label">DMA — Digital Markets Act</div>
+    <h2>Ziele des DMA</h2>
+    <p>Der DMA soll fairen Wettbewerb auf digitalen Märkten sicherstellen. Er gilt für die sogenannten <strong>Gatekeeper</strong> — große Plattformen, über die andere Unternehmen ihre Kunden erreichen müssen.</p>
+    <h3>4 Ziele des DMA</h3>
+    <ul>
+      <li>Beseitigung <strong>unfairer / wettbewerbswidriger Praktiken</strong> der Gatekeeper</li>
+      <li>Gewährung des <strong>Zugriffs auf Daten</strong>, die auf ihren Plattformen erhoben werden</li>
+      <li>Gewährleistung von <strong>Kompatibilität</strong> (Interoperabilität mit anderen Diensten)</li>
+      <li>Vermeidung der <strong>Bevorzugung eigener Dienste</strong> gegenüber Wettbewerbern</li>
+    </ul>
+    <div class="highlight"><strong>Gatekeeper-Unternehmen:</strong> Alphabet · Amazon · Apple · ByteDance · Meta · Microsoft · Booking.com</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">DMA — Prüfungsrelevant ⭐</div>
+    <h2>Gatekeeper-Unternehmen &amp; Vergehen</h2>
+
+    <div class="highlight" style="margin-bottom:1rem">📌 <strong>Für die Prüfung:</strong> 4 Unternehmen nennen können + 2 typische Vergehen kennen — der Rest ist Zusatzwissen!</div>
+
+    <h3>Alle Gatekeeper-Unternehmen</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.2rem">
+      <span class="tag red">⭐ Alphabet (Google)</span>
+      <span class="tag red">⭐ Amazon</span>
+      <span class="tag red">⭐ Apple</span>
+      <span class="tag red">⭐ Meta</span>
+      <span class="tag">ByteDance</span>
+      <span class="tag">Microsoft</span>
+      <span class="tag">Booking.com</span>
+    </div>
+
+    <h3>2 typische Vergehen — <span style="color:var(--accent)">Prüfungsrelevant</span></h3>
+    <ul style="margin-bottom:1.2rem">
+      <li><strong>Bevorzugung eigener Produkte/Dienste</strong> gegenüber Konkurrenten</li>
+      <li><strong>Einschränkung der Nutzerfreiheit / Datenmissbrauch</strong> (keine echte Wahlfreiheit, Bestpreisklauseln…)</li>
+    </ul>
+
+    <h3>Alle bekannten Vergehen im Überblick (Zusatzwissen)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Unternehmen</th><th>Vergehen</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Meta</strong></td><td>„Zustimmung oder Zahlung" — keine echte Wahlfreiheit bei Datenzusammenführung → 200 Mio. € Strafe</td></tr>
+          <tr><td><strong>Alphabet (Google)</strong></td><td>Eigene Werbung (Adwords) auf Startseite bevorzugt; Google News begünstigt wenige Verlage</td></tr>
+          <tr><td><strong>Amazon</strong></td><td>Bevorzugung eigener Produkte in Suchergebnissen; Bestpreisabsprachen mit Händlern</td></tr>
+          <tr><td><strong>Apple</strong></td><td>Hohe App Store Provisionen (bis 30 %); kein alternativer App-Store auf iOS erlaubt</td></tr>
+          <tr><td><strong>Microsoft</strong></td><td>Edge-Browser vorinstalliert bevorzugt; Teams in Microsoft 365 gebündelt</td></tr>
+          <tr><td><strong>Booking.com</strong></td><td>Bestpreisgarantie — Hotels müssen auf Booking.com immer den günstigsten Preis anbieten</td></tr>
+          <tr><td><strong>ByteDance</strong></td><td>Datenweitergabe an chinesische Behörden; intransparenter Algorithmus</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DSA -->
+  <div class="card">
+    <div class="card-label">DSA — Digital Services Act</div>
+    <h2>Was der DSA regelt</h2>
+    <p><strong>Grundsatz:</strong> Was offline illegal ist, muss auch online illegal sein.</p>
+    <ul style="margin-top:0.6rem">
+      <li>Moderation von Inhalten &amp; Mechanismen für Nutzerbeschwerden</li>
+      <li>Transparenz der Algorithmen (mind. eine Option ohne Profiling)</li>
+      <li>Zusammenarbeit mit Behörden</li>
+      <li>Verbot zielgerichteter Werbung auf Basis sensibler Daten (Religion, Politik, Sexualität…)</li>
+      <li><strong>Dark Patterns verboten</strong></li>
+      <li>Vollständiges Verbot von Profilwerbung für Minderjährige</li>
+      <li>Nutzer haben Anspruch auf Entschädigung bei Verstößen</li>
+      <li><strong>Trusted Flagger</strong>: anerkannte Meldeorganisationen mit Prioritätsstatus (z.B. vzbv)</li>
+    </ul>
+    <div class="law">Maximale Strafe: 6 % des weltweiten Jahresumsatzes</div>
+  </div>
+
+  <!-- 12 DARK PATTERNS -->
+  <div class="card">
+    <div class="card-label">DSA — Prüfungsrelevant ⭐</div>
+    <h2>Die 12 Dark Pattern Typen</h2>
+    <p style="margin-bottom:1rem; font-size:0.87rem; color:var(--muted)">Nach Harry Brignull (deceptive.design) — alle 12 Begriffe lernen!</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem">
+
+      <div class="dp-box">
+        <div class="dp-nr">1</div>
+        <div>
+          <div class="dp-name">Trick Questions</div>
+          <div class="dp-desc">Scheinbar eindeutige Fragen, die bei flüchtigem Lesen das Gegenteil bedeuten — z.B. Checkboxen mit doppelter Verneinung.</div>
+          <div class="dp-ex">Bsp: „Ich möchte KEINE Werbung erhalten" — schon vorausgewählt</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">2</div>
+        <div>
+          <div class="dp-name">Sneak into Basket</div>
+          <div class="dp-desc">Unbemerkt Produkte/Zusatzleistungen in den Warenkorb legen, die man aktiv entfernen muss.</div>
+          <div class="dp-ex">Bsp: Reiseversicherung beim Ticketkauf automatisch hinzugefügt</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">3</div>
+        <div>
+          <div class="dp-name">Roach Motel</div>
+          <div class="dp-desc">Leicht rein, schwer raus — einfache Anmeldung, komplizierte Kündigung.</div>
+          <div class="dp-ex">Bsp: Amazon Prime — Kündigung dauerte 4 Seiten, 6 Klicks, 15 Optionen</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">4</div>
+        <div>
+          <div class="dp-name">Privacy Zuckering</div>
+          <div class="dp-desc">Verwirrend gestaltete Datenschutzeinstellungen, damit Nutzer mehr Daten preisgeben als beabsichtigt.</div>
+          <div class="dp-ex">Bsp: Cookie-Banner mit „Alle akzeptieren" groß, Ablehnen versteckt</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">5</div>
+        <div>
+          <div class="dp-name">Misdirection</div>
+          <div class="dp-desc">Aufmerksamkeit wird bewusst abgelenkt, um einen anderen Aspekt zu verschleiern.</div>
+          <div class="dp-ex">Bsp: Großer „Gratis testen"-Button neben winzigem Hinweis auf automatische Aboverlängerung</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">6</div>
+        <div>
+          <div class="dp-name">Hidden Costs</div>
+          <div class="dp-desc">Zusatzkosten werden bis zum letzten Kaufschritt versteckt.</div>
+          <div class="dp-ex">Bsp: Bearbeitungsgebühren, Versandkosten erscheinen erst beim finalen Klick</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">7</div>
+        <div>
+          <div class="dp-name">Bait and Switch</div>
+          <div class="dp-desc">Verspricht eine Sache, liefert eine andere — Nutzer löst ungewollte Aktion aus.</div>
+          <div class="dp-ex">Bsp: Klick auf „Fenster schließen" startet stattdessen einen Download</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">8</div>
+        <div>
+          <div class="dp-name">Confirm Shaming</div>
+          <div class="dp-desc">Ablehnungs-Button ist moralisch unangenehm formuliert, um Scham zu erzeugen.</div>
+          <div class="dp-ex">Bsp: „Nein danke, ich möchte kein Geld sparen" statt „Nein danke"</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">9</div>
+        <div>
+          <div class="dp-name">Disguised Ads</div>
+          <div class="dp-desc">Werbung wird als redaktioneller Inhalt oder Navigationselement getarnt.</div>
+          <div class="dp-ex">Bsp: Werbeanzeige sieht aus wie ein echter Download-Button oder Suchergebnis</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">10</div>
+        <div>
+          <div class="dp-name">Forced Continuity</div>
+          <div class="dp-desc">Kostenpflichtige Abos werden nach Gratisphase ohne deutlichen Hinweis verlängert.</div>
+          <div class="dp-ex">Bsp: Streaming-Dienst zieht nach Probeabo automatisch Geld ab</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">11</div>
+        <div>
+          <div class="dp-name">Friend Spam</div>
+          <div class="dp-desc">App erschleicht sich Zugriff auf Kontakte und verschickt Einladungen im Namen des Nutzers.</div>
+          <div class="dp-ex">Bsp: App sendet automatisch Einladungs-E-Mails ans gesamte Adressbuch</div>
+        </div>
+      </div>
+
+      <div class="dp-box">
+        <div class="dp-nr">12</div>
+        <div>
+          <div class="dp-name">Price Comparison Prevention</div>
+          <div class="dp-desc">Preisvergleich wird bewusst erschwert durch unübersichtliche Strukturen oder versteckte Gesamtpreise.</div>
+          <div class="dp-ex">Bsp: Mobilfunktarife mit verschiedenen Bundles unvergleichbar gestaltet</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="highlight" style="margin-top:1rem"><strong>Warum sind Dark Patterns so wirksam?</strong> Sie umgehen den rationalen präfrontalen Kortex und sprechen die <strong>Amygdala</strong> (Angstzentrum) an — das evolutionär alte Alarmsystem des Gehirns. Knappheit („Nur noch 3 verfügbar!") und Zeitdruck („Nur noch 20 Min.!") lösen Stressreaktionen aus, die rationales Denken hemmen → <em>Amygdala Hijack</em>.</div>
+  </div>
+
+  <!-- ZUORDNUNG BEISPIELE -->
+  <div class="card">
+    <div class="card-label">DSA — Beispielzuordnung (Prüfung!)</div>
+    <h2>Dark Patterns erkennen &amp; zuordnen</h2>
+    <p style="font-size:0.87rem; color:var(--muted); margin-bottom:1rem">Typische Prüfungsaufgabe: Beispiel lesen → richtigen Typ zuordnen</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Beispiel / Situation</th><th>Dark Pattern Typ</th></tr></thead>
+        <tbody>
+          <tr><td>„Nur noch 3 Exemplare vorrätig" + „Angebot gilt nur noch 20 Minuten"</td><td><strong>Misdirection</strong> + Urgency/Scarcity Bias</td></tr>
+          <tr><td>Newsletter-Ablehnung heißt: „Ich möchte nicht über Modetrends informiert werden"</td><td><strong>Confirm Shaming</strong></td></tr>
+          <tr><td>Reiseversicherung beim Ticketkauf automatisch im Warenkorb</td><td><strong>Sneak into Basket</strong></td></tr>
+          <tr><td>Amazon Prime: 4 Seiten, 6 Klicks, 15 Optionen zum Kündigen</td><td><strong>Roach Motel</strong></td></tr>
+          <tr><td>Cookie-Banner: „Alle akzeptieren" farbig hervorgehoben, Ablehnen grau und klein</td><td><strong>Privacy Zuckering</strong></td></tr>
+          <tr><td>Booking.com: „Nur noch 1 Zimmer zu diesem Preis verfügbar!"</td><td><strong>Misdirection</strong> / Scarcity Bias</td></tr>
+          <tr><td>Werbeanzeige sieht aus wie Download-Button auf einer Website</td><td><strong>Disguised Ads</strong></td></tr>
+          <tr><td>Streaming-Dienst verlängert Abo still nach Gratisphase</td><td><strong>Forced Continuity</strong></td></tr>
+          <tr><td>App sendet nach Kontaktzugriff automatisch Einladungen</td><td><strong>Friend Spam</strong></td></tr>
+          <tr><td>Checkout zeigt erst im letzten Schritt Versandkosten + Servicegebühr</td><td><strong>Hidden Costs</strong></td></tr>
+          <tr><td>Klick auf „×" startet statt Schließen einen Download</td><td><strong>Bait and Switch</strong></td></tr>
+          <tr><td>Checkbox: „Ich möchte NICHT kontaktiert werden" — vorausgewählt</td><td><strong>Trick Questions</strong></td></tr>
+          <tr><td>Mobilfunk-Tarife mit unterschiedlichen Bundles — kein Direktvergleich möglich</td><td><strong>Price Comparison Prevention</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight" style="margin-top:1rem"><strong>Was ist schlimm an Dark Patterns?</strong> Sie untergraben die <strong>freie Entscheidung</strong> der Nutzer, indem sie unbewusste psychologische Mechanismen ausnutzen. Besonders betroffen: <strong>Kinder und Jugendliche</strong>, da ihr präfrontaler Kortex (Impulskontrolle, Risikoabwägung) erst mit ~25 Jahren vollständig ausgereift ist. 97 % der populärsten EU-Websites nutzen mindestens ein Dark Pattern (EU-Studie 2022).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3.5.7 — Aktuell</div>
+    <h2>KI &amp; Urheberrecht</h2>
+    <p>KI selbst kann <strong>kein Urheberrecht erlangen</strong> — denn Urheber kann nur ein Mensch sein. KI kann aber als Werkzeug eingesetzt werden, wobei das Ergebnis dem menschlichen Schöpfer zugerechnet wird.</p>
+    <div class="highlight">⚠️ Das Rechtsgebiet ist noch sehr jung und entwickelt sich durch Richterrecht und Gesetzgebung aktiv weiter (z.B. EU-KI-Verordnung, Klagen gegen OpenAI/Google wegen Trainingsdaten).</div>
+  </div>
+</div>
+
+<!-- ====== QUIZ ====== -->
+<div id="quiz" class="section">
+  <div class="sec-title"><span class="accent-bar"></span>Lernkontrolle</div>
+  <p style="margin-bottom:0.5rem; font-size:0.88rem; color:var(--muted)">Tippe auf eine Frage, um die Antwort aufzuklappen. Alle Themen prüfungsrelevant.</p>
+
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.4rem">
+    <button onclick="filterQuiz('all', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--accent);background:var(--accent);color:white;border-radius:2px;cursor:pointer;letter-spacing:0.04em">Alle</button>
+    <button onclick="filterQuiz('grundlagen', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">Grundlagen</button>
+    <button onclick="filterQuiz('gg', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">Grundgesetz</button>
+    <button onclick="filterQuiz('bgb', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">BGB</button>
+    <button onclick="filterQuiz('ip', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">Geist. Eigentum</button>
+    <button onclick="filterQuiz('software', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">Software</button>
+    <button onclick="filterQuiz('dsa', this)" style="font-family:inherit;font-size:0.75rem;font-weight:600;padding:0.35rem 0.9rem;border:1px solid var(--border);background:white;color:var(--muted);border-radius:2px;cursor:pointer;letter-spacing:0.04em">DSA/DMA</button>
+  </div>
+
+  <!-- GRUNDLAGEN -->
+  <div class="quiz-cat-label" data-cat="grundlagen">📚 Grundlagen des Rechts</div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist der Unterschied zwischen Verbrechen und Vergehen? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Verbrechen</strong> (§ 12 Abs. 1 StGB): Mindestfreiheitsstrafe ≥ 1 Jahr.<br><strong>Vergehen</strong> (§ 12 Abs. 2 StGB): Mindestfreiheitsstrafe &lt; 1 Jahr oder Geldstrafe.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist eine Ordnungswidrigkeit und wie unterscheidet sie sich vom Vergehen? <span class="icon">+</span></div>
+    <div class="quiz-answer">Eine <strong>Ordnungswidrigkeit</strong> (§ 1 Abs. 1 S. 1 OWiG) ist eine rechtswidrige Handlung, die mit einer <strong>Geldbuße</strong> (nicht Geldstrafe!) bestraft wird. Ein Vergehen hingegen ist eine Straftat mit Geldstrafe oder Freiheitsstrafe &lt; 1 Jahr. Ordnungswidrigkeiten erscheinen nicht im Strafregister.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was regelt Privatrecht, was regelt Öffentliches Recht? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Privatrecht</strong>: Verhältnis Bürger ↔ Bürger (gleichberechtigte Rechtssubjekte). Unterteilt in: Allgemeines Privatrecht (BGB/Zivilrecht) und Sonstiges Privatrecht (Handels-, Arbeitsrecht).<br><strong>Öffentliches Recht</strong>: Verhältnis Bürger ↔ Staat. Enthält: Völkerrecht, Europarecht, Verfassungsrecht, Verwaltungsrecht, Sozialrecht, Steuerrecht, Strafrecht.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist der Unterschied zwischen Eigentum und Besitz? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Eigentum</strong> (§§ 903–924 BGB): Die rechtliche Herrschaft über eine Sache — der Eigentümer kann andere ausschließen.<br><strong>Besitz</strong> (§§ 854–872 BGB): Die tatsächliche Herrschaft über eine Sache mit Besitzwillen.<br><em>Merkhilfe: Ein Mieter hat Besitz, der Vermieter hat Eigentum. Man kann also Besitzer ohne Eigentümer sein (und umgekehrt).</em></div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist eine Willenserklärung? Nenne je ein einseitiges und zweiseitiges Beispiel. <span class="icon">+</span></div>
+    <div class="quiz-answer">Eine <strong>Willenserklärung</strong> ist eine Willensäußerung, die darauf gerichtet ist, ein bestimmtes rechtliches Ergebnis herbeizuführen (§§ 116 ff. BGB).<br><strong>Einseitig</strong>: Kündigung (nur eine Partei erklärt)<br><strong>Zweiseitig</strong>: Kaufvertrag (Angebot + Annahme durch zwei Parteien)</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist ein Vertrag und welche Rechtsgrundlage gilt? <span class="icon">+</span></div>
+    <div class="quiz-answer">Ein <strong>Vertrag</strong> ist eine Vereinbarung (Versprechen) zwischen mindestens zwei Vertragspartnern. Aus dem Vertrag entstehen Rechte und Rechtspflichten für beide Seiten (§§ 145 ff. BGB). Er entsteht durch Angebot und Annahme (zwei übereinstimmende Willenserklärungen).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sind Rechtsquellen und welche Arten gibt es? <span class="icon">+</span></div>
+    <div class="quiz-answer">Rechtsquellen sind die Entstehungsgründe von Rechtsnormen:<br>1. <strong>Gesetztes Recht</strong>: In Gesetzen kodifiziert (BGB, StGB, GG…)<br>2. <strong>Gewohnheitsrecht</strong>: Ungeschrieben, aber allgemein anerkannt und langfristig geübt<br>3. <strong>Richterrecht</strong>: Durch Gerichtsurteile fortgebildetes Recht — kann zu Gewohnheitsrecht oder Gesetzen werden</div>
+  </div>
+
+  <div class="quiz-q" data-cat="grundlagen" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne die drei Staatsgewalten und ordne jeweils ein konkretes Organ zu. <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Legislative</strong> (Gesetzgebende Gewalt): Bundestag, Bundesrat, Länderparlamente<br><strong>Exekutive</strong> (Vollziehende Gewalt): Bundesregierung/Bundeskanzler, Länderregierungen, Kommunalverwaltungen<br><strong>Judikative</strong> (Rechtsprechende Gewalt): Bundesverfassungsgericht, Oberste Gerichtshöfe, Gerichte der Länder</div>
+  </div>
+
+  <!-- GRUNDGESETZ -->
+  <div class="quiz-cat-label" data-cat="gg">⚖️ Grundgesetz &amp; Grundrechte</div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sind die drei Kategorien von Grundrechten? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Freiheitsrechte</strong>: Sichern dem Bürger einen Freiraum, in den der Staat nicht (oder nur mit sehr guter Begründung) eingreifen darf.<br><strong>Gleichheitsrechte</strong>: Staat muss alle Menschen gleich behandeln — Abweichungen nur mit triftiger Begründung.<br><strong>Verfahrensrechte</strong>: Elementare Rechte des Bürgers in Gerichtsverfahren (z.B. Recht auf rechtliches Gehör).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist der Unterschied zwischen Menschenrechten und Bürgerrechten im GG? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Menschenrechte</strong>: Beginnen mit „Jeder hat das Recht…" → gelten für alle Menschen, unabhängig von der Nationalität.<br><strong>Bürgerrechte</strong>: Beginnen mit „Alle Deutschen haben das Recht…" → gelten nur für deutsche Staatsbürger (z.B. Versammlungsfreiheit, Freizügigkeit).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Was besagt die „Ewigkeitsklausel" (Art. 79 Abs. 3 GG)? <span class="icon">+</span></div>
+    <div class="quiz-answer">Art. 79 Abs. 3 GG schließt Verfassungsänderungen aus, die die in <strong>Art. 1 GG</strong> (Menschenwürde) und <strong>Art. 20 GG</strong> (Staatsprinzipien: Demokratie, Rechtsstaat, Bundesstaat, Sozialstaat) niedergelegten Grundsätze berühren. Diese Artikel sind also absolut unabänderlich — selbst mit Zweidrittelmehrheit nicht änderbar.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sagt Art. 20 Abs. 3 GG über die Bindung der Staatsgewalt? <span class="icon">+</span></div>
+    <div class="quiz-answer">Art. 20 Abs. 3 GG: „Die Gesetzgebung ist an die verfassungsmäßige Ordnung, die vollziehende Gewalt und die Rechtsprechung sind an Gesetz und Recht gebunden." → Alle drei Staatsgewalten sind rechtlich gebunden. Selbst der Gesetzgeber darf nicht gegen das Grundgesetz verstoßen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Welchen Rang hat das Europarecht in der Normenhierarchie? <span class="icon">+</span></div>
+    <div class="quiz-answer">Europarecht steht <strong>oberhalb des nationalen Verfassungsrechts</strong> (also auch über dem Grundgesetz). Die Normenhierarchie lautet: Europarecht → Grundgesetz (GG) → Bundesgesetze → Landesgesetze → Verordnungen. Widerspricht nationales Recht dem Europarecht, hat Europarecht Vorrang.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="gg" onclick="toggle(this)">
+    <div class="quiz-q-head">Was passiert, wenn ein Gesetz gegen das Grundgesetz verstößt? <span class="icon">+</span></div>
+    <div class="quiz-answer">Das <strong>Bundesverfassungsgericht</strong> erklärt das Gesetz für <strong>nichtig</strong> (verfassungswidrig). Das GG ist der Maßstab aller innerstaatlichen Rechtsquellen. Gesetze unterhalb des Verfassungsrangs, die dem GG widersprechen, sind unwirksam.</div>
+  </div>
+
+  <!-- BGB -->
+  <div class="quiz-cat-label" data-cat="bgb">📜 BGB &amp; Personen</div>
+
+  <div class="quiz-q" data-cat="bgb" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sind die drei Säulen der Privatautonomie im BGB? <span class="icon">+</span></div>
+    <div class="quiz-answer">1. <strong>Vertragsfreiheit</strong>: Abschlussfreiheit (ob und mit wem), Inhaltsfreiheit (was), Formfreiheit (wie). Ausnahmen: KfZ-Haftpflicht, Basiskonto, AGB…<br>2. <strong>Testierfreiheit</strong>: Recht, ein Testament frei zu verfassen. Einschränkung: Pflichtteil.<br>3. <strong>Eigentumsfreiheit</strong>: Art. 14 GG schützt Eigentum &amp; Erbrecht. Einschränkungen: Baurecht, Enteignung.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="bgb" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist der Unterschied zwischen natürlicher und juristischer Person? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Natürliche Person</strong>: Jeder Mensch als Träger von Rechten und Pflichten. Rechtsfähigkeit beginnt mit der Geburt, endet mit dem Tod (§§ 1 ff. BGB).<br><strong>Juristische Person</strong>: Ein Verein, GmbH, AG, Genossenschaft als eigenständiger Rechtsträger. Rechtsfähigkeit entsteht durch Eintragung in ein Register (Handels-/Vereinsregister) (§§ 21 ff. BGB).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="bgb" onclick="toggle(this)">
+    <div class="quiz-q-head">Wann beginnt und endet die Rechtsfähigkeit einer natürlichen Person? <span class="icon">+</span></div>
+    <div class="quiz-answer">Rechtsfähigkeit beginnt mit der vollendeten <strong>Geburt</strong> (§ 1 BGB) und endet mit dem <strong>Tod</strong>. Ausnahme beim Erbrecht: Ein noch ungeborenes Kind (Nasciturus) wird als bereits geboren angesehen, wenn es um sein Erbrecht geht.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="bgb" onclick="toggle(this)">
+    <div class="quiz-q-head">Liegt bei einem selbstständigen Softwareentwickler eine Kaufmannseigenschaft vor? <span class="icon">+</span></div>
+    <div class="quiz-answer">Nicht automatisch. Maßgeblich sind:<br>• <strong>Tätigkeit</strong>: Reines Programmieren gilt als ingenieurähnliche Tätigkeit → kein Kaufmann<br>• <strong>Abgrenzung</strong>: Freier Beruf (Ingenieur, Arzt, Anwalt → keine IHK-Pflicht) vs. Gewerbe (Kaufmann → IHK)<br>• <strong>Ausnahme</strong>: Als Formkaufmann (z.B. GmbH-Gründung) wäre er dennoch Kaufmann</div>
+  </div>
+
+  <div class="quiz-q" data-cat="bgb" onclick="toggle(this)">
+    <div class="quiz-q-head">Was versteht man unter dem Grundsatz der Privatautonomie? <span class="icon">+</span></div>
+    <div class="quiz-answer">Der <strong>Grundsatz der Privatautonomie</strong> bedeutet, dass dem Einzelnen die Freiheit eingeräumt wird, die Regelung seiner eigenen Lebensverhältnisse selbst zu treffen — also Verträge abzuschließen, Testamente zu verfassen und mit seinem Eigentum nach Belieben zu verfahren. Das BGB hat eine liberalistische, individualistische Grundhaltung.</div>
+  </div>
+
+  <!-- GEISTIGES EIGENTUM -->
+  <div class="quiz-cat-label" data-cat="ip">💡 Geistiges Eigentum &amp; Schutzrechte</div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne 5 gewerbliche Schutzrechte und erkläre kurz wofür jedes steht. <span class="icon">+</span></div>
+    <div class="quiz-answer">1. <strong>Urheberrecht</strong>: Schützt Werke der Literatur, Wissenschaft, Kunst, Software — entsteht automatisch.<br>2. <strong>Patentrecht</strong>: Schützt technische Erfindungen für max. 20 Jahre — muss angemeldet &amp; geprüft werden.<br>3. <strong>Gebrauchsmuster</strong>: „Kleines Patent" für Erfindungen, max. 10 Jahre, günstigere Anmeldung.<br>4. <strong>Markenrecht</strong>: Schützt Namen, Logos, Zeichen eines Unternehmens.<br>5. <strong>Geschäftsgeheimnis</strong>: Schützt vertrauliches Know-how, solange es geheim bleibt.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Welche drei Voraussetzungen muss eine Erfindung für ein Patent erfüllen? <span class="icon">+</span></div>
+    <div class="quiz-answer">1. <strong>Neu</strong>: Die Erfindung darf im jeweiligen Fachbereich noch nicht bekannt sein.<br>2. <strong>Erfinderische Tätigkeit</strong>: Sie muss auf einer nicht naheliegenden erfinderischen Leistung beruhen (≠ bloße Entdeckung).<br>3. <strong>Gewerblich anwendbar</strong>: Die Erfindung muss in der Praxis umsetzbar und nutzbar sein.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Wie lange gilt das Urheberrecht und wann erlischt es? <span class="icon">+</span></div>
+    <div class="quiz-answer">Das Urheberrecht erlischt <strong>70 Jahre nach dem Tod des Urhebers</strong>. Es entsteht automatisch mit der Schaffung des Werkes (keine Anmeldung nötig) und wird durch keine Formalität bedingt.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Welche vier Ansprüche entstehen bei Verletzung eines Patents? <span class="icon">+</span></div>
+    <div class="quiz-answer">1. <strong>Unterlassungsanspruch</strong>: Verletzung muss sofort gestoppt werden.<br>2. <strong>Schadensersatzanspruch</strong>: Lizenzgebühr × Stückzahl + ggf. Strafzahlung.<br>3. <strong>Auskunftsanspruch</strong>: Verletzer muss Ausmaß der Nutzung offenlegen.<br>4. <strong>Vernichtungsanspruch</strong>: Rechtsverletzende Waren können vernichtet werden.<br><em>Alternativ: Außergerichtlicher Vergleich mit Lizenzzahlung möglich (Bsp. Amazon/Nokia).</em></div>
+  </div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist der Unterschied zwischen Patent und Gebrauchsmuster? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Patent</strong>: Formelles Prüfungsverfahren beim DPMA, max. 20 Jahre, höhere Kosten, stärkerer Schutz.<br><strong>Gebrauchsmuster</strong>: Kein automatisches Prüfungsverfahren (Prüfung nur auf Antrag eines Dritten), max. 10 Jahre, günstiger und schneller. Wird manchmal als „kleines Patent" bezeichnet.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="ip" onclick="toggle(this)">
+    <div class="quiz-q-head">Was versteht man unter einem Geschäftsgeheimnis und wie lange gilt es? <span class="icon">+</span></div>
+    <div class="quiz-answer">Ein <strong>Geschäftsgeheimnis</strong> ist eine Information, die nur einem begrenzten Personenkreis zugänglich ist und wirtschaftlichen Wert hat (z.B. Coca-Cola-Rezept, Algorithmen). Es gilt so lange, wie es geheim bleibt — keine feste Laufzeit. Nach 5 Jahren besteht eine erhöhte Nachweispflicht. Schutzmaßnahmen (z.B. NDA, Geheimhaltungsvereinbarungen) sind entscheidend.</div>
+  </div>
+
+  <!-- SOFTWARE -->
+  <div class="quiz-cat-label" data-cat="software">💻 Software &amp; Lizenzen</div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Wann entsteht Urheberrecht an Software und muss es angemeldet werden? <span class="icon">+</span></div>
+    <div class="quiz-answer">Das Urheberrecht entsteht <strong>automatisch</strong> mit der Erstellung (Programmierung) der Software — ohne Eintragung, Registrierung oder sonstige Formalitäten. Es gilt ab dem ersten Moment der Schaffung, auch für Zwischenstufen, Entwürfe und einzelne Module.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist durch das Urheberrecht bei Software geschützt — und was nicht? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Geschützt</strong>: Quellcode, Objektcode, Entwurfsmaterial, Handbücher, Programmodule, auch Teile eines Programms.<br><strong>Nicht geschützt</strong>: Algorithmen als solche, Programmiersprachen, grafische Benutzeroberflächen, die zugrundeliegende Idee, Schnittstellenspezifikationen, Arbeitsvorgänge und Methoden.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Wer ist Urheber einer Software, die im Angestelltenverhältnis entwickelt wurde? <span class="icon">+</span></div>
+    <div class="quiz-answer">Der <strong>Entwickler bleibt Urheber</strong> (Schöpferprinzip). Nach § 69b UrhG gehen die <strong>Nutzungsrechte</strong> jedoch automatisch auf den <strong>Arbeitgeber</strong> über (ausschließliche Lizenz). Bei freien Mitarbeitern gilt dies nicht — dort braucht es eine vertragliche Regelung. Ohne Vertrag werden nur Minimalrechte übertragen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Kann KI Urheberrechte erwerben? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Nein.</strong> Urheber kann nur ein <strong>Mensch</strong> sein — auch juristische Personen (GmbH, AG) können keine Urheber sein. KI kann als Werkzeug eingesetzt werden und das entstandene Werk kann dem menschlichen Schöpfer zugerechnet werden. Das Rechtsgebiet entwickelt sich aktuell noch weiter.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sind die drei Arten von Softwarelizenzen? <span class="icon">+</span></div>
+    <div class="quiz-answer">1. <strong>Proprietäre Lizenz</strong>: Nutzung erlaubt, kein Verändern oder Weiterverteilen.<br>2. <strong>Open-Source-Lizenz</strong>: Nutzen, Verändern und Weiterverteilen unter bestimmten Bedingungen erlaubt.<br>3. <strong>SaaS (Software as a Service)</strong>: Software wird nicht gekauft, sondern als Dienstleistung bereitgestellt (monatliche/jährliche Gebühr, kein Kauf).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne 5 typische Paragrafen/Punkte in einem proprietären Softwarelizenzvertrag. <span class="icon">+</span></div>
+    <div class="quiz-answer">§ 1 Vertragsgegenstand · § 2 Lieferung · § 3 Rechtseinräumung · § 4 Preis und Zahlung · § 5 Sach- und Rechtsmängel · § 6 Rechtsverletzungen · § 7 Haftung · § 8 Updates · § 9 Pflichten des Lizenznehmers · § 10 Datenschutz · § 11 Mediation · § 12 Gerichtsstand und anwendbares Recht<br><em>(Für die Prüfung: mindestens 5 davon kennen!)</em></div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Kann Software in Deutschland/der EU als Patent geschützt werden? <span class="icon">+</span></div>
+    <div class="quiz-answer">Grundsätzlich <strong>nein</strong> — Software als solche ist in D/EU nicht patentierbar. <strong>Ausnahme</strong>: Wenn die Software unmittelbar einen <em>technischen Effekt</em> auslöst oder Teil einer technischen Erfindung ist (z.B. ABS-Bremssteuerung).<br>In den <strong>USA</strong> ist Patentschutz einfacher über den <em>Alice/Mayo-Test</em> möglich.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="software" onclick="toggle(this)">
+    <div class="quiz-q-head">Welche Nutzungsrechte erhält ein Lizenznehmer ohne besondere Regelung per Gesetz? <span class="icon">+</span></div>
+    <div class="quiz-answer">Ohne vertragliche Regelung erhält der Nutzer per Gesetz nur die <strong>Minimalrechte</strong>, die zur vertragsgemäßen Nutzung zwingend erforderlich sind: Laden, Anzeigen, Ablaufen, Speichern im Arbeitsspeicher und grundsätzlich das Anfertigen einer Sicherungskopie. Kein Recht auf Veränderung oder Weiterverbreitung.</div>
+  </div>
+
+  <!-- DSA/DMA -->
+  <div class="quiz-cat-label" data-cat="dsa">🌐 DSA &amp; DMA</div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Worin unterscheiden sich DSA und DMA? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>DSA (Digital Services Act)</strong>: Schutz der Verbraucher auf digitalen Plattformen — Transparenz, Inhaltskontrolle, Verbote von Dark Patterns, Schutz Minderjähriger.<br><strong>DMA (Digital Markets Act)</strong>: Fairer Wettbewerb zwischen Unternehmen und großen Gatekeeper-Plattformen (Alphabet, Amazon, Apple, Meta, ByteDance, Microsoft, Booking.com). Ziel: Verhinderung wettbewerbswidriger Praktiken.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Wie hoch ist die maximale Strafe nach dem DSA? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>6 % des weltweiten durchschnittlichen Vorjahresumsatzes</strong> der betroffenen Plattform. Bei wiederholten Verstößen können auch höhere Sanktionen oder Verbote verhängt werden.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Was sind „Dark Patterns" und warum sind sie nach dem DSA verboten? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Dark Patterns</strong> sind manipulative Designmuster auf Websites/Apps, die Nutzer zu ungewollten Entscheidungen verleiten (z.B. Abos leichter abschließen als kündigen, versteckte Opt-out-Buttons, aggressive Pop-ups). Nach dem DSA sind sie verboten, weil sie die freie Entscheidung der Nutzer untergraben. Grundsatz: Die Kündigung darf nicht schwieriger sein als das Abonnieren.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Welche Unternehmen gelten als „Gatekeeper" nach dem DMA? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Alphabet</strong> (Google), <strong>Amazon</strong>, <strong>Apple</strong>, <strong>ByteDance</strong> (TikTok), <strong>Meta</strong> (Facebook, Instagram, WhatsApp), <strong>Microsoft</strong>, <strong>Booking.com</strong>. Diese Unternehmen kontrollieren Schlüsselplattformen, über die andere Unternehmen ihre Kunden erreichen müssen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne die 4 Ziele des DMA. <span class="icon">+</span></div>
+    <div class="quiz-answer">1. Beseitigung <strong>unfairer / wettbewerbswidriger Praktiken</strong> der Gatekeeper<br>2. Gewährung des <strong>Zugriffs auf Daten</strong>, die auf ihren Plattformen erhoben werden<br>3. Gewährleistung von <strong>Kompatibilität</strong> (Interoperabilität mit anderen Diensten)<br>4. Vermeidung der <strong>Bevorzugung eigener Dienste / Produkte</strong> gegenüber Wettbewerbern</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne 4 Gatekeeper-Unternehmen und 2 typische allgemeine DMA-Vergehen. <span class="icon">+</span></div>
+    <div class="quiz-answer">
+      <strong>4 Unternehmen:</strong> Alphabet (Google), Amazon, Apple, Meta<br>(weitere: ByteDance, Microsoft, Booking.com)<br><br>
+      <strong>2 typische Vergehen:</strong><br>
+      1. <strong>Bevorzugung eigener Produkte/Dienste</strong> gegenüber Konkurrenten (z.B. eigene Suchergebnisse, eigener Browser)<br>
+      2. <strong>Einschränkung der Nutzerfreiheit / Datenmissbrauch</strong> (z.B. keine echte Wahlfreiheit bei Datenverarbeitung, Bestpreisklauseln)<br><br>
+      <em>Konkretes Beispiel: Meta → „Zustimmung oder Zahlung" → 200 Mio. € Strafe</em>
+    </div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Nenne alle 12 Dark Pattern Typen nach Brignull. <span class="icon">+</span></div>
+    <div class="quiz-answer">
+      1. <strong>Trick Questions</strong> — Fragen mit verstecktem Gegenteil (Doppelverneinung)<br>
+      2. <strong>Sneak into Basket</strong> — Unbemerkt Extras in den Warenkorb<br>
+      3. <strong>Roach Motel</strong> — Leicht rein, schwer raus (Abo-Falle)<br>
+      4. <strong>Privacy Zuckering</strong> — Verwirrende Datenschutzeinstellungen<br>
+      5. <strong>Misdirection</strong> — Aufmerksamkeit ablenken / Wichtiges verschleiern<br>
+      6. <strong>Hidden Costs</strong> — Versteckte Kosten bis zum letzten Schritt<br>
+      7. <strong>Bait and Switch</strong> — Verspricht A, liefert B<br>
+      8. <strong>Confirm Shaming</strong> — Ablehnung moralisch unangenehm formuliert<br>
+      9. <strong>Disguised Ads</strong> — Werbung als echte Inhalte getarnt<br>
+      10. <strong>Forced Continuity</strong> — Abo läuft nach Gratis-Phase still weiter<br>
+      11. <strong>Friend Spam</strong> — Einladungen im Namen des Nutzers verschicken<br>
+      12. <strong>Price Comparison Prevention</strong> — Preisvergleich bewusst erschwert
+    </div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist schlimm an Dark Patterns — und warum wirken sie so gut? <span class="icon">+</span></div>
+    <div class="quiz-answer">Dark Patterns untergraben die <strong>freie Entscheidung</strong> der Nutzer, weil sie den rationalen präfrontalen Kortex umgehen und stattdessen die <strong>Amygdala</strong> (evolutionäres Angstzentrum) ansprechen.<br><br>Signale wie „Nur noch 3 Stück!" oder „Nur noch 20 Min.!" lösen Stress-Hormone (Adrenalin, Cortisol) aus → <em>Amygdala Hijack</em> → rationales Denken wird gehemmt.<br><br>Besonders betroffen: <strong>Kinder &amp; Jugendliche</strong> — präfrontaler Kortex reift erst mit ~25 Jahren. 97 % der populärsten EU-Websites nutzen mindestens ein Dark Pattern (EU-Studie 2022).</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Ordne zu: „Nein danke, ich möchte kein Geld sparen" — welches Dark Pattern? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Confirm Shaming</strong>: Die Ablehnung wird moralisch unangenehm formuliert, um Scham zu erzeugen und den Nutzer zur Zustimmung zu drängen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Ordne zu: Reiseversicherung beim Ticketkauf automatisch im Warenkorb — welches Dark Pattern? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Sneak into Basket</strong>: Produkte oder Zusatzleistungen werden unbemerkt in den Warenkorb gelegt — der Nutzer muss sie aktiv wieder entfernen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Ordne zu: Amazon Prime — 4 Seiten, 6 Klicks zum Kündigen — welches Dark Pattern? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Roach Motel</strong>: Leicht rein (1 Klick anmelden), schwer raus (aufwendige Kündigung). Codename intern: „Iliad" (nach Homers langwierigem Trojanischen Krieg). FTC-Vergleich 2025: 2,5 Mrd. $.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Ordne zu: Cookie-Banner mit „Alle akzeptieren" farbig, Ablehnen grau und versteckt — welches Dark Pattern? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>Privacy Zuckering</strong> (benannt nach Mark Zuckerberg): Verwirrend gestaltete Datenschutzeinstellungen, damit Nutzer mehr Daten preisgeben als beabsichtigt.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Was ist ein „Trusted Flagger" nach dem DSA? <span class="icon">+</span></div>
+    <div class="quiz-answer">Eine behördlich anerkannte Organisation, deren Meldungen von Plattformen <strong>prioritär behandelt</strong> werden müssen. Beispiel: Verbraucherzentrale Bundesverband (vzbv) — kann Verstöße bevorzugt melden, Unternehmen abmahnen oder verklagen.</div>
+  </div>
+
+  <div class="quiz-q" data-cat="dsa" onclick="toggle(this)">
+    <div class="quiz-q-head">Wie hoch ist die maximale Strafe nach dem DSA? <span class="icon">+</span></div>
+    <div class="quiz-answer"><strong>6 % des weltweiten durchschnittlichen Vorjahresumsatzes</strong> der betroffenen Plattform.</div>
+  </div>
+
+</div>
+
+</main>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  btn.classList.add('active');
+}
+
+function toggle(el) {
+  el.classList.toggle('open');
+}
+
+function filterQuiz(cat, btn) {
+  document.querySelectorAll('.quiz-q').forEach(q => {
+    q.classList.toggle('hidden', cat !== 'all' && q.dataset.cat !== cat);
+  });
+  document.querySelectorAll('.quiz-cat-label').forEach(l => {
+    l.classList.toggle('hidden', cat !== 'all' && l.dataset.cat !== cat);
+  });
+  document.querySelectorAll('#quiz button').forEach(b => {
+    b.style.background = 'white';
+    b.style.color = 'var(--muted)';
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.style.background = 'var(--accent)';
+  btn.style.color = 'white';
+  btn.style.borderColor = 'var(--accent)';
+}
+</script>
+</body>
+</html>

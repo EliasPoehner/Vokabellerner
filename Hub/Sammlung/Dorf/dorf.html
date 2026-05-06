@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dorfchronik 3D</title>
+  <link rel="stylesheet" href="dorf.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div id="header">
+    <h1>⚔ Dorfchronik 3D</h1>
+    <span id="tier-badge">Weiler</span>
+    <div style="flex:1"></div>
+    <span id="clock">Tag 1</span>
+  </div>
+
+  <!-- RESOURCES -->
+  <div id="resources">
+    <div class="res-item"><span class="res-icon">🪵</span>
+      <div>
+        <div class="res-val" id="r-holz">10</div>
+        <div class="res-rate" id="rr-holz">+0/s</div>
+      </div><span class="res-label">Holz</span>
+    </div>
+    <div class="res-item"><span class="res-icon">🪨</span>
+      <div>
+        <div class="res-val" id="r-stein">6</div>
+        <div class="res-rate" id="rr-stein">+0/s</div>
+      </div><span class="res-label">Stein</span>
+    </div>
+    <div class="res-item"><span class="res-icon">🌾</span>
+      <div>
+        <div class="res-val" id="r-nahrung">20</div>
+        <div class="res-rate" id="rr-nahrung">+0/s</div>
+      </div><span class="res-label">Nahrung</span>
+    </div>
+    <div class="res-item"><span class="res-icon">🪙</span>
+      <div>
+        <div class="res-val" id="r-gold">15</div>
+        <div class="res-rate" id="rr-gold">+0/s</div>
+      </div><span class="res-label">Gold</span>
+    </div>
+    <div class="res-item"><span class="res-icon">⚙️</span>
+      <div>
+        <div class="res-val" id="r-eisen">0</div>
+        <div class="res-rate" id="rr-eisen">+0/s</div>
+      </div><span class="res-label">Eisen</span>
+    </div>
+    <div class="res-item"><span class="res-icon">🔥</span>
+      <div>
+        <div class="res-val" id="r-kohle">0</div>
+        <div class="res-rate" id="rr-kohle">+0/s</div>
+      </div><span class="res-label">Kohle</span>
+    </div>
+    <div id="pop-info">
+      <span style="font-family:'Cinzel',serif;font-size:10px">👷 Bev.</span>
+      <div class="pop-bar-bg">
+        <div class="pop-bar-fill" id="pop-fill" style="width:10%"></div>
+      </div>
+      <span style="font-family:'Cinzel',serif;font-size:11px;min-width:55px" id="pop-text">1/10 (2)</span>
+    </div>
+  </div>
+
+  <!-- 3D CANVAS -->
+  <div id="canvas-wrap">
+    <canvas id="threeCanvas"></canvas>
+  </div>
+
+  <div id="cam-controls">
+    <span class="cam-label">ANSICHT</span>
+    <button class="cam-btn" onclick="rotateCam(-1)" title="Links drehen">◀</button>
+    <span id="view-label">SW</span>
+    <button class="cam-btn" onclick="rotateCam(1)" title="Rechts drehen">▶</button>
+    <span class="cam-sep">|</span>
+    <span class="cam-label">ZOOM</span>
+    <div id="zoom-bar">
+      <button class="cam-btn" onclick="zoomCam(1)" style="padding:4px 7px">−</button>
+      <div class="zoom-track" id="zoom-track" onclick="zoomClick(event)">
+        <div class="zoom-fill" id="zoom-fill" style="width:45%"></div>
+      </div>
+      <button class="cam-btn" onclick="zoomCam(-1)" style="padding:4px 7px">+</button>
+    </div>
+    <span class="cam-sep">|</span>
+    <span class="cam-label">NEIGUNG</span>
+    <button class="cam-btn" onclick="tiltCam(-1)" title="Flacher">▲</button>
+    <button class="cam-btn" onclick="tiltCam(1)" title="Steiler">▼</button>
+  </div>
+
+  <!-- SELECTION INFO -->
+  <div id="sel-info"></div>
+
+  <!-- MOVE MODE BANNER -->
+  <div id="move-banner">✦ Verschiebemodus — Ziel wählen · ESC zum Abbrechen</div>
+
+  <!-- PANEL EDGE BUTTONS -->
+  <div id="panel-edge">
+    <button class="edge-btn" id="edge-toggle" onclick="togglePanel()" title="Panel öffnen/schließen">
+      <span id="edge-arrow">◀</span>
+      <span class="edge-label">MENÜ</span>
+    </button>
+    <button class="edge-btn" id="edge-full" onclick="togglePanelFullscreen()" title="Vollbild">
+      <span id="edge-full-icon">⛶</span>
+      <span class="edge-label">VOLL</span>
+    </button>
+  </div>
+
+  <!-- PANEL OVERLAY -->
+  <div id="panel-overlay">
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+      <button id="panel-close-inner" onclick="togglePanel()" title="Schließen">✕ Schließen</button>
+      <button id="panel-fullscreen-btn" onclick="togglePanelFullscreen()" title="Vollbild">⛶</button>
+      <button id="panel-close-btn" onclick="togglePanel()" title="Schließen">✕</button>
+      <div id="panel-tabs">
+        <div class="ptab active" onclick="showTab('bauen')">Bauen</div>
+        <div class="ptab" onclick="showTab('forschung')">Forschung</div>
+        <div class="ptab" onclick="showTab('dorf')">Dorf</div>
+      </div>
+      <div id="panel-content"></div>
+      <div id="log-box">
+        <div id="log-title">CHRONIK</div>
+        <div id="log"></div>
+      </div>
+      <div id="bottom-btns">
+        <button id="prestige-btn" onclick="prestige()">✦ Aufsteigen ✦</button>
+        <button class="action-btn" onclick="resetGame()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT MODAL -->
+  <div id="event-overlay">
+    <div id="event-modal">
+      <div id="event-inner"></div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+  <div id="notify"></div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/game.js"></script>
+</body>
+
+</html>

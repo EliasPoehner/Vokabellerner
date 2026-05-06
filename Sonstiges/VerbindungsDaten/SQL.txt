@@ -1,0 +1,6 @@
+Host:
+10.0.104.73
+URL:
+jdbc:sqlserver://10.0.104.73
+LizenzServer:
+http://jetbrainslic/

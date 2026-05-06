@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solitär, Spider & FreeCell</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --felt-dark: #112e1c;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --card-w: 80px;
+      --card-h: 112px;
+      --card-r: 8px;
+      --red: #c0392b;
+      --black: #1a1a2e;
+      --card-bg: #fefcf7;
+      --card-border: #d4c9a8;
+      --back-bg: #1e2a4a;
+      --back-border: #4a6fa8;
+      --back-pat: rgba(74, 111, 168, 0.3);
+    }
+
+    body {
+      background: var(--felt-dark);
+      background-image:
+        radial-gradient(ellipse at 30% 20%, rgba(34, 92, 56, 0.6) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(17, 46, 28, 0.8) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.03) 4px, rgba(0, 0, 0, 0.03) 8px);
+      min-height: 100vh;
+      font-family: 'DM Mono', monospace;
+      color: var(--gold);
+      user-select: none;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(4px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+      color: rgba(201, 168, 76, 0.75);
+    }
+
+    .stat-val {
+      color: var(--gold-light);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 7px 18px;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 4px;
+      background: rgba(201, 168, 76, 0.1);
+      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      background: rgba(201, 168, 76, 0.2);
+      border-color: var(--gold);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .mode-toggle {
+      display: flex;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mode-btn {
+      padding: 7px 14px;
+      border: none;
+      background: rgba(201, 168, 76, 0.05);
+      color: rgba(201, 168, 76, 0.55);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+    }
+
+    .mode-btn+.mode-btn {
+      border-left: 1px solid rgba(201, 168, 76, 0.3);
+    }
+
+    .mode-btn.active {
+      background: rgba(201, 168, 76, 0.2);
+      color: var(--gold-light);
+    }
+
+    #game {
+      padding: 20px 28px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .top-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      align-items: flex-start;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    /* ── SLOT ── */
+    .slot {
+      width: var(--card-w);
+      height: var(--card-h);
+      border: 2px dashed rgba(201, 168, 76, 0.25);
+      border-radius: var(--card-r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .slot.drop-hi {
+      border-color: var(--gold);
+      background: rgba(201, 168, 76, 0.1);
+    }
+
+    .slot-icon {
+      font-size: 28px;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    /* ── PILE WRAPPERS ── */
+    .tableau-pile,
+    .foundation-pile,
+    #stock-pile,
+    #waste-pile {
+      width: var(--card-w);
+      min-height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .tableau-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      width: var(--card-w);
+      height: var(--card-h);
+      border-radius: var(--card-r);
+      position: absolute;
+      cursor: grab;
+    }
+
+    .card.face-down {
+      cursor: default;
+    }
+
+    .card.flippable {
+      cursor: pointer;
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--card-r);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+    }
+
+    .card.face-down .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--card-r);
+      backface-visibility: hidden;
+    }
+
+    .card-front {
+      background: var(--card-bg);
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navy blue back — clearly distinct from the green felt */
+    .card-back {
+      background: var(--back-bg);
+      transform: rotateY(180deg);
+      border: 3px solid var(--back-border);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(45deg, var(--back-pat) 0, var(--back-pat) 1px, transparent 1px, transparent 8px),
+        repeating-linear-gradient(-45deg, var(--back-pat) 0, var(--back-pat) 1px, transparent 1px, transparent 8px);
+    }
+
+    .card-back::after {
+      content: '✦';
+      font-size: 20px;
+      color: rgba(74, 111, 168, 0.7);
+      position: relative;
+      z-index: 1;
+    }
+
+    .corner-tl,
+    .corner-br {
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+    }
+
+    .corner-tl {
+      align-self: flex-start;
+    }
+
+    .corner-br {
+      align-self: flex-end;
+      transform: rotate(180deg);
+    }
+
+    .rank {
+      font-size: 16px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .suit-small {
+      font-size: 11px;
+      display: block;
+    }
+
+    .center-suit {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .card.red .rank,
+    .card.red .suit-small,
+    .card.red .center-suit {
+      color: var(--red);
+    }
+
+    .card.black .rank,
+    .card.black .suit-small,
+    .card.black .center-suit {
+      color: var(--black);
+    }
+
+    /* Drop highlight on pile containers */
+    .pile-drop {
+      outline: 2px solid rgba(201, 168, 76, 0.65);
+      border-radius: var(--card-r);
+    }
+
+    /* 3-card waste fan: extra width to show fanned cards */
+    #waste-pile {
+      transition: width 0.2s;
+    }
+
+    #waste-pile.fan {
+      width: 120px;
+    }
+
+    /* ── DRAG GHOST ── */
+    #drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+
+    #drag-ghost .card {
+      position: relative;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.65);
+    }
+
+    #drag-ghost .card+.card {
+      margin-top: -86px;
+    }
+
+    /* ── WIN ── */
+    #win-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #win-screen.show {
+      display: flex;
+    }
+
+    .win-box {
+      background: var(--felt-dark);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 12px;
+      padding: 48px 64px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(201, 168, 76, 0.15);
+    }
+
+    .win-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      color: var(--gold-light);
+      margin-bottom: 12px;
+    }
+
+    .win-sub {
+      color: rgba(201, 168, 76, 0.7);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .confetti {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* ── SPIDER LAYOUT ── */
+    #spider-game {
+      display: none;
+      padding: 16px 16px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    #spider-game.active {
+      display: block;
+    }
+
+    #game.hidden {
+      display: none;
+    }
+
+    .spider-top-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .spider-tableau-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .spider-tableau-pile {
+      width: var(--card-w);
+      min-height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    #spider-stock-pile {
+      width: var(--card-w);
+      height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .spider-deck-count {
+      position: absolute;
+      bottom: -18px;
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: rgba(201, 168, 76, 0.5);
+    }
+
+    .spider-foundation-slot {
+      width: var(--card-w);
+      height: var(--card-h);
+      border: 2px dashed rgba(201, 168, 76, 0.25);
+      border-radius: var(--card-r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .spider-foundation-slot.filled {
+      border: none;
+    }
+
+    .spider-foundation-slot .slot-icon {
+      font-size: 22px;
+      opacity: 0.2;
+    }
+
+    .spider-complete-badge {
+      width: var(--card-w);
+      height: var(--card-h);
+      border-radius: var(--card-r);
+      background: linear-gradient(135deg, #1a3a28, #224d36);
+      border: 2px solid rgba(201, 168, 76, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .spider-spacer {
+      flex: 1;
+      min-width: 8px;
+    }
+
+    /* Spider responsive: 10 columns need more space */
+    #spider-game {
+      --spider-card-w: clamp(60px, 8.5vw, 80px);
+    }
+
+    #spider-game .spider-tableau-pile,
+    #spider-game #spider-stock-pile,
+    #spider-game .spider-foundation-slot {
+      width: var(--spider-card-w);
+    }
+
+    #spider-game .card {
+      width: var(--spider-card-w);
+    }
+
+    #spider-game .spider-tableau-row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .suits-toggle {
+      display: flex;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .suits-btn {
+      padding: 7px 12px;
+      border: none;
+      background: rgba(201, 168, 76, 0.05);
+      color: rgba(201, 168, 76, 0.55);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+    }
+
+    .suits-btn+.suits-btn {
+      border-left: 1px solid rgba(201, 168, 76, 0.3);
+    }
+
+    .suits-btn.active {
+      background: rgba(201, 168, 76, 0.2);
+      color: var(--gold-light);
+    }
+
+    /* Game mode selector */
+    .game-toggle {
+      display: flex;
+      border: 1px solid rgba(201, 168, 76, 0.5);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .game-btn {
+      padding: 7px 16px;
+      border: none;
+      background: rgba(201, 168, 76, 0.05);
+      color: rgba(201, 168, 76, 0.55);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+    }
+
+    .game-btn+.game-btn {
+      border-left: 1px solid rgba(201, 168, 76, 0.4);
+    }
+
+    .game-btn.active {
+      background: rgba(201, 168, 76, 0.25);
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+
+    /* Completed sequence flash animation */
+    @keyframes sequenceComplete {
+      0% {
+        box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.8);
+      }
+
+      50% {
+        box-shadow: 0 0 0 12px rgba(201, 168, 76, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+      }
+    }
+
+    .seq-flash {
+      animation: sequenceComplete 0.6s ease-out;
+    }
+
+    /* ── FREECELL LAYOUT ── */
+    #freecell-game {
+      display: none;
+      padding: 20px 24px;
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    #freecell-game.active {
+      display: block;
+    }
+
+    .fc-top-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .fc-tableau-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .fc-tableau-pile {
+      width: var(--card-w);
+      min-height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .fc-free-slot {
+      width: var(--card-w);
+      min-height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .fc-foundation-pile {
+      width: var(--card-w);
+      min-height: var(--card-h);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Responsive: 8 columns need room */
+    #freecell-game {
+      --fc-card-w: clamp(62px, 9vw, 80px);
+    }
+
+    #freecell-game .fc-tableau-pile,
+    #freecell-game .fc-free-slot,
+    #freecell-game .fc-foundation-pile {
+      width: var(--fc-card-w);
+    }
+
+    #freecell-game .card {
+      width: var(--fc-card-w);
+    }
+
+    /* ── HUB BACK BUTTON ── */
+    .hub-back-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px 0;
+    }
+
+    .hub-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-decoration: none;
+      border: 1px solid var(--cyan);
+      padding: 7px 14px;
+      transition: color .2s, border-color .2s, box-shadow .2s;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .hub-back-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .hub-back-arrow {
+      font-size: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <header>
+    <div class="title" id="header-title">SOLITÄR</div>
+    <div class="stats">
+      <div>ZÜGE <span class="stat-val" id="move-count">0</span></div>
+      <div>ZEIT <span class="stat-val" id="timer">0:00</span></div>
+      <div>PUNKTE <span class="stat-val" id="score">0</span></div>
+    </div>
+    <div class="header-btns">
+      <div class="game-toggle">
+        <button class="game-btn active" id="game-btn-klondike" onclick="switchGame('klondike')">KLONDIKE</button>
+        <button class="game-btn" id="game-btn-spider" onclick="switchGame('spider')">SPIDER</button>
+        <button class="game-btn" id="game-btn-freecell" onclick="switchGame('freecell')">FREECELL</button>
+      </div>
+      <div class="mode-toggle" id="klondike-modes">
+        <button class="mode-btn active" id="mode-btn-1" onclick="setMode(1)">1 Karte</button>
+        <button class="mode-btn" id="mode-btn-3" onclick="setMode(3)">3 Karten</button>
+      </div>
+      <div class="suits-toggle" id="spider-modes" style="display:none;">
+        <button class="suits-btn active" id="suits-btn-1" onclick="setSpiderSuits(1)">1 Farbe</button>
+        <button class="suits-btn" id="suits-btn-2" onclick="setSpiderSuits(2)">2 Farben</button>
+        <button class="suits-btn" id="suits-btn-4" onclick="setSpiderSuits(4)">4 Farben</button>
+      </div>
+      <button class="btn" onclick="currentGame==='klondike'?undoMove():currentGame==='spider'?spiderUndo():fcUndo()">↩ UNDO</button>
+      <button class="btn" onclick="currentGame==='klondike'?newGame():currentGame==='spider'?newSpiderGame():newFreecellGame()">⟳ NEU</button>
+    </div>
+  </header>
+  <div class="hub-back-bar">
+    <a class="hub-back-btn" href="O:\work\Allgemein\Hub.html"
+      onclick="if(window.history.length>1){history.back();return false;}">
+      <span class="hub-back-arrow">←</span> F11 HUB · Arcade
+    </a>
+  </div>
+
+  <div id="game">
+    <div class="top-row">
+      <div id="stock-pile"></div>
+      <div id="waste-pile"></div>
+      <div class="spacer"></div>
+      <div id="foundation-0" class="foundation-pile"></div>
+      <div id="foundation-1" class="foundation-pile"></div>
+      <div id="foundation-2" class="foundation-pile"></div>
+      <div id="foundation-3" class="foundation-pile"></div>
+    </div>
+    <div class="tableau-row">
+      <div id="tableau-0" class="tableau-pile"></div>
+      <div id="tableau-1" class="tableau-pile"></div>
+      <div id="tableau-2" class="tableau-pile"></div>
+      <div id="tableau-3" class="tableau-pile"></div>
+      <div id="tableau-4" class="tableau-pile"></div>
+      <div id="tableau-5" class="tableau-pile"></div>
+      <div id="tableau-6" class="tableau-pile"></div>
+    </div>
+  </div>
+
+  <!-- SPIDER GAME -->
+  <div id="spider-game">
+    <div class="spider-top-row">
+      <div id="spider-stock-pile"></div>
+      <div class="spider-spacer"></div>
+      <div id="spider-foundations"></div>
+    </div>
+    <div class="spider-tableau-row" id="spider-tableau-row"></div>
+  </div>
+
+  <!-- FREECELL GAME -->
+  <div id="freecell-game">
+    <div class="fc-top-row">
+      <div id="fc-free-0" class="fc-free-slot"></div>
+      <div id="fc-free-1" class="fc-free-slot"></div>
+      <div id="fc-free-2" class="fc-free-slot"></div>
+      <div id="fc-free-3" class="fc-free-slot"></div>
+      <div class="spacer"></div>
+      <div id="fc-found-0" class="fc-foundation-pile"></div>
+      <div id="fc-found-1" class="fc-foundation-pile"></div>
+      <div id="fc-found-2" class="fc-foundation-pile"></div>
+      <div id="fc-found-3" class="fc-foundation-pile"></div>
+    </div>
+    <div class="fc-tableau-row" id="fc-tableau-row">
+      <div id="fc-col-0" class="fc-tableau-pile"></div>
+      <div id="fc-col-1" class="fc-tableau-pile"></div>
+      <div id="fc-col-2" class="fc-tableau-pile"></div>
+      <div id="fc-col-3" class="fc-tableau-pile"></div>
+      <div id="fc-col-4" class="fc-tableau-pile"></div>
+      <div id="fc-col-5" class="fc-tableau-pile"></div>
+      <div id="fc-col-6" class="fc-tableau-pile"></div>
+      <div id="fc-col-7" class="fc-tableau-pile"></div>
+    </div>
+  </div>
+
+  <div id="drag-ghost"></div>
+
+  <div id="win-screen">
+    <div class="win-box">
+      <div class="win-title">Gewonnen! 🎉</div>
+      <div class="win-sub" id="win-stats"></div>
+      <button class="btn" onclick="winNewGame()" style="font-size:14px;padding:12px 32px;">NEUES SPIEL</button>
+    </div>
+  </div>
+
+  <script>
+    // ── CONSTANTS ──
+    const SUITS = ['♠', '♥', '♦', '♣'];
+    const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const COLOR = { '♠': 'black', '♣': 'black', '♥': 'red', '♦': 'red' };
+    const FD_OFF = 16, FU_OFF = 26;
+
+    // ── GAME MODE ──
+    let currentGame = 'klondike';
+    let spiderState = {};
+    let spiderHistory = [];
+    let spiderTimerIv = null, spiderStartTime = null;
+    let spiderSuits = 1;
+
+    // ── FREECELL STATE ──
+    let fcState = {};
+    let fcHistory = [];
+    let fcTimerIv = null, fcStartTime = null;
+
+    // ── GAME STATE ──
+    let state = {};
+    let history = [];
+    let moves = 0, score = 0;
+    let timerIv = null, startTime = null;
+    let drawMode = 1;
+
+    function setMode(n) {
+      drawMode = n;
+      document.getElementById('mode-btn-1').classList.toggle('active', n === 1);
+      document.getElementById('mode-btn-3').classList.toggle('active', n === 3);
+      newGame();
+    }
+
+    // ── DRAG STATE ──
+    let drag = null;
+    // { cards, srcType, srcIdx, cardIdx, offX, offY, startX, startY, moved }
+
+    const ghost = document.getElementById('drag-ghost');
+
+    // ════════════════════════════════════════
+    //  DECK
+    // ════════════════════════════════════════
+    function createDeck() {
+      return SUITS.flatMap(s => RANKS.map((r, i) => ({ suit: s, rank: r, value: i + 1, color: COLOR[s], faceUp: false, id: s + r })));
+    }
+    function shuffle(a) {
+      a = [...a];
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; }
+      return a;
+    }
+
+    // ════════════════════════════════════════
+    //  INIT
+    // ════════════════════════════════════════
+    function newGame() {
+      clearInterval(timerIv);
+      moves = 0; score = 0; history = []; drag = null;
+      document.getElementById('move-count').textContent = '0';
+      document.getElementById('score').textContent = '0';
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('win-screen').classList.remove('show');
+      document.querySelectorAll('.confetti').forEach(e => e.remove());
+      ghost.style.display = 'none';
+
+      const deck = shuffle(createDeck());
+      const tableau = Array.from({ length: 7 }, () => []);
+      for (let i = 0; i < 7; i++)
+        for (let j = 0; j <= i; j++) { const c = deck.pop(); c.faceUp = (j === i); tableau[i].push(c); }
+
+      state = { stock: deck.map(c => ({ ...c, faceUp: false })), waste: [], foundation: [[], [], [], []], tableau };
+      startTime = Date.now();
+      timerIv = setInterval(() => {
+        const s = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('timer').textContent = `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+      }, 1000);
+      render();
+    }
+
+    // ════════════════════════════════════════
+    //  SCORE / UNDO
+    // ════════════════════════════════════════
+    function addScore(n) { score = Math.max(0, score + n); document.getElementById('score').textContent = score; }
+    function incMoves() { moves++; document.getElementById('move-count').textContent = moves; }
+    function saveState() { history.push(JSON.parse(JSON.stringify(state))); if (history.length > 60) history.shift(); }
+    function undoMove() { if (!history.length) return; state = history.pop(); drag = null; addScore(-5); render(); }
+
+    // ════════════════════════════════════════
+    //  RULES
+    // ════════════════════════════════════════
+    function canTableau(card, pile) {
+      if (!pile.length) return card.value === 13;
+      const t = pile[pile.length - 1];
+      return t.faceUp && t.value === card.value + 1 && t.color !== card.color;
+    }
+    function canFoundation(card, pile) {
+      if (!pile.length) return card.value === 1;
+      const t = pile[pile.length - 1];
+      return t.suit === card.suit && card.value === t.value + 1;
+    }
+    function bestFoundation(card) {
+      for (let i = 0; i < 4; i++)if (canFoundation(card, state.foundation[i])) return i;
+      return -1;
+    }
+
+    // ════════════════════════════════════════
+    //  MOVE HELPERS
+    // ════════════════════════════════════════
+    function removeFromSrc(type, idx, count) {
+      if (type === 'waste') state.waste.pop();
+      else if (type === 'tableau') state.tableau[idx].splice(state.tableau[idx].length - count);
+      else if (type === 'foundation') state.foundation[idx].pop();
+    }
+    function flipNewTop(type, idx) {
+      if (type !== 'tableau') return;
+      const p = state.tableau[idx];
+      if (p.length && !p[p.length - 1].faceUp) { p[p.length - 1].faceUp = true; addScore(5); }
+    }
+    function doDropTableau(cards, destIdx) {
+      if (!canTableau(cards[0], state.tableau[destIdx])) return false;
+      state.tableau[destIdx].push(...cards.map(c => ({ ...c, faceUp: true })));
+      return true;
+    }
+    function doDropFoundation(cards, destIdx) {
+      if (cards.length !== 1 || !canFoundation(cards[0], state.foundation[destIdx])) return false;
+      state.foundation[destIdx].push({ ...cards[0], faceUp: true });
+      return true;
+    }
+
+    // ════════════════════════════════════════
+    //  STOCK CLICK
+    // ════════════════════════════════════════
+    function handleStockClick() {
+      saveState();
+      if (!state.stock.length) {
+        // Reset: put waste back into stock (all face-down)
+        state.stock = state.waste.slice().reverse().map(c => ({ ...c, faceUp: false }));
+        state.waste = [];
+        addScore(-15);
+      } else {
+        const count = Math.min(drawMode, state.stock.length);
+        for (let i = 0; i < count; i++) {
+          const c = state.stock.pop(); c.faceUp = true; state.waste.push(c);
+        }
+      }
+      incMoves(); render();
+    }
+
+    // ════════════════════════════════════════
+    //  DOUBLE-CLICK → FOUNDATION
+    // ════════════════════════════════════════
+    function tryAutoFoundation(card, srcType, srcIdx) {
+      if (!card.faceUp) return;
+      const fi = bestFoundation(card);
+      if (fi === -1) return;
+      saveState();
+      removeFromSrc(srcType, srcIdx, 1);
+      flipNewTop(srcType, srcIdx);
+      state.foundation[fi].push({ ...card, faceUp: true });
+      addScore(15); incMoves(); render(); checkWin();
+    }
+
+    // ════════════════════════════════════════
+    //  DRAG & DROP
+    // ════════════════════════════════════════
+    function startDrag(e, card, srcType, srcIdx, cardIdx) {
+      if (!card.faceUp) return;
+      e.preventDefault(); e.stopPropagation();
+
+      const cards = srcType === 'tableau'
+        ? state.tableau[srcIdx].slice(cardIdx)
+        : [card];
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      drag = {
+        cards, srcType, srcIdx, cardIdx,
+        offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+        startX: e.clientX, startY: e.clientY, moved: false
+      };
+
+      // Build ghost stack
+      ghost.innerHTML = '';
+      cards.forEach(c => {
+        const el = buildCard(c); el.style.position = 'relative'; ghost.appendChild(el);
+      });
+      moveGhost(e.clientX, e.clientY);
+      ghost.style.display = 'block';
+
+      // Visually hide source cards
+      setSrcOpacity(0);
+    }
+
+    function moveGhost(x, y) {
+      ghost.style.left = (x - drag.offX) + 'px';
+      ghost.style.top = (y - drag.offY) + 'px';
+    }
+
+    function setSrcOpacity(op) {
+      if (!drag) return;
+      if (drag.srcType === 'tableau') {
+        const el = document.getElementById(`tableau-${drag.srcIdx}`);
+        if (el) el.querySelectorAll('.card').forEach((c, i) => { if (i >= drag.cardIdx) c.style.opacity = op; });
+      } else if (drag.srcType === 'waste') {
+        const c = document.getElementById('waste-pile')?.querySelector('.card');
+        if (c) c.style.opacity = op;
+      } else if (drag.srcType === 'foundation') {
+        const c = document.getElementById(`foundation-${drag.srcIdx}`)?.querySelector('.card');
+        if (c) c.style.opacity = op;
+      }
+      // fc-tableau and fc-freecell opacity is managed directly in their own drag/drop handlers
+    }
+
+    // Find the pile under cursor (Klondike only)
+    function getPileAt(x, y) {
+      for (let i = 0; i < 7; i++) {
+        const el = document.getElementById(`tableau-${i}`);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+          if (drag && drag.srcType === 'tableau' && drag.srcIdx === i) continue;
+          return { type: 'tableau', idx: i };
+        }
+      }
+      for (let i = 0; i < 4; i++) {
+        const r = document.getElementById(`foundation-${i}`).getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return { type: 'foundation', idx: i };
+      }
+      return null;
+    }
+
+    function clearDropHighlights() {
+      document.querySelectorAll('.pile-drop').forEach(el => el.classList.remove('pile-drop'));
+      document.querySelectorAll('.slot.drop-hi').forEach(el => el.classList.remove('drop-hi'));
+    }
+
+    document.addEventListener('mousemove', e => {
+      if (!drag) return;
+      const dx = Math.abs(e.clientX - drag.startX), dy = Math.abs(e.clientY - drag.startY);
+      if (dx > 4 || dy > 4) drag.moved = true;
+      moveGhost(e.clientX, e.clientY);
+
+      if (drag.srcType === 'spider-tableau') {
+        document.querySelectorAll('.spider-tableau-pile').forEach(el => el.classList.remove('pile-drop'));
+        const idx = getSpiderPileAt(e.clientX, e.clientY);
+        if (idx >= 0) document.getElementById(`spider-col-${idx}`).classList.add('pile-drop');
+        return;
+      }
+
+      if (drag.srcType === 'fc-tableau' || drag.srcType === 'fc-freecell') {
+        document.querySelectorAll('.fc-tableau-pile, .fc-free-slot, .fc-foundation-pile').forEach(el => el.classList.remove('pile-drop'));
+        const target = getFcPileAt(e.clientX, e.clientY);
+        if (target) {
+          const id = target.type === 'fc-tableau' ? `fc-col-${target.idx}`
+            : target.type === 'fc-freecell' ? `fc-free-${target.idx}`
+            : `fc-found-${target.idx}`;
+          const el = document.getElementById(id);
+          if (el) el.classList.add('pile-drop');
+        }
+        return;
+      }
+
+      clearDropHighlights();
+      const target = getPileAt(e.clientX, e.clientY);
+      if (target) {
+        const el = document.getElementById(target.type === 'tableau' ? `tableau-${target.idx}` : `foundation-${target.idx}`);
+        el.classList.add('pile-drop');
+      }
+    });
+
+    document.addEventListener('mouseup', e => {
+      if (!drag) return;
+      ghost.style.display = 'none';
+
+      // ── SPIDER DROP ──
+      if (drag.srcType === 'spider-tableau') {
+        document.querySelectorAll('.spider-tableau-pile').forEach(el => el.classList.remove('pile-drop'));
+        const srcEl = document.getElementById(`spider-col-${drag.srcIdx}`);
+        if (srcEl) srcEl.querySelectorAll('.card').forEach((el, i) => { if (i >= drag.cardIdx) el.style.opacity = 1; });
+        if (!drag.moved) { drag = null; return; }
+        const destIdx = getSpiderPileAt(e.clientX, e.clientY);
+        if (destIdx >= 0 && canSpiderDrop(drag.cards, spiderState.tableau[destIdx])) {
+          spiderSaveState();
+          spiderState.tableau[drag.srcIdx].splice(drag.cardIdx, drag.cards.length);
+          const srcPile = spiderState.tableau[drag.srcIdx];
+          if (srcPile.length && !srcPile[srcPile.length - 1].faceUp) srcPile[srcPile.length - 1].faceUp = true;
+          drag.cards.forEach(c => spiderState.tableau[destIdx].push({ ...c, faceUp: true }));
+          moves++; document.getElementById('move-count').textContent = moves;
+          addScore(1);
+          checkAndRemoveComplete(destIdx);
+          drag = null; spiderRender(); checkSpiderWin(); return;
+        }
+        drag = null; spiderRender(); return;
+      }
+
+      // ── FREECELL DROP ──
+      if (drag.srcType === 'fc-tableau' || drag.srcType === 'fc-freecell') {
+        document.querySelectorAll('.fc-tableau-pile, .fc-free-slot, .fc-foundation-pile').forEach(el => el.classList.remove('pile-drop'));
+        // Restore source opacity
+        if (drag.srcType === 'fc-freecell') {
+          const el = document.getElementById(`fc-free-${drag.srcIdx}`)?.querySelector('.card');
+          if (el) el.style.opacity = 1;
+        } else {
+          const el = document.getElementById(`fc-col-${drag.srcIdx}`);
+          if (el) el.querySelectorAll('.card').forEach((c, i) => { if (i >= drag.cardIdx) c.style.opacity = 1; });
+        }
+        if (!drag.moved) { drag = null; return; }
+
+        const target = getFcPileAt(e.clientX, e.clientY);
+        if (target) {
+          const card = drag.cards[0];
+          const isSingle = drag.cards.length === 1;
+
+          if (target.type === 'fc-freecell' && isSingle && fcState.freecells[target.idx] === null) {
+            fcSaveState();
+            fcRemoveFromSrc(drag.srcType, drag.srcIdx, 1);
+            fcState.freecells[target.idx] = { ...card, faceUp: true };
+            addScore(2); incMoves(); drag = null; fcRender(); return;
+          }
+
+          if (target.type === 'fc-foundation' && isSingle && canFcFoundation(card, fcState.foundation[target.idx])) {
+            fcSaveState();
+            fcRemoveFromSrc(drag.srcType, drag.srcIdx, 1);
+            fcState.foundation[target.idx].push({ ...card, faceUp: true });
+            addScore(15); incMoves(); drag = null; fcRender(); checkFcWin(); return;
+          }
+
+          if (target.type === 'fc-tableau') {
+            const destPile = fcState.tableau[target.idx];
+            const destIsEmpty = destPile.length === 0;
+            if (canFcTableau(card, destPile) && drag.cards.length <= fcMaxMovable(destIsEmpty)) {
+              fcSaveState();
+              fcRemoveFromSrc(drag.srcType, drag.srcIdx, drag.cards.length);
+              drag.cards.forEach(c => fcState.tableau[target.idx].push({ ...c, faceUp: true }));
+              addScore(3); incMoves(); drag = null; fcRender(); return;
+            }
+          }
+        }
+        drag = null; fcRender(); return;
+      }
+
+      // ── KLONDIKE DROP ──
+      clearDropHighlights();
+      if (!drag.moved) {
+        setSrcOpacity(1);
+        drag = null; return;
+      }
+      setSrcOpacity(1);
+      const target = getPileAt(e.clientX, e.clientY);
+      if (target) {
+        saveState();
+        let ok = false;
+        if (target.type === 'tableau') ok = doDropTableau(drag.cards, target.idx);
+        if (target.type === 'foundation') ok = doDropFoundation(drag.cards, target.idx);
+        if (ok) {
+          removeFromSrc(drag.srcType, drag.srcIdx, drag.cards.length);
+          flipNewTop(drag.srcType, drag.srcIdx);
+          addScore(target.type === 'foundation' ? 15 : (drag.srcType === 'waste' ? 10 : 3));
+          incMoves(); drag = null; render(); checkWin(); return;
+        } else {
+          history.pop();
+        }
+      }
+      drag = null; render();
+    });
+
+    // ════════════════════════════════════════
+    //  WIN
+    // ════════════════════════════════════════
+    function checkWin() {
+      if (!state.foundation.every(f => f.length === 13)) return;
+      clearInterval(timerIv);
+      const s = Math.floor((Date.now() - startTime) / 1000);
+      document.getElementById('win-stats').textContent =
+        `${moves} Züge · ${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')} · ${score} Punkte`;
+      document.getElementById('win-screen').classList.add('show');
+      spawnConfetti();
+    }
+
+    function winNewGame() {
+      if (currentGame === 'klondike') newGame();
+      else if (currentGame === 'spider') newSpiderGame();
+      else newFreecellGame();
+    }
+
+    function spawnConfetti() {
+      const cols = ['#c9a84c', '#e8c97a', '#fff', '#c0392b', '#4a6fa8'];
+      for (let i = 0; i < 90; i++) {
+        const el = document.createElement('div'); el.className = 'confetti';
+        el.style.cssText = `left:${Math.random() * 100}vw;top:-10px;width:${6 + Math.random() * 8}px;height:${6 + Math.random() * 8}px;background:${cols[Math.random() * cols.length | 0]};border-radius:${Math.random() > .5 ? '50%' : '2px'};animation:fall ${2 + Math.random() * 3}s ${Math.random() * 2}s linear forwards;`;
+        document.body.appendChild(el);
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  BUILD CARD ELEMENT
+    // ════════════════════════════════════════
+    function buildCard(card) {
+      const el = document.createElement('div');
+      el.className = `card ${card.color}${card.faceUp ? '' : ' face-down'}`;
+      el.innerHTML = `
+    <div class="card-inner">
+      <div class="card-front">
+        <div class="corner-tl"><span class="rank">${card.rank}</span><span class="suit-small">${card.suit}</span></div>
+        <div class="center-suit">${card.suit}</div>
+        <div class="corner-br"><span class="rank">${card.rank}</span><span class="suit-small">${card.suit}</span></div>
+      </div>
+      <div class="card-back"></div>
+    </div>`;
+      return el;
+    }
+
+    // ════════════════════════════════════════
+    //  RENDER
+    // ════════════════════════════════════════
+    function render() {
+      renderStock();
+      renderWaste();
+      renderFoundations();
+      renderTableau();
+    }
+
+    function renderStock() {
+      const el = document.getElementById('stock-pile');
+      el.innerHTML = '';
+      if (!state.stock.length) {
+        const s = makeSlot('↺'); s.style.cursor = 'pointer';
+        s.addEventListener('click', handleStockClick); el.appendChild(s);
+      } else {
+        const top = buildCard({ suit: '', rank: '', value: 0, color: 'black', faceUp: false });
+        top.style.position = 'relative'; top.style.cursor = 'pointer';
+        top.addEventListener('click', handleStockClick); el.appendChild(top);
+        const cnt = document.createElement('div');
+        cnt.style.cssText = 'position:absolute;bottom:-18px;width:100%;text-align:center;font-size:10px;color:rgba(201,168,76,0.5);';
+        cnt.textContent = state.stock.length; el.appendChild(cnt);
+      }
+    }
+
+    function renderWaste() {
+      const el = document.getElementById('waste-pile');
+      el.innerHTML = '';
+
+      if (!state.waste.length) {
+        el.classList.remove('fan');
+        el.appendChild(makeSlot(''));
+        return;
+      }
+
+      if (drawMode === 1) {
+        el.classList.remove('fan');
+        const card = state.waste[state.waste.length - 1];
+        const ci = state.waste.length - 1;
+        const cel = buildCard(card);
+        cel.style.position = 'relative';
+        cel.addEventListener('mousedown', e => startDrag(e, card, 'waste', 0, ci));
+        cel.addEventListener('dblclick', () => tryAutoFoundation(card, 'waste', 0));
+        el.appendChild(cel);
+      } else {
+        // Draw-3: fan up to 3 topmost waste cards, only top is playable
+        el.classList.add('fan');
+        const total = state.waste.length;
+        const showCount = Math.min(3, total);
+        const FAN_OFF = 20; // horizontal offset per card
+        el.style.minHeight = 'var(--card-h)';
+
+        for (let i = showCount - 1; i >= 0; i--) {
+          const wIdx = total - 1 - i; // index in waste array (0=bottom)
+          const card = state.waste[total - 1 - i];
+          const cel = buildCard(card);
+          cel.style.left = ((showCount - 1 - i) * FAN_OFF) + 'px';
+          cel.style.zIndex = i + 1;
+
+          // Only the topmost card (i===0) is draggable/playable
+          if (i === 0) {
+            cel.style.zIndex = 10;
+            cel.addEventListener('mousedown', e => startDrag(e, card, 'waste', 0, wIdx));
+            cel.addEventListener('dblclick', () => tryAutoFoundation(card, 'waste', 0));
+          } else {
+            cel.style.cursor = 'default';
+            cel.style.pointerEvents = 'none';
+          }
+          el.appendChild(cel);
+        }
+      }
+    }
+
+    function renderFoundations() {
+      const ICONS = ['♠', '♥', '♦', '♣'];
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`foundation-${i}`);
+        el.innerHTML = '';
+        const pile = state.foundation[i];
+        if (!pile.length) { el.appendChild(makeSlot(ICONS[i])); continue; }
+        const card = pile[pile.length - 1];
+        const cel = buildCard(card);
+        cel.style.position = 'relative';
+        cel.addEventListener('mousedown', e => startDrag(e, card, 'foundation', i, pile.length - 1));
+        el.appendChild(cel);
+      }
+    }
+
+    function renderTableau() {
+      for (let i = 0; i < 7; i++) {
+        const el = document.getElementById(`tableau-${i}`);
+        el.innerHTML = '';
+        const pile = state.tableau[i];
+        if (!pile.length) {
+          const s = makeSlot(''); s.style.position = 'relative';
+          el.appendChild(s); el.style.minHeight = 'var(--card-h)'; continue;
+        }
+        let totalH = 0;
+        pile.forEach((c, j) => { totalH += j === 0 ? 0 : (c.faceUp ? FU_OFF : FD_OFF); });
+        el.style.minHeight = (totalH + 112) + 'px';
+        let top = 0;
+        pile.forEach((card, j) => {
+          const cel = buildCard(card);
+          cel.style.top = top + 'px';
+          if (card.faceUp) {
+            cel.addEventListener('mousedown', e => startDrag(e, card, 'tableau', i, j));
+            cel.addEventListener('dblclick', () => tryAutoFoundation(card, 'tableau', i));
+          } else if (j === pile.length - 1) {
+            cel.classList.add('flippable');
+            cel.addEventListener('click', () => {
+              saveState(); state.tableau[i][j].faceUp = true;
+              addScore(5); incMoves(); render();
+            });
+          }
+          el.appendChild(cel);
+          top += j < pile.length - 1 ? (card.faceUp ? FU_OFF : FD_OFF) : 0;
+        });
+      }
+    }
+
+    function makeSlot(icon) {
+      const el = document.createElement('div'); el.className = 'slot';
+      el.innerHTML = `<span class="slot-icon">${icon}</span>`; return el;
+    }
+
+    function switchGame(which) {
+      currentGame = which;
+      document.getElementById('game-btn-klondike').classList.toggle('active', which === 'klondike');
+      document.getElementById('game-btn-spider').classList.toggle('active', which === 'spider');
+      document.getElementById('game-btn-freecell').classList.toggle('active', which === 'freecell');
+      document.getElementById('klondike-modes').style.display = which === 'klondike' ? '' : 'none';
+      document.getElementById('spider-modes').style.display = which === 'spider' ? '' : 'none';
+      document.getElementById('game').classList.toggle('hidden', which !== 'klondike');
+      document.getElementById('spider-game').classList.toggle('active', which === 'spider');
+      document.getElementById('freecell-game').classList.toggle('active', which === 'freecell');
+      document.getElementById('header-title').textContent =
+        which === 'klondike' ? 'SOLITÄR' : which === 'spider' ? 'SPIDER' : 'FREECELL';
+      if (which === 'spider') newSpiderGame();
+      else if (which === 'freecell') newFreecellGame();
+      else { clearInterval(timerIv); newGame(); }
+    }
+
+    // ════════════════════════════════════════
+    //  SPIDER SUITS / DECK
+    // ════════════════════════════════════════
+    function setSpiderSuits(n) {
+      spiderSuits = n;
+      ['1', '2', '4'].forEach(x => document.getElementById(`suits-btn-${x}`).classList.toggle('active', parseInt(x) === n));
+      newSpiderGame();
+    }
+
+    // Spider uses 2 decks (104 cards), 10 tableau piles, 8 foundations
+    function createSpiderDeck() {
+      const suits4 = ['♠', '♥', '♦', '♣'];
+      let usedSuits;
+      if (spiderSuits === 1) usedSuits = ['♠', '♠', '♠', '♠']; // 4× spades
+      else if (spiderSuits === 2) usedSuits = ['♠', '♠', '♥', '♥']; // 2× spades, 2× hearts
+      else usedSuits = suits4;             // all 4
+      // 2 decks worth = 8 copies of each suit-set
+      let cards = [];
+      for (let rep = 0; rep < 2; rep++) {
+        usedSuits.forEach(s => {
+          RANKS.forEach((r, i) => {
+            cards.push({ suit: s, rank: r, value: i + 1, color: COLOR[s], faceUp: false, id: `${s}${r}_${rep}_${Math.random()}` });
+          });
+        });
+      }
+      return shuffle(cards);
+    }
+
+    function newSpiderGame() {
+      clearInterval(spiderTimerIv);
+      spiderHistory = [];
+      moves = 0; score = 0;
+      document.getElementById('move-count').textContent = '0';
+      document.getElementById('score').textContent = '0';
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('win-screen').classList.remove('show');
+      document.querySelectorAll('.confetti').forEach(e => e.remove());
+      ghost.style.display = 'none'; drag = null;
+
+      const deck = createSpiderDeck(); // 104 cards
+      // Deal: piles 0-3 get 6 cards, piles 4-9 get 5 cards → 54 dealt, 50 in stock
+      const tableau = Array.from({ length: 10 }, () => []);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 6; j++) { const c = deck.pop(); c.faceUp = (j === 5); tableau[i].push(c); }
+      for (let i = 4; i < 10; i++) for (let j = 0; j < 5; j++) { const c = deck.pop(); c.faceUp = (j === 4); tableau[i].push(c); }
+
+      spiderState = { tableau, stock: deck, completed: 0 }; // completed = number of finished sequences
+      spiderStartTime = Date.now();
+      spiderTimerIv = setInterval(() => {
+        const s = Math.floor((Date.now() - spiderStartTime) / 1000);
+        document.getElementById('timer').textContent = `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+      }, 1000);
+
+      spiderRender();
+    }
+
+    // Spider move validation: can only drag a face-up sequence in descending order (same suit for clean moves, but ANY descending is allowed)
+    function getSpiderSequence(pile, fromIdx) {
+      const seq = pile.slice(fromIdx);
+      if (!seq[0].faceUp) return null;
+      for (let i = 1; i < seq.length; i++) {
+        if (!seq[i].faceUp) return null;
+        if (seq[i].value !== seq[i - 1].value - 1) return null;
+      }
+      return seq;
+    }
+
+    function canSpiderDrop(cards, pile) {
+      if (!pile.length) return true; // empty pile accepts anything
+      const top = pile[pile.length - 1];
+      if (!top.faceUp) return false;
+      return top.value === cards[0].value + 1; // just needs descending (any suit)
+    }
+
+    function checkSpiderComplete(pileIdx) {
+      const pile = spiderState.tableau[pileIdx];
+      if (pile.length < 13) return false;
+      const top13 = pile.slice(pile.length - 13);
+      if (!top13.every(c => c.faceUp)) return false;
+      if (top13[0].value !== 13) return false;
+      for (let i = 1; i < 13; i++) {
+        if (top13[i].value !== top13[i - 1].value - 1) return false;
+        if (top13[i].suit !== top13[0].suit) return false;
+      }
+      return true;
+    }
+
+    function spiderSaveState() {
+      spiderHistory.push(JSON.parse(JSON.stringify(spiderState)));
+      if (spiderHistory.length > 60) spiderHistory.shift();
+    }
+    function spiderUndo() {
+      if (!spiderHistory.length) return;
+      spiderState = spiderHistory.pop();
+      drag = null;
+      addScore(-5);
+      spiderRender();
+    }
+
+    // Deal new row from stock
+    function spiderDealFromStock() {
+      if (spiderState.stock.length < 10) return; // need 10
+      // Check no empty columns
+      if (spiderState.tableau.some(p => p.length === 0)) {
+        // Flash the empty piles — indicate it's not allowed
+        document.querySelectorAll('.spider-tableau-pile').forEach((el, i) => {
+          if (spiderState.tableau[i].length === 0) {
+            el.style.outline = '2px solid rgba(192,57,43,0.8)';
+            setTimeout(() => el.style.outline = '', 800);
+          }
+        });
+        return;
+      }
+      spiderSaveState();
+      for (let i = 0; i < 10; i++) {
+        const c = spiderState.stock.pop();
+        c.faceUp = true;
+        spiderState.tableau[i].push(c);
+      }
+      moves++; document.getElementById('move-count').textContent = moves;
+      // Check completions
+      for (let i = 0; i < 10; i++) checkAndRemoveComplete(i);
+      spiderRender();
+      checkSpiderWin();
+    }
+
+    function checkAndRemoveComplete(pileIdx) {
+      if (checkSpiderComplete(pileIdx)) {
+        spiderState.tableau[pileIdx].splice(spiderState.tableau[pileIdx].length - 13, 13);
+        spiderState.completed++;
+        addScore(100);
+      }
+    }
+
+    function checkSpiderWin() {
+      if (spiderState.completed === 8) {
+        clearInterval(spiderTimerIv);
+        const s = Math.floor((Date.now() - spiderStartTime) / 1000);
+        document.getElementById('win-stats').textContent =
+          `${moves} Züge · ${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')} · ${score} Punkte`;
+        document.getElementById('win-screen').classList.add('show');
+        spawnConfetti();
+      }
+    }
+
+    // ════════════════════════════════════════
+    //  SPIDER DRAG & DROP
+    // ════════════════════════════════════════
+    function startSpiderDrag(e, pileIdx, cardIdx) {
+      const pile = spiderState.tableau[pileIdx];
+      const seq = getSpiderSequence(pile, cardIdx);
+      if (!seq) return;
+      e.preventDefault(); e.stopPropagation();
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      drag = {
+        cards: seq, srcType: 'spider-tableau', srcIdx: pileIdx, cardIdx,
+        offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+        startX: e.clientX, startY: e.clientY, moved: false
+      };
+
+      ghost.innerHTML = '';
+      seq.forEach(c => { const el = buildCard(c); el.style.position = 'relative'; ghost.appendChild(el); });
+      moveGhost(e.clientX, e.clientY);
+      ghost.style.display = 'block';
+
+      // Hide source
+      const els = document.getElementById(`spider-col-${pileIdx}`).querySelectorAll('.card');
+      els.forEach((el, i) => { if (i >= cardIdx) el.style.opacity = 0; });
+    }
+
+    function getSpiderPileAt(x, y) {
+      for (let i = 0; i < 10; i++) {
+        const el = document.getElementById(`spider-col-${i}`);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+          if (drag && drag.srcType === 'spider-tableau' && drag.srcIdx === i) continue;
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    // ════════════════════════════════════════
+    //  SPIDER RENDER
+    // ════════════════════════════════════════
+    function spiderRender() {
+      renderSpiderStock();
+      renderSpiderFoundations();
+      renderSpiderTableau();
+    }
+
+    function renderSpiderStock() {
+      const el = document.getElementById('spider-stock-pile');
+      el.innerHTML = '';
+      const remaining = spiderState.stock.length / 10; // how many deals left
+      if (spiderState.stock.length > 0) {
+        // Stack visual of remaining deals
+        const maxShow = Math.min(Math.ceil(remaining), 5);
+        for (let i = 0; i < maxShow; i++) {
+          const card = buildCard({ suit: '', rank: '', value: 0, color: 'black', faceUp: false });
+          card.style.position = 'absolute';
+          card.style.top = (-i * 2) + 'px';
+          card.style.left = (i * 1) + 'px';
+          card.style.zIndex = i;
+          card.style.cursor = 'pointer';
+          if (i === maxShow - 1) card.addEventListener('click', spiderDealFromStock);
+          el.appendChild(card);
+        }
+        const cnt = document.createElement('div');
+        cnt.className = 'spider-deck-count';
+        cnt.textContent = `${spiderState.stock.length / 10} Deals`;
+        el.appendChild(cnt);
+      } else {
+        const s = document.createElement('div');
+        s.className = 'spider-foundation-slot';
+        s.innerHTML = '<span class="slot-icon">∅</span>';
+        el.appendChild(s);
+      }
+    }
+
+    function renderSpiderFoundations() {
+      const container = document.getElementById('spider-foundations');
+      container.innerHTML = '';
+      container.style.cssText = 'display:flex;gap:8px;';
+      for (let i = 0; i < 8; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'spider-foundation-slot';
+        if (i < spiderState.completed) {
+          slot.classList.add('filled');
+          slot.innerHTML = '<div class="spider-complete-badge">♠</div>';
+        } else {
+          slot.innerHTML = `<span class="slot-icon">♠</span>`;
+        }
+        container.appendChild(slot);
+      }
+    }
+
+    function renderSpiderTableau() {
+      let row = document.getElementById('spider-tableau-row');
+      row.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const colEl = document.createElement('div');
+        colEl.className = 'spider-tableau-pile';
+        colEl.id = `spider-col-${i}`;
+        const pile = spiderState.tableau[i];
+        if (!pile.length) {
+          const s = document.createElement('div');
+          s.className = 'slot'; s.style.position = 'relative';
+          s.innerHTML = '<span class="slot-icon"></span>';
+          colEl.appendChild(s);
+          colEl.style.minHeight = 'var(--card-h)';
+          row.appendChild(colEl);
+          continue;
+        }
+        let totalH = 0;
+        pile.forEach((c, j) => { totalH += j === 0 ? 0 : (c.faceUp ? FU_OFF : FD_OFF); });
+        colEl.style.minHeight = (totalH + 112) + 'px';
+        let top = 0;
+        pile.forEach((card, j) => {
+          const cel = buildCard(card);
+          cel.style.top = top + 'px';
+          if (card.faceUp) {
+            const seq = getSpiderSequence(pile, j);
+            if (seq) {
+              cel.addEventListener('mousedown', e => startSpiderDrag(e, i, j));
+            }
+            // Double-click: move to best column (quality of life)
+            cel.addEventListener('dblclick', () => spiderAutoMove(i, j));
+          } else if (j === pile.length - 1) {
+            cel.classList.add('flippable');
+            cel.addEventListener('click', () => {
+              spiderSaveState();
+              spiderState.tableau[i][j].faceUp = true;
+              addScore(5); moves++; document.getElementById('move-count').textContent = moves;
+              spiderRender();
+            });
+          }
+          colEl.appendChild(cel);
+          top += j < pile.length - 1 ? (card.faceUp ? FU_OFF : FD_OFF) : 0;
+        });
+        row.appendChild(colEl);
+      }
+    }
+
+    function spiderAutoMove(pileIdx, cardIdx) {
+      const pile = spiderState.tableau[pileIdx];
+      const seq = getSpiderSequence(pile, cardIdx);
+      if (!seq) return;
+      // Find best dest: prefer same suit continuation
+      let bestDest = -1, bestScore = -1;
+      for (let i = 0; i < 10; i++) {
+        if (i === pileIdx) continue;
+        const destPile = spiderState.tableau[i];
+        if (!canSpiderDrop(seq, destPile)) continue;
+        let s = 0;
+        if (destPile.length && destPile[destPile.length - 1].suit === seq[0].suit) s = 2;
+        else if (destPile.length) s = 1;
+        if (s > bestScore) { bestScore = s; bestDest = i; }
+      }
+      if (bestDest === -1) return;
+      spiderSaveState();
+      spiderState.tableau[pileIdx].splice(cardIdx, seq.length);
+      const srcPile = spiderState.tableau[pileIdx];
+      if (srcPile.length && !srcPile[srcPile.length - 1].faceUp) srcPile[srcPile.length - 1].faceUp = true;
+      seq.forEach(c => spiderState.tableau[bestDest].push({ ...c, faceUp: true }));
+      moves++; document.getElementById('move-count').textContent = moves;
+      addScore(1);
+      checkAndRemoveComplete(bestDest);
+      spiderRender();
+      checkSpiderWin();
+    }
+
+    // ════════════════════════════════════════
+    //  FREECELL
+    // ════════════════════════════════════════
+    function newFreecellGame() {
+      clearInterval(fcTimerIv);
+      fcHistory = []; drag = null;
+      moves = 0; score = 0;
+      document.getElementById('move-count').textContent = '0';
+      document.getElementById('score').textContent = '0';
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('win-screen').classList.remove('show');
+      document.querySelectorAll('.confetti').forEach(e => e.remove());
+      ghost.style.display = 'none';
+
+      // Deal 52 face-up cards left→right across 8 columns: cols 0-3 get 7, cols 4-7 get 6
+      const deck = shuffle(createDeck());
+      deck.forEach(c => c.faceUp = true);
+      const tableau = Array.from({ length: 8 }, () => []);
+      deck.forEach((c, i) => tableau[i % 8].push(c));
+
+      fcState = { freecells: [null, null, null, null], foundation: [[], [], [], []], tableau };
+      fcStartTime = Date.now();
+      fcTimerIv = setInterval(() => {
+        const s = Math.floor((Date.now() - fcStartTime) / 1000);
+        document.getElementById('timer').textContent = `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+      }, 1000);
+      fcRender();
+    }
+
+    // ── FreeCell Rules ──
+    function canFcTableau(card, pile) {
+      if (!pile.length) return true; // empty accepts any card
+      const top = pile[pile.length - 1];
+      return top.color !== card.color && top.value === card.value + 1;
+    }
+    function canFcFoundation(card, pile) {
+      if (!pile.length) return card.value === 1;
+      const top = pile[pile.length - 1];
+      return top.suit === card.suit && card.value === top.value + 1;
+    }
+    function fcBestFoundation(card) {
+      for (let i = 0; i < 4; i++) if (canFcFoundation(card, fcState.foundation[i])) return i;
+      return -1;
+    }
+    // Max cards movable as a group (super-move formula)
+    function fcMaxMovable(destIsEmpty) {
+      const freeCells = fcState.freecells.filter(c => c === null).length;
+      const emptyPiles = fcState.tableau.filter(p => p.length === 0).length;
+      const e = destIsEmpty ? Math.max(0, emptyPiles - 1) : emptyPiles;
+      return (freeCells + 1) * Math.pow(2, e);
+    }
+
+    // ── FreeCell History ──
+    function fcSaveState() {
+      fcHistory.push(JSON.parse(JSON.stringify(fcState)));
+      if (fcHistory.length > 60) fcHistory.shift();
+    }
+    function fcUndo() {
+      if (!fcHistory.length) return;
+      fcState = fcHistory.pop();
+      drag = null;
+      addScore(-5);
+      fcRender();
+    }
+
+    // ── FreeCell Helpers ──
+    function fcRemoveFromSrc(srcType, srcIdx, count) {
+      if (srcType === 'fc-freecell') fcState.freecells[srcIdx] = null;
+      else fcState.tableau[srcIdx].splice(fcState.tableau[srcIdx].length - count);
+    }
+
+    function fcTryAutoFoundation(card, srcType, srcIdx) {
+      const fi = fcBestFoundation(card);
+      if (fi === -1) return;
+      fcSaveState();
+      fcRemoveFromSrc(srcType, srcIdx, 1);
+      fcState.foundation[fi].push({ ...card, faceUp: true });
+      addScore(15); incMoves(); fcRender(); checkFcWin();
+    }
+
+    // Build the longest valid alternating-color descending sequence from cardIdx
+    function getFcDragSeq(pile, cardIdx) {
+      const cards = [pile[cardIdx]];
+      for (let i = cardIdx + 1; i < pile.length; i++) {
+        const prev = pile[i - 1], curr = pile[i];
+        if (curr.color !== prev.color && curr.value === prev.value - 1) cards.push(curr);
+        else break;
+      }
+      return cards;
+    }
+
+    // ── FreeCell Drag ──
+    function startFcDrag(e, card, srcType, srcIdx, cardIdx) {
+      e.preventDefault(); e.stopPropagation();
+      const cards = srcType === 'fc-freecell' ? [card] : getFcDragSeq(fcState.tableau[srcIdx], cardIdx);
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      drag = {
+        cards, srcType, srcIdx, cardIdx,
+        offX: e.clientX - rect.left, offY: e.clientY - rect.top,
+        startX: e.clientX, startY: e.clientY, moved: false
+      };
+
+      ghost.innerHTML = '';
+      cards.forEach(c => { const el = buildCard(c); el.style.position = 'relative'; ghost.appendChild(el); });
+      moveGhost(e.clientX, e.clientY);
+      ghost.style.display = 'block';
+
+      // Hide source cards
+      if (srcType === 'fc-freecell') {
+        const el = document.getElementById(`fc-free-${srcIdx}`)?.querySelector('.card');
+        if (el) el.style.opacity = 0;
+      } else {
+        const el = document.getElementById(`fc-col-${srcIdx}`);
+        if (el) el.querySelectorAll('.card').forEach((c, i) => { if (i >= cardIdx) c.style.opacity = 0; });
+      }
+    }
+
+    function getFcPileAt(x, y) {
+      for (let i = 0; i < 8; i++) {
+        const el = document.getElementById(`fc-col-${i}`);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+          if (drag && drag.srcType === 'fc-tableau' && drag.srcIdx === i) continue;
+          return { type: 'fc-tableau', idx: i };
+        }
+      }
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`fc-free-${i}`);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return { type: 'fc-freecell', idx: i };
+      }
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`fc-found-${i}`);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return { type: 'fc-foundation', idx: i };
+      }
+      return null;
+    }
+
+    // ── FreeCell Win ──
+    function checkFcWin() {
+      if (!fcState.foundation.every(f => f.length === 13)) return;
+      clearInterval(fcTimerIv);
+      const s = Math.floor((Date.now() - fcStartTime) / 1000);
+      document.getElementById('win-stats').textContent =
+        `${moves} Züge · ${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')} · ${score} Punkte`;
+      document.getElementById('win-screen').classList.add('show');
+      spawnConfetti();
+    }
+
+    // ── FreeCell Render ──
+    function fcRender() {
+      renderFcFreecells();
+      renderFcFoundations();
+      renderFcTableau();
+    }
+
+    function renderFcFreecells() {
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`fc-free-${i}`);
+        el.innerHTML = '';
+        const card = fcState.freecells[i];
+        if (!card) {
+          el.appendChild(makeSlot(''));
+        } else {
+          const cel = buildCard(card);
+          cel.style.position = 'relative';
+          cel.addEventListener('mousedown', e => startFcDrag(e, card, 'fc-freecell', i, 0));
+          cel.addEventListener('dblclick', () => fcTryAutoFoundation(card, 'fc-freecell', i));
+          el.appendChild(cel);
+        }
+      }
+    }
+
+    function renderFcFoundations() {
+      const ICONS = ['♠', '♥', '♦', '♣'];
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`fc-found-${i}`);
+        el.innerHTML = '';
+        const pile = fcState.foundation[i];
+        if (!pile.length) { el.appendChild(makeSlot(ICONS[i])); continue; }
+        const card = pile[pile.length - 1];
+        const cel = buildCard(card);
+        cel.style.position = 'relative';
+        el.appendChild(cel);
+      }
+    }
+
+    function renderFcTableau() {
+      for (let i = 0; i < 8; i++) {
+        const el = document.getElementById(`fc-col-${i}`);
+        el.innerHTML = '';
+        const pile = fcState.tableau[i];
+        if (!pile.length) {
+          const s = makeSlot(''); s.style.position = 'relative';
+          el.appendChild(s); el.style.minHeight = 'var(--card-h)'; continue;
+        }
+        let totalH = 0;
+        pile.forEach((c, j) => { totalH += j === 0 ? 0 : FU_OFF; });
+        el.style.minHeight = (totalH + 112) + 'px';
+        let top = 0;
+        pile.forEach((card, j) => {
+          const cel = buildCard(card);
+          cel.style.top = top + 'px';
+          cel.addEventListener('mousedown', e => startFcDrag(e, card, 'fc-tableau', i, j));
+          if (j === pile.length - 1) {
+            cel.addEventListener('dblclick', () => fcTryAutoFoundation(card, 'fc-tableau', i));
+          }
+          el.appendChild(cel);
+          top += j < pile.length - 1 ? FU_OFF : 0;
+        });
+      }
+    }
+
+    newGame();
+  </script>
+</body>
+
+</html>

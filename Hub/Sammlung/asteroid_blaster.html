@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asteroid Blaster</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --amber:#EF9F27;--teal:#5DCAA5;--purple:#AFA9EC;--coral:#D85A30;--pink:#D4537E;
+  --bg:#05050d;--surface:#0d0d1a;--border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:rgba(255,255,255,0.35);
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:default;}
+#cv{display:block;background:var(--bg);cursor:none;}
+#gw{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;user-select:none;}
+#hud{display:flex;gap:0;width:640px;justify-content:space-between;background:var(--surface);border:0.5px solid var(--border);border-radius:6px;padding:8px 20px;}
+#hud .hitem{display:flex;flex-direction:column;align-items:center;gap:2px;}
+#hud .label{font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;}
+#hud .value{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--text);}
+.v-amber{color:var(--amber)!important;} .v-teal{color:var(--teal)!important;} .v-purple{color:var(--purple)!important;} .v-coral{color:var(--coral)!important;}
+#cc{position:relative;border-radius:6px;overflow:hidden;border:0.5px solid var(--border);}
+#cc::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.05) 3px,rgba(0,0,0,0.05) 4px);pointer-events:none;border-radius:6px;z-index:2;}
+
+#wf{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:30px;font-weight:900;color:var(--teal);letter-spacing:.2em;pointer-events:none;opacity:0;transition:opacity .4s;text-shadow:0 0 30px rgba(93,202,165,.6);z-index:5;}
+/* OVERLAY */
+#ol{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,5,13,.92);border-radius:6px;z-index:20;}
+#ol h1{font-family:'Orbitron',monospace;font-size:34px;font-weight:900;letter-spacing:.12em;color:#fff;text-align:center;text-shadow:0 0 30px rgba(239,159,39,.4);}
+#ol .sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.9;letter-spacing:.04em;}
+#ol .sub b{color:var(--teal);font-weight:400;}
+.obtn{padding:10px 34px;font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:4px;border:1px solid var(--amber);background:transparent;color:var(--amber);transition:background .15s,color .15s,box-shadow .15s;}
+.obtn:hover{background:var(--amber);color:#05050d;box-shadow:0 0 20px rgba(239,159,39,.35);}
+.obtn.teal-btn{border-color:var(--teal);color:var(--teal);}
+.obtn.teal-btn:hover{background:var(--teal);color:#05050d;box-shadow:0 0 20px rgba(93,202,165,.35);}
+/* PERK SCREEN */
+#perk-screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(5,5,13,.95);border-radius:6px;z-index:20;}
+#perk-screen h2{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;color:var(--teal);letter-spacing:.15em;}
+#perk-screen p{font-size:11px;color:var(--muted);}
+#perks-container{display:flex;gap:14px;}
+.perk-card{width:160px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:border-color .15s,background .15s;}
+.perk-card:hover{border-color:var(--amber);background:rgba(239,159,39,.07);}
+.perk-icon{font-size:28px;line-height:1;}
+.perk-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--text);text-align:center;letter-spacing:.06em;}
+.perk-desc{font-size:10px;color:var(--muted);text-align:center;line-height:1.5;}
+/* HIGHSCORE */
+#hs-list{display:flex;flex-direction:column;gap:4px;width:240px;}
+.hs-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:3px 0;border-bottom:0.5px solid var(--border);}
+.hs-row:first-child .hs-sc{color:var(--amber);} .hs-row .hs-rank{color:var(--purple);}
+/* COMBO */
+#combo-display{position:absolute;top:10px;right:10px;font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--amber);letter-spacing:.1em;opacity:0;transition:opacity .3s;pointer-events:none;z-index:4;}
+/* POWERUP ICONS in HUD */
+#pu-hud{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.pu-badge{font-size:11px;padding:2px 7px;border-radius:3px;border:0.5px solid;font-family:'Share Tech Mono',monospace;position:relative;overflow:hidden;}
+.pu-badge .pu-timer-bar{position:absolute;bottom:0;left:0;height:2px;transition:width .1s linear;}
+.pu-shield{border-color:var(--teal);color:var(--teal);background:rgba(93,202,165,.1);}
+.pu-shield .pu-timer-bar{background:var(--teal);}
+.pu-rapid{border-color:var(--amber);color:var(--amber);background:rgba(239,159,39,.1);}
+.pu-rapid .pu-timer-bar{background:var(--amber);}
+.pu-triple{border-color:var(--purple);color:var(--purple);background:rgba(175,169,236,.1);}
+.pu-triple .pu-timer-bar{background:var(--purple);}
+.pu-synergy{border-color:var(--pink);color:var(--pink);background:rgba(212,83,126,.1);animation:synergy-pulse 1s ease-in-out infinite alternate;}
+.pu-synergy .pu-timer-bar{background:var(--pink);}
+@keyframes synergy-pulse{from{box-shadow:0 0 4px rgba(212,83,126,.3);}to{box-shadow:0 0 10px rgba(212,83,126,.7);}}
+/* KEYS */
+#keys{display:flex;gap:8px;font-size:11px;color:var(--muted);flex-wrap:wrap;justify-content:center;letter-spacing:.04em;width:640px;}
+#keys kbd{background:var(--surface);border:0.5px solid rgba(255,255,255,.15);border-radius:3px;padding:1px 6px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);}
+#keys .sep{color:rgba(255,255,255,.1);}
+</style>
+</head>
+<body>
+<div id="gw">
+  <div id="hud">
+    <div class="hitem"><div class="label">Score</div><div class="value v-amber" id="sc">0</div></div>
+    <div class="hitem"><div class="label">Combo</div><div class="value v-coral" id="cb">x1</div></div>
+    <div class="hitem"><div class="label">Wave</div><div class="value v-teal" id="wv">1</div></div>
+    <div class="hitem"><div class="label">Leben</div><div class="value" id="lv">♥ ♥ ♥</div></div>
+    <div class="hitem"><div class="label">Power-ups</div><div id="pu-hud">—</div></div>
+    <div class="hitem"><div class="label">Highscore</div><div class="value v-purple" id="hsc">0</div></div>
+  </div>
+
+  <div id="cc">
+    <canvas id="cv" width="640" height="500"></canvas>
+    <div id="wf"></div>
+    <div id="combo-display"></div>
+
+    <!-- MAIN OVERLAY -->
+    <div id="ol">
+      <h1>ASTEROID<br>BLASTER</h1>
+      <p class="sub">
+        Schieß alle Asteroiden ab — große splitten in kleinere.<br>
+        UFOs tauchen ab Wave 3 auf. Power-ups sammeln.<br>
+        <b>W/↑</b> Schub &nbsp; <b>A D/←→</b> Drehen &nbsp; <b>Leertaste</b> / <b>LMB</b> Schießen &nbsp; <b>S</b> Bremsen &nbsp; <b>B</b> Bombe<br>
+        🖱️ <b>Maus</b> Zielen &nbsp; <b>RMB</b> Schub &nbsp; <b>ESC</b> Pause
+      </p>
+      <div id="hs-section"></div>
+      <button class="obtn" id="startBtn">STARTEN</button>
+    </div>
+
+    <!-- PERK SCREEN -->
+    <div id="perk-screen">
+      <h2>UPGRADE WÄHLEN</h2>
+      <p>Wave abgeschlossen — wähle einen Perk</p>
+      <div id="perks-container"></div>
+    </div>
+
+    <!-- PAUSE SCREEN -->
+    <div id="pause-screen" style="display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(5,5,13,.92);border-radius:6px;z-index:20;">
+      <h2 style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:.15em;color:var(--teal);text-shadow:0 0 20px rgba(93,202,165,.4)">PAUSE</h2>
+      <p style="font-size:11px;color:var(--muted);letter-spacing:.08em">ESC oder Klick zum Weiterspielen</p>
+      <div style="display:flex;gap:12px;margin-top:4px;">
+        <button class="obtn teal-btn" id="resumeBtn">WEITERSPIELEN</button>
+        <button class="obtn" id="quitBtn">AUFGEBEN</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="keys">
+    <kbd>W</kbd>/<kbd>↑</kbd> Schub <span class="sep">|</span>
+    <kbd>A</kbd><kbd>D</kbd>/<kbd>←</kbd><kbd>→</kbd> Drehen <span class="sep">|</span>
+    <kbd>Leertaste</kbd>/<kbd>LMB</kbd> Schießen <span class="sep">|</span>
+    <kbd>S</kbd> Bremsen <span class="sep">|</span>
+    <kbd>B</kbd> Bombe <span class="sep">|</span>
+    <kbd>ESC</kbd> Pause <span class="sep">|</span>
+    🖱️ Zielen &nbsp; RMB Schub
+  </div>
+</div>
+
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const ol=document.getElementById('ol'),perkScreen=document.getElementById('perk-screen');
+const wf=document.getElementById('wf'),comboDisplay=document.getElementById('combo-display');
+const W=640,H=500;
+
+// --- STATE ---
+let ship,bullets,ufoBullets,asteroids,ufos,particles,powerups;
+let score,lives,wave,gameRunning=false,keys={},lastTime=0,shootCooldown=0;
+let combo=1,comboTimer=0,comboTimeout=180;
+let shakeX=0,shakeY=0,shakeStrength=0;
+// Mouse state
+let mouse={x:W/2,y:H/2,left:false,right:false,onCanvas:false};
+// Pause state
+let gamePaused=false;
+
+// --- POINTER LOCK HELPERS ---
+const cvEl=document.getElementById('cv');
+function lockPointer(){ cvEl.requestPointerLock(); }
+function unlockPointer(){ if(document.pointerLockElement===cvEl) document.exitPointerLock(); }
+document.addEventListener('pointerlockchange',()=>{
+  if(document.pointerLockElement===cvEl){
+    mouse.onCanvas=true;
+    // center virtual cursor
+    mouse.x=W/2; mouse.y=H/2;
+  } else {
+    mouse.onCanvas=false;
+    mouse.left=false; mouse.right=false;
+  }
+});
+// Perks: permanent upgrades gained between waves
+let perks={speedBoost:0,extraBomb:0,comboExtend:0,bulletPierce:false};
+// Timed active powerups (from drops)
+let activePU={shield:0,rapid:0,triple:0};
+// Permanent perk stacks from perk screen
+let permPerks={rapidFire:0,tripleShot:false,spreadBurst:false,ghostMode:false,piercing:false};
+let isSpreadBurst=false,isGhostMode=false;
+let synergyActive=''; // 'spreadBurst' | 'ghostMode' | ''
+let highscores=JSON.parse(localStorage.getItem('ab_hs')||'[]');
+let pendingWave=false;
+
+// Stars
+let stars=[];
+for(let i=0;i<110;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.2,a:Math.random()*.5+.15,t:Math.random()*Math.PI*2});
+let starTime=0;
+
+// --- PERK DEFINITIONS ---
+// PERK DEFINITIONS — minWave gates when they appear
+const PERK_POOL=[
+  {id:'rapidFire',  icon:'⚡',name:'RAPID FIRE',   desc:'Schussrate dauerhaft +40%',          minWave:1},
+  {id:'tripleShot', icon:'✦', name:'TRIPLE SHOT',  desc:'3 Schüsse permanent (auch aus Drops)',minWave:1},
+  {id:'speedBoost', icon:'▶', name:'SPEED',         desc:'Höchstgeschw. +20%',                 minWave:1},
+  {id:'extraBomb',  icon:'◉', name:'BOMBE',          desc:'+1 Bombe (B drücken)',               minWave:1},
+  {id:'extraLife',  icon:'♥', name:'EXTRA LEBEN',   desc:'Ein Leben zurück (max 5)',            minWave:1},
+  {id:'comboExtend',icon:'⟳', name:'COMBO+',        desc:'Combo-Fenster 50% länger',           minWave:2},
+  {id:'piercing',   icon:'⇒', name:'PIERCE',        desc:'Kugeln durchdringen 1 Asteroid',     minWave:3},
+  // Synergy perks — unlock only when prerequisites are active
+  {id:'spreadBurst',icon:'✸', name:'SPREAD BURST',  desc:'SYNERGIE: Triple+Rapid → Breitfeuer (kurze Range, Flächendeckung)',minWave:4,requires:['rapidFire','tripleShot']},
+  {id:'ghostMode',  icon:'◌', name:'GHOST MODE',    desc:'SYNERGIE: Schild+Speed → Unverwundbar & schnell, aber kein Schuss',minWave:5,requires:['speedBoost']},
+];
+
+function getRandomPerks(){
+  // Filter by wave and synergy requirements
+  const available=PERK_POOL.filter(p=>{
+    if(p.minWave>wave) return false;
+    if(p.requires){
+      return p.requires.every(req=>permPerks[req]||permPerks[req]>0);
+    }
+    return true;
+  });
+  const pool=[...available];
+  const chosen=[];
+  while(chosen.length<3&&pool.length>0){
+    const i=Math.floor(Math.random()*pool.length);
+    chosen.push(pool.splice(i,1)[0]);
+  }
+  return chosen;
+}
+
+function applyPerk(id){
+  if(id==='rapidFire')   permPerks.rapidFire=Math.min((permPerks.rapidFire||0)+1,3);
+  else if(id==='tripleShot') permPerks.tripleShot=true;
+  else if(id==='speedBoost') permPerks.speedBoost=(permPerks.speedBoost||0)+0.2;
+  else if(id==='extraLife')  lives=Math.min(lives+1,5);
+  else if(id==='extraBomb')  bombs++;
+  else if(id==='comboExtend') permPerks.comboExtend=(permPerks.comboExtend||0)+1;
+  else if(id==='piercing')   permPerks.piercing=true;
+  else if(id==='spreadBurst'){permPerks.spreadBurst=true;synergyActive='spreadBurst';}
+  else if(id==='ghostMode')  {permPerks.ghostMode=true;synergyActive='ghostMode';}
+  // shield still applies as temporary from perk
+  else if(id==='shield'){ship.invincible+=900;}
+  checkSynergies();
+  perkScreen.style.display='none';
+  lockPointer();
+  startNextWave();
+}
+
+function checkSynergies(){
+  // Auto-activate spread burst if both prerequisites are permed
+  if(permPerks.spreadBurst&&permPerks.tripleShot&&permPerks.rapidFire) synergyActive='spreadBurst';
+}
+
+function showPerkScreen(){
+  const chosen=getRandomPerks();
+  const container=document.getElementById('perks-container');
+  container.innerHTML='';
+  chosen.forEach(p=>{
+    const isSynergy=!!p.requires;
+    const card=document.createElement('div');
+    card.className='perk-card';
+    if(isSynergy) card.style.borderColor='var(--pink)';
+    card.innerHTML=`
+      <div class="perk-icon">${p.icon}</div>
+      <div class="perk-name" style="${isSynergy?'color:var(--pink)':''}">${p.name}</div>
+      ${isSynergy?'<div style="font-size:9px;color:var(--pink);letter-spacing:.08em">✦ SYNERGIE</div>':''}
+      <div class="perk-desc">${p.desc}</div>`;
+    card.onclick=()=>applyPerk(p.id);
+    container.appendChild(card);
+  });
+  perkScreen.style.display='flex';
+  unlockPointer();
+}
+
+// --- SHIP ---
+function Ship(){
+  return{x:W/2,y:H/2,vx:0,vy:0,angle:0,invincible:130,trail:[]};
+}
+
+// --- ASTEROIDS ---
+function spawnAsteroids(n,size,cx,cy){
+  const arr=[];
+  for(let i=0;i<n;i++){
+    let x,y;
+    if(cx!==undefined){x=cx+(Math.random()-.5)*30;y=cy+(Math.random()-.5)*30;}
+    else{do{x=Math.random()*W;y=Math.random()*H;}while(Math.hypot(x-W/2,y-H/2)<130);}
+    const speed=(Math.random()*.65+.3)*(1+wave*.09);
+    const angle=Math.random()*Math.PI*2;
+    const r=size===3?40:size===2?23:13;
+    const armor=size===3&&wave>=5&&Math.random()<.3?2:0;
+    arr.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      size,r,rot:0,rotSpd:(Math.random()-.5)*.045,verts:genVerts(r),armor,maxArmor:armor});
+  }
+  return arr;
+}
+
+function genVerts(r){
+  const n=Math.floor(Math.random()*4)+7,v=[];
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2;v.push({x:Math.cos(a)*r*(.72+Math.random()*.45),y:Math.sin(a)*r*(.72+Math.random()*.45)});}
+  return v;
+}
+
+// --- UFOs ---
+function spawnUFO(){
+  const side=Math.random()<.5;
+  return{x:side?-20:W+20,y:Math.random()*H*.7+50,vx:(side?1:-1)*(1+wave*.1),
+    vy:(Math.random()-.5)*1.2,shootTimer:Math.floor(80+Math.random()*80),hp:2,r:16};
+}
+
+// --- POWERUPS ---
+const PU_TYPES=[
+  {type:'shield',col:'#5DCAA5',label:'S'},
+  {type:'rapid',col:'#EF9F27',label:'R'},
+  {type:'triple',col:'#AFA9EC',label:'T'},
+  {type:'bomb',col:'#D85A30',label:'B'},
+];
+
+function maybeDrop(x,y){
+  if(Math.random()<.13){
+    const t=PU_TYPES[Math.floor(Math.random()*PU_TYPES.length)];
+    powerups.push({x,y,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,type:t.type,col:t.col,label:t.label,life:420,r:11});
+  }
+}
+
+// --- INIT ---
+function startGame(){
+  ship=Ship();bullets=[];ufoBullets=[];asteroids=[];ufos=[];particles=[];powerups=[];
+  score=0;lives=3;wave=1;combo=1;comboTimer=0;bombs=1;
+  permPerks={rapidFire:0,tripleShot:false,speedBoost:0,comboExtend:0,piercing:false,spreadBurst:false,ghostMode:false};
+  activePU={shield:0,rapid:0,triple:0};
+  synergyActive='';gamePaused=false;
+  asteroids=spawnAsteroids(4,3);
+  gameRunning=true;ol.style.display='none';perkScreen.style.display='none';
+  document.getElementById('pause-screen').style.display='none';
+  lockPointer();
+  updateHUD();requestAnimationFrame(loop);
+}
+
+function startNextWave(){
+  asteroids=spawnAsteroids(3+wave,3);
+  ship.invincible=Math.max(ship.invincible,100);
+  pendingWave=false;
+}
+
+// --- HUD ---
+function updateHUD(){
+  document.getElementById('sc').textContent=score;
+  document.getElementById('wv').textContent=wave;
+  document.getElementById('lv').textContent='♥ '.repeat(lives).trim();
+  document.getElementById('hsc').textContent=highscores.length?highscores[0].s:0;
+  document.getElementById('cb').textContent=combo>1?`x${combo}`:'x1';
+  const puh=document.getElementById('pu-hud');
+  const badges=[];
+  const maxShield=900, maxRapid=360, maxTriple=300;
+  if(ship&&ship.invincible>60){
+    const pct=Math.min(100,Math.round(ship.invincible/maxShield*100));
+    badges.push(`<span class="pu-badge pu-shield">SCHILD<span class="pu-timer-bar" style="width:${pct}%"></span></span>`);
+  }
+  if(activePU.rapid>0){
+    const pct=Math.min(100,Math.round(activePU.rapid/maxRapid*100));
+    badges.push(`<span class="pu-badge pu-rapid">RF<span class="pu-timer-bar" style="width:${pct}%"></span></span>`);
+  }
+  if(permPerks.rapidFire>0&&activePU.rapid<=0){
+    badges.push(`<span class="pu-badge pu-rapid">RF+${permPerks.rapidFire}</span>`);
+  }
+  if(activePU.triple>0){
+    const pct=Math.min(100,Math.round(activePU.triple/maxTriple*100));
+    badges.push(`<span class="pu-badge pu-triple">3x<span class="pu-timer-bar" style="width:${pct}%"></span></span>`);
+  }
+  if(permPerks.tripleShot&&activePU.triple<=0){
+    badges.push(`<span class="pu-badge pu-triple">3x ∞</span>`);
+  }
+  if(synergyActive==='spreadBurst') badges.push(`<span class="pu-badge pu-synergy">SPREAD</span>`);
+  if(synergyActive==='ghostMode')   badges.push(`<span class="pu-badge pu-synergy">GHOST</span>`);
+  if(permPerks.piercing) badges.push(`<span class="pu-badge pu-triple">⇒PIERCE</span>`);
+  if(bombs>0) badges.push(`<span class="pu-badge pu-rapid">💣${bombs}</span>`);
+  puh.innerHTML=badges.length?badges.join(''):'—';
+}
+
+// --- MAIN LOOP ---
+function loop(ts){
+  if(!gameRunning)return;
+  if(gamePaused){lastTime=ts;requestAnimationFrame(loop);return;}
+  const dt=Math.min((ts-lastTime)/16.67,3);lastTime=ts;
+  update(dt);draw();requestAnimationFrame(loop);
+}
+
+// --- WRAP ---
+function wrap(v,max){return((v%max)+max)%max;}
+
+// --- UPDATE ---
+function update(dt){
+  // ship movement
+  if(keys['ArrowLeft']||keys['KeyA']) ship.angle-=.055*dt;
+  if(keys['ArrowRight']||keys['KeyD']) ship.angle+=.055*dt;
+  // Mouse aiming — use pointer lock relative movement to move virtual cursor
+  if(document.pointerLockElement===cvEl){
+    mouse.x=Math.max(0,Math.min(W,mouse.x+(window._mouseMovX||0)));
+    mouse.y=Math.max(0,Math.min(H,mouse.y+(window._mouseMovY||0)));
+    window._mouseMovX=0;window._mouseMovY=0;
+    const targetAngle=Math.atan2(mouse.x-ship.x,-(mouse.y-ship.y));
+    let da=targetAngle-ship.angle;
+    while(da>Math.PI)da-=Math.PI*2;
+    while(da<-Math.PI)da+=Math.PI*2;
+    ship.angle+=da*Math.min(1,0.18*dt);
+  } else if(mouse.onCanvas){
+    const targetAngle=Math.atan2(mouse.x-ship.x,-(mouse.y-ship.y));
+    let da=targetAngle-ship.angle;
+    while(da>Math.PI)da-=Math.PI*2;
+    while(da<-Math.PI)da+=Math.PI*2;
+    ship.angle+=da*Math.min(1,0.18*dt);
+  }
+  const thrusting=keys['ArrowUp']||keys['KeyW']||mouse.right;
+  if(thrusting){
+    ship.vx+=Math.sin(ship.angle)*.19*dt;
+    ship.vy-=Math.cos(ship.angle)*.19*dt;
+    ship.trail.push({x:ship.x,y:ship.y,a:1});
+  }
+  if(keys['KeyS']){ship.vx*=Math.pow(.91,dt);ship.vy*=Math.pow(.91,dt);}
+
+  const ghostBoost=isGhostMode?0.6:0;
+  const maxSpd=(5.5+wave*.2)*(1+(permPerks.speedBoost||0)+ghostBoost);
+  const spd=Math.hypot(ship.vx,ship.vy);
+  if(spd>maxSpd){ship.vx=ship.vx/spd*maxSpd;ship.vy=ship.vy/spd*maxSpd;}
+  ship.vx*=Math.pow(.995,dt);ship.vy*=Math.pow(.995,dt);
+  ship.x=wrap(ship.x+ship.vx*dt,W);ship.y=wrap(ship.y+ship.vy*dt,H);
+  ship.trail=ship.trail.map(t=>({...t,a:t.a-.09*dt})).filter(t=>t.a>0);
+  if(ship.invincible>0) ship.invincible-=dt;
+
+  // tick timed powerups
+  if(activePU.rapid>0){activePU.rapid-=dt;if(activePU.rapid<0)activePU.rapid=0;}
+  if(activePU.triple>0){activePU.triple-=dt;if(activePU.triple<0)activePU.triple=0;}
+
+  // resolve effective fire state
+  const hasRapid=activePU.rapid>0||permPerks.rapidFire>0;
+  const hasTriple=activePU.triple>0||permPerks.tripleShot;
+  isSpreadBurst=synergyActive==='spreadBurst'&&hasTriple&&hasRapid;
+  isGhostMode=synergyActive==='ghostMode'&&ship.invincible>60;
+
+  // Ghost Mode: fast + invulnerable but no shooting
+  const rapidStacks=(activePU.rapid>0?1:0)+(permPerks.rapidFire||0);
+  const fireRate=isSpreadBurst?4:8/Math.pow(1.45,rapidStacks);
+
+  shootCooldown-=dt;
+  if(!isGhostMode&&(keys['Space']||mouse.left)&&shootCooldown<=0){
+    const bspd=10;
+    let angles;
+    if(isSpreadBurst){
+      // 5 bullets, short range
+      angles=[ship.angle-.36,ship.angle-.18,ship.angle,ship.angle+.18,ship.angle+.36];
+    } else if(hasTriple){
+      angles=[ship.angle-.18,ship.angle,ship.angle+.18];
+    } else {
+      angles=[ship.angle];
+    }
+    angles.forEach(a=>{
+      const blife=isSpreadBurst?28:55;
+      bullets.push({x:ship.x+Math.sin(a)*18,y:ship.y-Math.cos(a)*18,
+        vx:Math.sin(a)*bspd+ship.vx,vy:-Math.cos(a)*bspd+ship.vy,life:blife,
+        piercing:permPerks.piercing,pierceCount:1});
+    });
+    shootCooldown=fireRate;
+  }
+
+  // bomb
+  if(keys['KeyB']&&bombs>0){
+    bombs--;keys['KeyB']=false;
+    [...asteroids,...ufos].forEach(a=>explode(a.x,a.y,a.size||2));
+    score+=asteroids.length*30+ufos.length*100;
+    asteroids=[];ufos=[];
+    screenShake(12);
+  }
+
+  // combo timer — extended by comboExtend perk
+  const effectiveComboTimeout=comboTimeout*(1+0.5*(permPerks.comboExtend||0));
+  if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0){combo=1;comboDisplay.style.opacity='0';}}
+  // bullets
+  bullets=bullets.filter(b=>b.life>0).map(b=>{
+    b.x=wrap(b.x+b.vx*dt,W);b.y=wrap(b.y+b.vy*dt,H);b.life-=dt;return b;});
+  ufoBullets=ufoBullets.filter(b=>b.life>0).map(b=>{
+    b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;return b;});
+
+  // asteroids move
+  asteroids.forEach(a=>{a.x=wrap(a.x+a.vx*dt,W);a.y=wrap(a.y+a.vy*dt,H);a.rot+=a.rotSpd*dt;});
+
+  // bullet vs asteroid
+  let newAsts=[];
+  bullets=bullets.filter(b=>{
+    let hit=false;
+    asteroids=asteroids.filter(a=>{
+      if(hit&&!b.piercing)return true;
+      if(Math.hypot(b.x-a.x,b.y-a.y)<a.r){
+        if(b.piercing&&b.pierceCount>0){b.pierceCount--;}
+        else{hit=true;}
+        if(a.armor>0){a.armor--;explodeSmall(a.x,a.y);return true;}
+        explode(a.x,a.y,a.size);
+        maybeDrop(a.x,a.y);
+        const pts=(a.size===3?20:a.size===2?50:100)*combo;
+        score+=pts;
+        spawnScoreText(a.x,a.y,'+'+pts,a.size===3?'#EF9F27':a.size===2?'#5DCAA5':'#AFA9EC');
+        combo=Math.min(combo+1,8);comboTimer=effectiveComboTimeout;
+        showCombo();
+        if(a.size>1){const sp=spawnAsteroids(2,a.size-1,a.x,a.y);newAsts.push(...sp);}
+        return false;
+      }
+      return true;
+    });
+    // bullet vs UFO
+    if(!hit) ufos=ufos.filter(u=>{
+      if(hit)return true;
+      if(Math.hypot(b.x-u.x,b.y-u.y)<u.r){u.hp--;hit=true;
+        if(u.hp<=0){explode(u.x,u.y,2);maybeDrop(u.x,u.y);score+=200*combo;spawnScoreText(u.x,u.y,'+'+200*combo,'#D4537E');screenShake(5);return false;}
+        explodeSmall(u.x,u.y);return true;}
+      return true;
+    });
+    return !hit;
+  });
+  asteroids.push(...newAsts);
+
+  // UFOs
+  ufos=ufos.filter(u=>{
+    u.x+=u.vx*dt;u.y+=u.vy*dt;
+    u.vy+=(Math.random()-.5)*.04*dt;
+    u.vy=Math.max(-1.5,Math.min(1.5,u.vy));
+    u.shootTimer-=dt;
+    if(u.shootTimer<=0){
+      const ang=Math.atan2(ship.y-u.y,ship.x-u.x);
+      ufoBullets.push({x:u.x,y:u.y,vx:Math.cos(ang)*3.5,vy:Math.sin(ang)*3.5,life:120});
+      u.shootTimer=70+Math.random()*60;
+    }
+    return u.x>-60&&u.x<W+60;
+  });
+  if(wave>=3&&ufos.length<Math.floor(wave/3)&&Math.random()<.002*dt) ufos.push(spawnUFO());
+
+  // powerups
+  powerups=powerups.filter(p=>{
+    p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
+    if(Math.hypot(ship.x-p.x,ship.y-p.y)<p.r+14){
+      collectPowerup(p.type);return false;
+    }
+    return p.life>0&&p.x>-20&&p.x<W+20&&p.y>-20&&p.y<H+20;
+  });
+
+  // Ghost mode keeps invincibility ticking but stay protected
+  if(isGhostMode&&ship.invincible<10) ship.invincible=10;
+
+  // ship collision
+  if(ship.invincible<=0){
+    let hit=false;
+    for(const a of asteroids){
+      if(Math.hypot(ship.x-a.x,ship.y-a.y)<a.r-4){hit=true;break;}
+    }
+    if(!hit) for(const b of ufoBullets){
+      if(Math.hypot(ship.x-b.x,ship.y-b.y)<10){hit=true;ufoBullets=ufoBullets.filter(bb=>bb!==b);break;}
+    }
+    if(!hit) for(const u of ufos){
+      if(Math.hypot(ship.x-u.x,ship.y-u.y)<u.r){hit=true;break;}
+    }
+    if(hit){
+      lives--;explode(ship.x,ship.y,3);screenShake(14);combo=1;comboTimer=0;
+      if(lives<=0){endGame();return;}
+      ship=Ship();
+    }
+  }
+
+  // particles & score texts
+  particles=particles.filter(p=>p.life>0).map(p=>{
+    p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
+    p.vx*=Math.pow(.97,dt);p.vy*=Math.pow(.97,dt);
+    if(p.isText){p.y-=.3*dt;}
+    return p;
+  });
+
+  // shake decay
+  if(shakeStrength>0){shakeStrength=Math.max(0,shakeStrength-.5*dt);shakeX=(Math.random()-.5)*shakeStrength;shakeY=(Math.random()-.5)*shakeStrength;}
+  else{shakeX=0;shakeY=0;}
+
+  // wave complete
+  if(asteroids.length===0&&ufos.length===0&&!pendingWave){
+    pendingWave=true;wave++;
+    showWaveFlash(()=>{
+      if(wave>1&&wave%2===0) showPerkScreen();
+      else startNextWave();
+    });
+  }
+
+  updateHUD();
+}
+
+function collectPowerup(type){
+  if(type==='shield') ship.invincible+=600;
+  else if(type==='rapid'){
+    activePU.rapid=360; // 6 seconds at 60fps
+    // check if this triggers spread burst synergy
+    if(permPerks.spreadBurst&&(activePU.triple>0||permPerks.tripleShot)) synergyActive='spreadBurst';
+  }
+  else if(type==='triple'){
+    activePU.triple=300; // 5 seconds
+    if(permPerks.spreadBurst&&(activePU.rapid>0||permPerks.rapidFire>0)) synergyActive='spreadBurst';
+  }
+  else if(type==='bomb') bombs++;
+  spawnScoreText(ship.x,ship.y-20,type.toUpperCase(),'#5DCAA5');
+}
+
+function screenShake(s){shakeStrength=Math.max(shakeStrength,s);}
+
+function showCombo(){
+  if(combo>1){
+    comboDisplay.textContent=`COMBO x${combo}`;
+    comboDisplay.style.opacity='1';
+    comboDisplay.style.color=combo>=5?'#D4537E':combo>=3?'#EF9F27':'#AFA9EC';
+    setTimeout(()=>{if(combo<=1)comboDisplay.style.opacity='0';},400);
+  }
+}
+
+function showWaveFlash(cb){
+  wf.textContent=`WAVE ${wave}`;wf.style.opacity='1';
+  setTimeout(()=>{wf.style.opacity='0';},1000);
+  setTimeout(cb,1400);
+}
+
+function explode(x,y,size){
+  const n=size*9+6;
+  const cols={3:'#EF9F27',2:'#5DCAA5',1:'#AFA9EC'};
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,sp=Math.random()*3.5+.5;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:22+Math.random()*28,maxLife:50,col:cols[size]||'#fff'});
+  }
+  screenShake(size*3);
+}
+
+function explodeSmall(x,y){
+  for(let i=0;i<5;i++){
+    const a=Math.random()*Math.PI*2,sp=Math.random()*2+.5;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:12+Math.random()*10,maxLife:22,col:'#888'});
+  }
+}
+
+function spawnScoreText(x,y,text,col){
+  particles.push({x,y,vx:0,vy:0,life:40,maxLife:40,col,isText:true,text,fontSize:13});
+}
+
+// --- DRAW ---
+function draw(){
+  starTime+=.008;
+  ctx.save();
+  ctx.translate(shakeX,shakeY);
+  ctx.fillStyle='#05050d';ctx.fillRect(-10,-10,W+20,H+20);
+
+  // stars
+  stars.forEach(s=>{
+    ctx.fillStyle=`rgba(255,255,255,${s.a*(0.7+0.3*Math.sin(starTime+s.t))})`;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+  });
+
+  // particles
+  particles.forEach(p=>{
+    if(p.isText){
+      ctx.globalAlpha=p.life/p.maxLife;
+      ctx.fillStyle=p.col;ctx.font=`${p.fontSize||12}px 'Orbitron',monospace`;
+      ctx.textAlign='center';ctx.fillText(p.text,p.x,p.y);ctx.textAlign='left';
+    }else{
+      ctx.globalAlpha=p.life/p.maxLife*.9;
+      ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,Math.PI*2);ctx.fill();
+    }
+  });
+  ctx.globalAlpha=1;
+
+  // powerups
+  powerups.forEach(p=>{
+    ctx.globalAlpha=Math.min(1,p.life/60)*.9;
+    ctx.strokeStyle=p.col;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=p.col;ctx.font="bold 11px 'Orbitron',monospace";
+    ctx.textAlign='center';ctx.fillText(p.label,p.x,p.y+4);ctx.textAlign='left';
+  });
+  ctx.globalAlpha=1;
+
+  // ship trail
+  ship.trail.forEach(t=>{
+    ctx.globalAlpha=t.a*.35;ctx.fillStyle='#5DCAA5';
+    ctx.beginPath();ctx.arc(t.x,t.y,2,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // ship
+  if(ship.invincible<=0||Math.floor(ship.invincible/6)%2===0){
+    ctx.save();ctx.translate(ship.x,ship.y);ctx.rotate(ship.angle);
+    // ghost mode aura
+    if(isGhostMode){
+      ctx.strokeStyle='rgba(212,83,126,.5)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle='rgba(212,83,126,.2)';ctx.lineWidth=6;
+      ctx.beginPath();ctx.arc(0,0,26,0,Math.PI*2);ctx.stroke();
+    } else if(ship.invincible>60){
+      // shield aura
+      ctx.strokeStyle='rgba(93,202,165,.4)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();
+    }
+    // spread burst bullet color hint
+    const shipCol=isSpreadBurst?'#D4537E':isGhostMode?'rgba(212,83,126,.6)':'#ffffff';
+    ctx.strokeStyle=shipCol;ctx.lineWidth=1.5;ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(-9,11);ctx.lineTo(-4,7);ctx.lineTo(4,7);ctx.lineTo(9,11);ctx.closePath();ctx.stroke();
+    if(keys['ArrowUp']||keys['KeyW']||mouse.right){
+      ctx.strokeStyle='#EF9F27';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-4,7);ctx.lineTo(0,17+Math.random()*7);ctx.lineTo(4,7);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // bullets (player)
+  bullets.forEach(b=>{
+    const isShort=b.life<30;
+    ctx.fillStyle=isShort?'#D4537E':'#fff';
+    ctx.globalAlpha=b.life/55;
+    ctx.beginPath();ctx.arc(b.x,b.y,isShort?2:2.5,0,Math.PI*2);ctx.fill();
+  });
+  // bullets (UFO)
+  ufoBullets.forEach(b=>{
+    ctx.fillStyle='#D4537E';ctx.globalAlpha=b.life/120;
+    ctx.beginPath();ctx.arc(b.x,b.y,3,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // asteroids
+  const astCols={3:'#EF9F27',2:'#5DCAA5',1:'#AFA9EC'};
+  asteroids.forEach(a=>{
+    ctx.save();ctx.translate(a.x,a.y);ctx.rotate(a.rot);
+    ctx.strokeStyle=a.armor>0?'#888':astCols[a.size];
+    ctx.lineWidth=a.armor>0?2.5:1.5;
+    ctx.beginPath();a.verts.forEach((v,i)=>i===0?ctx.moveTo(v.x,v.y):ctx.lineTo(v.x,v.y));
+    ctx.closePath();ctx.stroke();
+    if(a.armor>0){
+      ctx.strokeStyle='rgba(150,150,150,.3)';ctx.lineWidth=.8;
+      for(let i=0;i<3;i++){
+        ctx.beginPath();ctx.arc(0,0,a.r*(0.4+i*.2),0,Math.PI*2);ctx.stroke();
+      }
+    }
+    ctx.restore();
+  });
+
+  // UFOs
+  ufos.forEach(u=>{
+    ctx.save();ctx.translate(u.x,u.y);
+    ctx.strokeStyle='#D4537E';ctx.lineWidth=1.5;
+    // body
+    ctx.beginPath();ctx.ellipse(0,0,16,8,0,0,Math.PI*2);ctx.stroke();
+    // dome
+    ctx.beginPath();ctx.ellipse(0,-4,8,5,0,Math.PI,Math.PI*2);ctx.stroke();
+    // lights
+    [-6,-2,2,6].forEach(lx=>{
+      ctx.fillStyle=`rgba(212,83,126,${0.5+Math.sin(Date.now()/200+lx)*.3})`;
+      ctx.beginPath();ctx.arc(lx,2,1.5,0,Math.PI*2);ctx.fill();
+    });
+    ctx.restore();
+  });
+
+  ctx.restore();
+
+  // Draw crosshair cursor when pointer is locked
+  if(document.pointerLockElement===cvEl){
+    const cx=mouse.x,cy=mouse.y;
+    ctx.save();
+    ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx-10,cy);ctx.lineTo(cx-4,cy);ctx.moveTo(cx+4,cy);ctx.lineTo(cx+10,cy);
+    ctx.moveTo(cx,cy-10);ctx.lineTo(cx,cy-4);ctx.moveTo(cx,cy+4);ctx.lineTo(cx,cy+10);
+    ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// --- END GAME ---
+function endGame(){
+  gameRunning=false;gamePaused=false;
+  unlockPointer();
+  if(score>0){
+    highscores.push({s:score,w:wave,d:new Date().toLocaleDateString('de')});
+    highscores.sort((a,b)=>b.s-a.s);
+    highscores=highscores.slice(0,5);
+    localStorage.setItem('ab_hs',JSON.stringify(highscores));
+  }
+  ol.innerHTML=buildGameOverHTML();
+  ol.style.display='flex';
+  document.getElementById('startBtn').onclick=startGame;
+}
+
+// --- PAUSE ---
+function pauseGame(){
+  if(!gameRunning||gamePaused)return;
+  gamePaused=true;
+  unlockPointer();
+  document.getElementById('pause-screen').style.display='flex';
+}
+function resumeGame(){
+  if(!gameRunning||!gamePaused)return;
+  gamePaused=false;
+  document.getElementById('pause-screen').style.display='none';
+  lockPointer();
+}
+
+function buildGameOverHTML(){
+  const hsRows=highscores.slice(0,5).map((h,i)=>`<div class="hs-row"><span class="hs-rank">#${i+1}</span><span class="hs-sc">${h.s}</span><span>Wave ${h.w}</span><span style="color:var(--muted);font-size:10px">${h.d}</span></div>`).join('');
+  return `
+    <h1 style="font-size:26px">GAME OVER</h1>
+    <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:700;color:var(--amber)">${score}</div>
+    <div style="font-size:11px;letter-spacing:.2em;color:var(--purple);border:0.5px solid rgba(175,169,236,.3);padding:3px 12px;border-radius:20px">WAVE ${wave} ERREICHT</div>
+    ${highscores.length?`<div style="width:100%;padding:0 40px"><div style="font-size:10px;letter-spacing:.15em;color:var(--muted);margin-bottom:8px;text-align:center">BESTENLISTE</div><div id="hs-list">${hsRows}</div></div>`:''}
+    <button class="obtn" id="startBtn">NOCHMAL</button>
+  `;
+}
+
+function buildStartHTML(){
+  if(!highscores.length) return '';
+  const hsRows=highscores.slice(0,3).map((h,i)=>`<div class="hs-row"><span class="hs-rank">#${i+1}</span><span class="hs-sc">${h.s}</span><span>Wave ${h.w}</span><span style="color:var(--muted);font-size:10px">${h.d}</span></div>`).join('');
+  return `<div style="width:100%;padding:0 50px"><div style="font-size:9px;letter-spacing:.18em;color:var(--muted);margin-bottom:6px;text-align:center">BESTENLISTE</div><div id="hs-list">${hsRows}</div></div>`;
+}
+
+// Build start screen hs
+document.getElementById('hs-section').innerHTML=buildStartHTML();
+document.getElementById('startBtn').onclick=startGame;
+
+// Input
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'){
+    if(gameRunning&&!gamePaused) pauseGame();
+    else if(gameRunning&&gamePaused) resumeGame();
+    return;
+  }
+  keys[e.code]=true;
+  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+// Mouse — pointer lock movement
+document.addEventListener('mousemove',e=>{
+  if(document.pointerLockElement===cvEl){
+    window._mouseMovX=(window._mouseMovX||0)+e.movementX;
+    window._mouseMovY=(window._mouseMovY||0)+e.movementY;
+  }
+});
+
+// Click on canvas while not locked → request lock (resume if paused)
+cvEl.addEventListener('click',e=>{
+  if(document.pointerLockElement!==cvEl && gameRunning){
+    if(gamePaused) resumeGame();
+    else lockPointer();
+  }
+});
+
+cvEl.addEventListener('mousedown',e=>{
+  if(document.pointerLockElement!==cvEl) return;
+  e.preventDefault();
+  if(e.button===0) mouse.left=true;
+  if(e.button===2) mouse.right=true;
+});
+document.addEventListener('mouseup',e=>{
+  if(e.button===0) mouse.left=false;
+  if(e.button===2) mouse.right=false;
+});
+cvEl.addEventListener('contextmenu',e=>e.preventDefault());
+
+// Pause screen buttons
+document.getElementById('resumeBtn').onclick=resumeGame;
+document.getElementById('quitBtn').onclick=()=>{endGame();};
+</script>
+</body>
+</html>
