@@ -1,4 +1,0 @@
-Sonstiges/
-Claude.md
-Login daten.txt
-Soll Integriert werden - Bugs.txt

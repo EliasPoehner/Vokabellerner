@@ -6,15 +6,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **F11 HUB** is a browser-based educational gaming portal for a computer science class (F11). It combines arcade/simulation games with school resource aggregation. The UI is in German throughout.
 
+## Hosting
+
+The project is hosted on **Railway** via automatic GitHub deploys.
+
+- Every `git push` to `main` triggers a new deployment automatically.
+- Railway detects `package.json`, runs `npm install`, then `npm start` (`serve . -l $PORT`).
+- Health-check: Railway polls `/Hub.html` for HTTP 200.
+- Config files: `railway.toml` (deploy settings), `package.json` (serve dependency).
+
+Relevant files:
+- `railway.toml` — Railway deploy config (health-check path, restart policy)
+- `package.json` — only exists for the `serve` dependency; no build step
+- `serve.json` — tells `serve` to route `/` → `/Hub.html` (entry point is not index.html)
+
 ## Running the Project
 
-No build system exists — everything is static HTML/CSS/JS.
-
 ```bash
-# Serve locally (prevents cross-origin issues with Three.js)
+# Local development
+npm install
+npm start        # serves on http://localhost:3000
+
+# Alternative (no Node required)
 python -m http.server 8000
-# or
-npx serve .
 ```
 
 Then open `Hub.html` as the entry point. Individual game files can also be opened directly in the browser.
@@ -63,7 +77,7 @@ Known bugs tracked in `Soll Integriert werden - Bugs.txt`: storage overflow at l
 - Three.js r128 (CDN) — only used in Dorf
 - Tailwind CSS (CDN) — only Hub.html
 - Google Material Symbols (CDN) — Hub.html icons
-- No npm, no bundler, no transpilation
+- `serve` (npm) — only used for local dev and Railway hosting; no bundler, no transpilation
 
 ## Design System
 
