@@ -136,58 +136,112 @@
     ];
 
     const RESEARCH = [
-      { id: 'bewaesserung', name: 'Bewässerung', branch: 'wirtschaft', tier: 1, effect: '+50% Nahrung', cost: { gold: 18, holz: 12 }, requires: [], special: 'nahrungBoost' },
-      { id: 'gewuerzhandel', name: 'Gewürzhandel', branch: 'wirtschaft', tier: 2, effect: '+60% Gold', cost: { gold: 45, holz: 22 }, requires: ['bewaesserung'], special: 'goldBoost' },
-      { id: 'gilden', name: 'Zünfte', branch: 'wirtschaft', tier: 3, effect: 'Alle Prod. +20%', cost: { gold: 90, eisen: 22 }, requires: ['gewuerzhandel'], special: 'allBoost' },
-      { id: 'metallurgie', name: 'Metallurgie', branch: 'technik', tier: 1, effect: 'Schmelze frei', cost: { gold: 22, stein: 18 }, requires: [], special: 'none' },
-      { id: 'kathedrale_tech', name: 'Große Architektur', branch: 'technik', tier: 2, effect: 'Kathedrale bauen', cost: { gold: 55, eisen: 12 }, requires: ['metallurgie'], special: 'none' },
-      { id: 'ingenieure', name: 'Ingenieure', branch: 'technik', tier: 3, effect: '+40% Stein', cost: { gold: 85, eisen: 32 }, requires: ['kathedrale_tech'], special: 'steinBoost' },
-      { id: 'taktik', name: 'Taktik', branch: 'militaer', tier: 1, effect: 'Mauer frei', cost: { gold: 28, holz: 22 }, requires: [], special: 'none' },
-      { id: 'ritter', name: 'Ritter', branch: 'militaer', tier: 2, effect: '+5 Verteidigung', cost: { gold: 65, eisen: 22 }, requires: ['taktik'], special: 'defenseBoost' },
-      { id: 'feudalrecht', name: 'Feudalrecht', branch: 'militaer', tier: 3, effect: '+50% Gold+Moral', cost: { gold: 110, eisen: 45 }, requires: ['ritter'], special: 'feudal' },
+      // Wirtschaft
+      { id: 'bewaesserung', name: 'Bewässerung', branch: 'wirtschaft', tier: 1, effect: '+50% Nahrung', cost: { gold: 18, holz: 12 }, requires: [], special: 'nahrungBoost', duration: 300 },
+      { id: 'gewuerzhandel', name: 'Gewürzhandel', branch: 'wirtschaft', tier: 2, effect: '+60% Gold', cost: { gold: 45, holz: 22 }, requires: ['bewaesserung'], special: 'goldBoost', duration: 600 },
+      { id: 'gilden', name: 'Zünfte', branch: 'wirtschaft', tier: 3, effect: 'Alle Prod. +20%', cost: { gold: 90, eisen: 22 }, requires: ['gewuerzhandel'], special: 'allBoost', duration: 1200 },
+      // Technik
+      { id: 'metallurgie', name: 'Metallurgie', branch: 'technik', tier: 1, effect: 'Schmelze frei', cost: { gold: 22, stein: 18 }, requires: [], special: 'none', duration: 300 },
+      { id: 'kathedrale_tech', name: 'Große Architektur', branch: 'technik', tier: 2, effect: 'Kathedrale bauen', cost: { gold: 55, eisen: 12 }, requires: ['metallurgie'], special: 'none', duration: 600 },
+      { id: 'ingenieure', name: 'Ingenieure', branch: 'technik', tier: 3, effect: '+40% Stein', cost: { gold: 85, eisen: 32 }, requires: ['kathedrale_tech'], special: 'steinBoost', duration: 1200 },
+      // Militär
+      { id: 'taktik', name: 'Taktik', branch: 'militaer', tier: 1, effect: 'Mauer frei', cost: { gold: 28, holz: 22 }, requires: [], special: 'none', duration: 300 },
+      { id: 'ritter', name: 'Ritter', branch: 'militaer', tier: 2, effect: '+5 Verteidigung', cost: { gold: 65, eisen: 22 }, requires: ['taktik'], special: 'defenseBoost', duration: 600 },
+      { id: 'feudalrecht', name: 'Feudalrecht', branch: 'militaer', tier: 3, effect: '+50% Gold+Moral', cost: { gold: 110, eisen: 45 }, requires: ['ritter'], special: 'feudal', duration: 1200 },
+      // Landwirtschaft
+      { id: 'kompostwirtschaft', name: 'Kompostwirtschaft', branch: 'landwirtschaft', tier: 1, effect: '+30% Nahrung', cost: { gold: 20, holz: 10 }, requires: [], special: 'nahrungBoost30', duration: 300 },
+      { id: 'fruchtfolge', name: 'Fruchtfolge', branch: 'landwirtschaft', tier: 2, effect: '−20% Nahrungsverbrauch', cost: { gold: 40, holz: 18 }, requires: ['kompostwirtschaft'], special: 'nahrungVerbrauchReduce', duration: 600 },
+      { id: 'gewaechshaus', name: 'Gewächshaus', branch: 'landwirtschaft', tier: 3, effect: 'Nahrung wächst auch bei Dürre', cost: { gold: 75, stein: 20 }, requires: ['fruchtfolge'], special: 'gewaechshaus', duration: 900 },
+      { id: 'plantagenwirtschaft', name: 'Plantagenwirtschaft', branch: 'landwirtschaft', tier: 4, effect: '+80% Nahrung', cost: { gold: 130, eisen: 15 }, requires: ['gewaechshaus'], special: 'nahrungBoost80', duration: 1200 },
+      // Handel
+      { id: 'fernhandel', name: 'Fernhandel', branch: 'handel', tier: 1, effect: '+20% Gold', cost: { gold: 25, holz: 15 }, requires: [], special: 'goldBoost20', duration: 300 },
+      { id: 'muenzpraegung', name: 'Münzprägung', branch: 'handel', tier: 2, effect: '+30% Gold', cost: { gold: 50, stein: 20 }, requires: ['fernhandel'], special: 'goldBoost30', duration: 600 },
+      { id: 'gildenwesen', name: 'Gildenwesen', branch: 'handel', tier: 3, effect: 'Alle Prod. +15%', cost: { gold: 95, eisen: 20 }, requires: ['muenzpraegung'], special: 'allBoost15', duration: 900 },
+      { id: 'banken', name: 'Banken', branch: 'handel', tier: 4, effect: '+Gold aus Vorräten', cost: { gold: 150, eisen: 40 }, requires: ['gildenwesen'], special: 'banken', duration: 1200 },
+    ];
+
+    const OBSTACLES = [
+      {
+        id: 'tree_pine', name: 'Tanne', type: 'tree',
+        cost: {}, yield: { holz: 15 }, hp: 1, shape: 'pine', color: 0x3a5220,
+        desc: 'Gibt 15 Holz beim Entfernen.'
+      },
+      {
+        id: 'boulder_mossy', name: 'Moosiger Fels', type: 'stone',
+        cost: { gold: 5 }, yield: { stein: 10 }, hp: 2, shape: 'rock', color: 0x708090,
+        desc: 'Gibt 10 Stein beim Entfernen (kostet 5 Gold).'
+      }
     ];
 
     const EVENTS = [
       {
-        id: 'durre', title: 'Große Dürre', text: 'Wochenlanger Trockenheit vernichtet die Ernte.', options: [
+        id: 'durre', title: 'Große Dürre', minTier: 0,
+        text: 'Wochenlanger Trockenheit vernichtet die Ernte.', options: [
           { text: 'Rationieren (−40% Nahrung 90s, Moral −10)', fn: () => { changeMoral(-10); applyModTemp('nahrungMult', 0.6, 90); notify('Rationierung läuft.', 'warning'); } },
-          { text: 'Nahrung kaufen (−35 Gold)', fn: () => { if (S.res.gold >= 35) { S.res.gold -= 35; S.res.nahrung = Math.min(S.res.nahrung + 40, S.lager.nahrung); notify('+40 Nahrung.'); } else { changeMoral(-15); notify('Kein Gold! Moral −15', 'warning'); } } }
+          { text: 'Nahrung kaufen (−Gold)', fn: () => { const cost = Math.round(35 * eventScale()); if (S.res.gold >= cost) { S.res.gold -= cost; S.res.nahrung = Math.min(S.res.nahrung + Math.round(40 * eventScale()), S.lager.nahrung); notify('+Nahrung erkauft.'); } else { changeMoral(-15); notify('Kein Gold! Moral −15', 'warning'); } } }
         ]
       },
       {
-        id: 'karawane', title: 'Händlerkarawane', text: 'Eine reiche Karawane bittet um Handelserlaubnis.', options: [
-          { text: 'Handeln (+50 Gold, −15 Nahrung, −10 Holz)', fn: () => { S.res.gold += 50; S.res.nahrung = Math.max(0, S.res.nahrung - 15); S.res.holz = Math.max(0, S.res.holz - 10); notify('+50 Gold!', 'good'); } },
+        id: 'karawane', title: 'Händlerkarawane', minTier: 0,
+        text: 'Eine reiche Karawane bittet um Handelserlaubnis.', options: [
+          { text: 'Handeln (+Gold, −Nahrung, −Holz)', fn: () => { const sc = eventScale(); const g = Math.round(50 * sc); S.res.gold += g; S.res.nahrung = Math.max(0, S.res.nahrung - Math.round(15 * sc)); S.res.holz = Math.max(0, S.res.holz - Math.round(10 * sc)); notify('+' + g + ' Gold!', 'good'); } },
           { text: 'Ablehnen', fn: () => { changeMoral(-3); notify('Karawane zieht weiter.', 'warning'); } }
         ]
       },
       {
-        id: 'raeuber', title: 'Räuberangriff!', text: 'Ein Räubertrupp greift an! Eure Verteidigung wird geprüft.', options: [
-          { text: 'Verteidigen', fn: () => { const d = S.modifiers.defense; if (d >= 6) { const b = Math.min(30, Math.floor(S.res.gold * .15)); S.res.gold += b; notify('Sieg! +' + b + ' Gold', 'good'); } else if (d >= 3) { const h = Math.floor(S.res.holz * .2), n = Math.floor(S.res.nahrung * .25); S.res.holz = Math.max(0, S.res.holz - h); S.res.nahrung = Math.max(0, S.res.nahrung - n); changeMoral(-8); notify('Abgewehrt −' + h + ' Holz', 'warning'); } else { const g = Math.floor(S.res.gold * .4), n = Math.floor(S.res.nahrung * .4); S.res.gold = Math.max(0, S.res.gold - g); S.res.nahrung = Math.max(0, S.res.nahrung - n); changeMoral(-20); notify('Niederlage! −' + g + ' Gold', 'warning'); } } },
+        id: 'raeuber', title: 'Räuberangriff!', minTier: 0,
+        text: 'Ein Räubertrupp greift an! Eure Verteidigung wird geprüft.', options: [
+          { text: 'Verteidigen', fn: () => { const d = S.modifiers.defense; const sc = eventScale(); if (d >= 6) { const b = Math.min(Math.round(50 * sc), Math.floor(S.res.gold * .2)); S.res.gold += b; notify('Sieg! +' + b + ' Gold', 'good'); } else if (d >= 3) { const h = Math.floor(S.res.holz * .2), n = Math.floor(S.res.nahrung * .25); S.res.holz = Math.max(0, S.res.holz - h); S.res.nahrung = Math.max(0, S.res.nahrung - n); changeMoral(-8); notify('Abgewehrt −' + h + ' Holz', 'warning'); } else { const g = Math.floor(S.res.gold * .4), n = Math.floor(S.res.nahrung * .4); S.res.gold = Math.max(0, S.res.gold - g); S.res.nahrung = Math.max(0, S.res.nahrung - n); changeMoral(-20); destroyBuildingOutermost(); notify('Niederlage! −' + g + ' Gold', 'warning'); } } },
           { text: 'Kapitulieren (−30% Gold, Moral −15)', fn: () => { const v = Math.floor(S.res.gold * .3); S.res.gold -= v; changeMoral(-15); notify('Lösegeld −' + v + ' Gold', 'warning'); } }
         ]
       },
       {
-        id: 'seuche', title: 'Seuche!', text: 'Eine Krankheit verbreitet sich im Dorf.', options: [
+        id: 'seuche', title: 'Seuche!', minTier: 0,
+        text: 'Eine Krankheit verbreitet sich im Dorf.', options: [
           { text: 'Isolieren (Moral −12)', fn: () => { changeMoral(-12); S._seuche = Date.now() + 60000; notify('Quarantäne!', 'warning'); } },
-          { text: 'Heiler (−25 Gold, −10 Nahrung)', fn: () => { if (S.res.gold >= 25) { S.res.gold -= 25; S.res.nahrung = Math.max(0, S.res.nahrung - 10); notify('Seuche eingedämmt.'); } else { changeMoral(-25); S.popTotal = Math.max(2, S.popTotal - 2); notify('2 sterben! Moral −25', 'warning'); } } }
+          { text: 'Heiler (−Gold, −Nahrung)', fn: () => { const cost = Math.round(25 * eventScale()); if (S.res.gold >= cost) { S.res.gold -= cost; S.res.nahrung = Math.max(0, S.res.nahrung - 10); notify('Seuche eingedämmt.'); } else { changeMoral(-25); S.popTotal = Math.max(2, S.popTotal - 2); notify('2 sterben! Moral −25', 'warning'); } } }
         ]
       },
       {
-        id: 'aufstand', title: 'Unruhige Bauern', text: 'Niedrige Moral führt zu Unruhen.', condition: () => S.moral < 45, options: [
+        id: 'aufstand', title: 'Unruhige Bauern', minTier: 0, condition: () => S.moral < 45,
+        text: 'Niedrige Moral führt zu Unruhen.', options: [
           { text: 'Fest (−20 Gold, −15 Nahrung, Moral +20)', fn: () => { S.res.gold = Math.max(0, S.res.gold - 20); S.res.nahrung = Math.max(0, S.res.nahrung - 15); changeMoral(20); notify('Fest! Moral +20', 'good'); } },
-          { text: 'Ignorieren (Moral −15)', fn: () => { changeMoral(-15); const bs = Object.keys(S.buildings).filter(id => id !== 'rathaus' && (S.buildings[id]?.length || 0) > 0); if (bs.length) { S.buildings[bs[0]].splice(-1, 1); rebuild3D(); } notify('Aufstand!', 'warning'); } }
+          { text: 'Ignorieren (Moral −15, Gebäude beschädigt)', fn: () => { changeMoral(-15); destroyBuildingOutermost(); notify('Aufstand!', 'warning'); } }
         ]
       },
       {
-        id: 'ernte', title: 'Prächtige Ernte', text: 'Ausgezeichnetes Wetter! Die Felder tragen mehr.', options: [
-          { text: 'Feiern (+30 Nahrung, Moral +10)', fn: () => { S.res.nahrung = Math.min(S.res.nahrung + 30, S.lager.nahrung); changeMoral(10); notify('+30 Nahrung', 'good'); } },
-          { text: 'Verkaufen (+35 Gold)', fn: () => { S.res.gold += 35; notify('+35 Gold', 'good'); } }
+        id: 'ernte', title: 'Prächtige Ernte', minTier: 0,
+        text: 'Ausgezeichnetes Wetter! Die Felder tragen mehr.', options: [
+          { text: 'Feiern (+Nahrung, Moral +10)', fn: () => { const gain = Math.round(30 * eventScale()); S.res.nahrung = Math.min(S.res.nahrung + gain, S.lager.nahrung); changeMoral(10); notify('+' + gain + ' Nahrung', 'good'); } },
+          { text: 'Verkaufen (+Gold)', fn: () => { const gain = Math.round(35 * eventScale()); S.res.gold += gain; notify('+' + gain + ' Gold', 'good'); } }
         ]
       },
       {
-        id: 'feuer', title: 'Feuer!', text: 'Ein Großbrand droht Teile des Dorfes zu vernichten!', options: [
+        id: 'feuer', title: 'Feuer!', minTier: 0,
+        text: 'Ein Großbrand droht Teile des Dorfes zu vernichten!', options: [
           { text: 'Löschen (−20 Holz, −10 Gold)', fn: () => { S.res.holz = Math.max(0, S.res.holz - 20); S.res.gold = Math.max(0, S.res.gold - 10); notify('Feuer gelöscht.', 'warning'); } },
-          { text: 'Evakuieren (Gebäude zerstört, Moral −18)', fn: () => { changeMoral(-18); const bs = Object.keys(S.buildings).filter(id => id !== 'rathaus' && (S.buildings[id]?.length || 0) > 0); if (bs.length) { const r = bs[Math.floor(Math.random() * bs.length)]; S.buildings[r].splice(-1, 1); rebuild3D(); } notify('Gebäude zerstört!', 'warning'); } }
+          { text: 'Evakuieren (Gebäude zerstört, Moral −18)', fn: () => { changeMoral(-18); destroyBuildingOutermost(); notify('Gebäude zerstört!', 'warning'); } }
+        ]
+      },
+      {
+        id: 'haendlerkonvoi', title: 'Großer Händlerkonvoi', minTier: 2,
+        text: 'Ein mächtiger Handelskonvoi bietet lukrative Geschäfte an.', options: [
+          { text: 'Großhandel (+viel Gold, −Ressourcen)', fn: () => { const sc = eventScale(); const g = Math.round(100 * sc); S.res.gold += g; S.res.nahrung = Math.max(0, S.res.nahrung - Math.round(35 * sc)); S.res.holz = Math.max(0, S.res.holz - Math.round(25 * sc)); S.res.stein = Math.max(0, S.res.stein - Math.round(15 * sc)); notify('+' + g + ' Gold!', 'good'); } },
+          { text: 'Ablehnen', fn: () => { changeMoral(-2); notify('Konvoi zieht weiter.', 'warning'); } }
+        ]
+      },
+      {
+        id: 'einwanderung', title: 'Einwanderungswelle', minTier: 2,
+        text: 'Eine Gruppe Siedler bittet um Aufnahme in eurem Dorf.', options: [
+          { text: 'Aufnehmen (+Bevölkerung, Moral +5)', fn: () => { const free = S.popMax - S.popTotal; if (free >= 5) { S.popTotal += Math.min(5, free); changeMoral(5); notify('+5 Einwohner!', 'good'); } else { changeMoral(-3); notify('Zu wenig Platz! Mehr Wohnhäuser bauen.', 'warning'); } } },
+          { text: 'Ablehnen (Moral −5)', fn: () => { changeMoral(-5); notify('Siedler abgewiesen.', 'warning'); } }
+        ]
+      },
+      {
+        id: 'belagerung', title: 'Belagerung!', minTier: 3,
+        text: 'Eine feindliche Armee hat das Dorf umzingelt! Sie werden in Wellen angreifen.', options: [
+          { text: 'Verteidigen (Belagerung beginnt)', fn: () => { const rounds = Math.max(3, Math.ceil(6 - S.modifiers.defense / 4)); S._belagerung = { roundsLeft: rounds, roundsTotal: rounds, nextAttackTick: S.tick + 150 }; log('Belagerung beginnt! ' + rounds + ' Angriffswellen!', 'warning'); notify('Belagerung beginnt!', 'warning'); } },
+          { text: 'Kapitulieren (−Gold, −Nahrung, Moral −25)', fn: () => { const sc = eventScale(); S.res.gold = Math.max(0, S.res.gold - Math.round(80 * sc)); S.res.nahrung = Math.max(0, S.res.nahrung - Math.round(40 * sc)); changeMoral(-25); notify('Kapitulation! Schwere Verluste!', 'warning'); } }
         ]
       },
     ];

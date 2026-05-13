@@ -30,26 +30,26 @@ Alles was zum Speichern gehört, liegt in `S`. Wird in `localStorage` als JSON g
 S = {
   res: { holz, stein, nahrung, gold, eisen, kohle },
   lager: { holz, stein, nahrung, gold, eisen, kohle },         // aktuelle Caps
-  buildings: { [id]: [ {level, x, z}, ... ] },                 // Array pro Gebäudetyp (NEU)
-  research: { [id]: true | { done, progress, startTick } },    // mit Zeit-System (NEU)
-  activeResearch: null | researchId,                           // laufende Forschung (NEU)
+  buildings: { [id]: [ {level, x, z}, ... ] },                 // Array pro Gebäudetyp
+  research: { [id]: true | { done, progress, startTick } },    // mit Zeit-System
+  activeResearch: null | researchId,                           // laufende Forschung
   pop: 0, popTotal: 0, popMax: 0,
   moral: 60,
-  prestige: 0,                                                  // Zähler bleibt, kein Mult mehr
+  prestige: 0,                                                  // reiner Ruf-/Geschichtswert
   modifiers: { nahrungMult, holzMult, steinMult, goldMult, eisenMult, defense },
   day: 0, tick: 0, tier: 0,
   nextEventTick: 0,
   activeEvent: null,
-  rathausAlive: true,                                          // Game-Over-Flag (NEU)
+  rathausAlive: true,                                          // Game-Over-Flag
 }
 ```
 
-### WICHTIG: buildings-Format geändert
+### WICHTIG: buildings-Format
 
 Alt: `S.buildings = { waldarbeiter: 3 }`
 Neu: `S.buildings = { waldarbeiter: [ {level:1, x:2, z:4}, {level:2, x:0, z:3} ] }`
 
-Grid-Positionen werden jetzt persistiert. Helper-Funktionen:
+Grid-Positionen werden persistiert. Helper-Funktionen:
 - `getBuildingCount(id)` → Anzahl Gebäude dieses Typs
 - `getBuildingLevel(id, idx)` → Level eines bestimmten Exemplars
 
@@ -89,15 +89,6 @@ upgradeCost(bld, currentLevel) = baseCost * 0.55 * (currentLevel * 0.8)
 - Wenn zerstört: `S.rathausAlive = false` → Game-Over-Bildschirm
 - Hat kein Upgrade
 
-## Lager-Bug-Fix
-
-Das Problem: Lagerhaus-Upgrade-Kosten übersteigen die aktuelle Lager-Kapazität.
-
-Lösung:
-1. Baukosten-Multiplikator für Lagerhaus (`costMult`) von 2.0 auf 1.5 senken
-2. Basis-Holz-Kapazität von 80 auf 150 erhöhen (pro Lagerhaus +80 statt +60)
-3. Beim Anzeigen von Build-Buttons prüfen: wenn Kosten > (Lager - aktuelle Res), Button deaktivieren mit Hinweis "Lager zu klein"
-
 ## Grid-Persistence
 
 Grid-Positionen werden jetzt in `S.buildings[id][idx].{x,z}` gespeichert.
@@ -107,7 +98,7 @@ Beim Laden (`loadState`):
 - `rebuild3D()` platziert Meshes an den gespeicherten Koordinaten
 - Fallback: `findFreeCell()` nur wenn x/z fehlen (Migration alter Saves)
 
-## Forschungs-System (NEU)
+## Forschungs-System
 
 ### Zeit-basiert
 
@@ -124,7 +115,7 @@ if (S.activeResearch) {
 
 Fortschrittsbalken im Forschungs-Panel.
 
-### Neue Äste (geplant)
+### Geplante neue Äste
 
 ```
 Landwirtschaft:
@@ -181,50 +172,26 @@ Events werden gefiltert nach `S.tier`. Belohnungen/Strafen skalieren mit Ressour
 eventReward = baseReward * (1 + S.tier * 0.5) * prestigeMult
 ```
 
-Neue Events für höhere Tier:
+Geplante neue Events für höhere Tier:
 - Tier 2+: Händlerkonvoi (großes Goldangebot gegen Ressourcen)
 - Tier 2+: Einwanderungswelle (+pop, braucht Platz)
 - Tier 3: Belagerung (Serienereignis über mehrere Ticks, nicht nur 1 Event)
 
 ## Prestige (vereinfacht)
 
-Prestige-Zähler bleibt, aber **kein permanenter Multiplikator**. Prestige ist jetzt ein reiner Ruf-/Geschichtswert ("Dein Dorf wurde X mal neu aufgebaut"). Der Prestige-Button bleibt mit Bestätigungsdialog, aber der Bonus entfällt.
+Prestige-Zähler bleibt, aber **kein permanenter Multiplikator**. Prestige ist ein reiner Ruf-/Geschichtswert ("Dein Dorf wurde X mal neu aufgebaut"). Der Prestige-Button bleibt mit Bestätigungsdialog, aber der Bonus entfällt.
 
 `S.prestigeMult` wird auf konstant 1.0 gesetzt und nie geändert.
 
-## Tier-System (unverändert)
+## Tier-System
 
 - Tier 0 → Weiler: Start
 - Tier 1 → Dorf: 5+ Gebäude, 5+ Bevölkerung
 - Tier 2 → Stadt: 14+ Gebäude, 18+ Bevölkerung, 3+ Forschungen
 - Tier 3 → Königreich: 22+ Gebäude, 35+ Bevölkerung, 7+ Forschungen
 
-## Implementierungs-Reihenfolge
+## Bekannte Bugs
 
-### Phase 1 — Kritische Fixes (erst diese, dann weiter)
-1. `S.buildings` zu Array-Format migrieren (mit Rückwärtskompatibilität für alte Saves)
-2. Grid-Positions-Persistence (x,z in State speichern)
-3. Lager-Bug-Fix (costMult + Basis-Caps)
-4. Rathaus als Pflichtgebäude in der Mitte
-
-### Phase 2 — Kern-Features
-5. Gebäude-Upgrade-System (Klick im Grid → Upgrade-Button, Level 1–5)
-6. Forschung zeitbasiert (Fortschrittsbalken, activeResearch)
-7. Neue Forschungs-Äste (Landwirtschaft zuerst, dann Handel, Architektur)
-8. Prestige-Multiplikator entfernen
-
-### Phase 3 — Kampf & Events
-9. Mauern manuell platzierbar, Mauer-HP-System
-10. Gebäude-Zerstörungs-Logik (Rand zuerst, Multiplikator-Reset)
-11. Events nach Tier skalieren, neue Events
-
-### Phase 4 — Nice-to-have
-12. Straßen-System
-13. Größeres Grid (14×14 oder 16×16)
-14. Neue 3D-Meshes für Gebäude -> ansprechvollere Grafik für Gebäude
-
-## Bekannte Bugs (aus Soll-Integriert-Werden.txt)
-
-- [x] Grid-Reset bei Refresh → Phase 1
-- [x] Lager-Cap-Bug ab Level 10 → Phase 1
+- [x] Grid-Reset bei Refresh → gefixt
+- [x] Lager-Cap-Bug ab Level 10 → gefixt
 - [ ] Markt-Debuffs greifen nicht (im Event-System prüfen)

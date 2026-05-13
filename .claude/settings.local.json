@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check \"o:/work/Allgemein/Hub/Sammlung/Dorf/js/renderer.js\")"
+    ]
+  }
+}

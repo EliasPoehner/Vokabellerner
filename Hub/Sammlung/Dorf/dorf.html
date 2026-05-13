@@ -20,48 +20,60 @@
 
   <!-- RESOURCES -->
   <div id="resources">
-    <div class="res-item"><span class="res-icon">🪵</span>
+    <div class="res-item" title="Holz">
+      <span class="res-icon">🪵</span>
       <div>
-        <div class="res-val" id="r-holz">10</div>
+        <div class="res-val-row"><span class="res-val" id="r-holz">10</span><span class="res-cap" id="rl-holz">/150</span></div>
         <div class="res-rate" id="rr-holz">+0/s</div>
-      </div><span class="res-label">Holz</span>
+      </div>
+      <span class="res-label">Holz</span>
     </div>
-    <div class="res-item"><span class="res-icon">🪨</span>
+    <div class="res-item" title="Stein">
+      <span class="res-icon">🪨</span>
       <div>
-        <div class="res-val" id="r-stein">6</div>
+        <div class="res-val-row"><span class="res-val" id="r-stein">6</span><span class="res-cap" id="rl-stein">/60</span></div>
         <div class="res-rate" id="rr-stein">+0/s</div>
-      </div><span class="res-label">Stein</span>
+      </div>
+      <span class="res-label">Stein</span>
     </div>
-    <div class="res-item"><span class="res-icon">🌾</span>
+    <div class="res-item" title="Nahrung">
+      <span class="res-icon">🌾</span>
       <div>
-        <div class="res-val" id="r-nahrung">20</div>
+        <div class="res-val-row"><span class="res-val" id="r-nahrung">20</span><span class="res-cap" id="rl-nahrung">/50</span></div>
         <div class="res-rate" id="rr-nahrung">+0/s</div>
-      </div><span class="res-label">Nahrung</span>
+      </div>
+      <span class="res-label">Nahrung</span>
     </div>
-    <div class="res-item"><span class="res-icon">🪙</span>
+    <div class="res-item" title="Gold">
+      <span class="res-icon">🪙</span>
       <div>
-        <div class="res-val" id="r-gold">15</div>
+        <div class="res-val-row"><span class="res-val" id="r-gold">15</span></div>
         <div class="res-rate" id="rr-gold">+0/s</div>
-      </div><span class="res-label">Gold</span>
+      </div>
+      <span class="res-label">Gold</span>
     </div>
-    <div class="res-item"><span class="res-icon">⚙️</span>
+    <div class="res-item" title="Eisen">
+      <span class="res-icon">⚙️</span>
       <div>
-        <div class="res-val" id="r-eisen">0</div>
+        <div class="res-val-row"><span class="res-val" id="r-eisen">0</span><span class="res-cap" id="rl-eisen">/30</span></div>
         <div class="res-rate" id="rr-eisen">+0/s</div>
-      </div><span class="res-label">Eisen</span>
+      </div>
+      <span class="res-label">Eisen</span>
     </div>
-    <div class="res-item"><span class="res-icon">🔥</span>
+    <div class="res-item" title="Kohle">
+      <span class="res-icon">🔥</span>
       <div>
-        <div class="res-val" id="r-kohle">0</div>
+        <div class="res-val-row"><span class="res-val" id="r-kohle">0</span><span class="res-cap" id="rl-kohle">/40</span></div>
         <div class="res-rate" id="rr-kohle">+0/s</div>
-      </div><span class="res-label">Kohle</span>
+      </div>
+      <span class="res-label">Kohle</span>
     </div>
     <div id="pop-info">
-      <span style="font-family:'Cinzel',serif;font-size:10px">👷 Bev.</span>
+      <span class="pop-label">👷 Bev.</span>
       <div class="pop-bar-bg">
         <div class="pop-bar-fill" id="pop-fill" style="width:10%"></div>
       </div>
-      <span style="font-family:'Cinzel',serif;font-size:11px;min-width:55px" id="pop-text">1/10 (2)</span>
+      <span id="pop-text">1/10 (2)</span>
     </div>
   </div>
 
@@ -70,24 +82,68 @@
     <canvas id="threeCanvas"></canvas>
   </div>
 
+  <!-- GAME LOG — standalone parchment panel -->
+  <div id="log-wrap">
+    <div id="log-title">CHRONIK</div>
+    <div id="log"></div>
+  </div>
+
+  <!-- CAMERA CONTROLS — pill -->
   <div id="cam-controls">
-    <span class="cam-label">ANSICHT</span>
-    <button class="cam-btn" onclick="rotateCam(-1)" title="Links drehen">◀</button>
-    <span id="view-label">SW</span>
-    <button class="cam-btn" onclick="rotateCam(1)" title="Rechts drehen">▶</button>
+
+    <!-- View / Rotation group with hover dropdown -->
+    <div class="cam-group">
+      <button class="cam-btn cam-view-toggle" title="Kameraansicht">👁</button>
+      <div class="cam-dropdown">
+        <div class="cam-dropdown-row">
+          <span class="cam-label">ANSICHT</span>
+          <button class="cam-btn" onclick="rotateCam(-1)" title="Links drehen">◀</button>
+          <span id="view-label">SW</span>
+          <button class="cam-btn" onclick="rotateCam(1)" title="Rechts drehen">▶</button>
+        </div>
+        <div class="cam-dropdown-row">
+          <span class="cam-label">NEIGUNG</span>
+          <button class="cam-btn" onclick="tiltCam(-1)" title="Flacher">▲</button>
+          <button class="cam-btn" onclick="tiltCam(1)" title="Steiler">▼</button>
+        </div>
+      </div>
+    </div>
+
     <span class="cam-sep">|</span>
-    <span class="cam-label">ZOOM</span>
+
+    <!-- Zoom -->
     <div id="zoom-bar">
-      <button class="cam-btn" onclick="zoomCam(1)" style="padding:4px 7px">−</button>
+      <button class="cam-btn" onclick="zoomCam(1)" title="Rauszoomen">−</button>
       <div class="zoom-track" id="zoom-track" onclick="zoomClick(event)">
         <div class="zoom-fill" id="zoom-fill" style="width:45%"></div>
       </div>
-      <button class="cam-btn" onclick="zoomCam(-1)" style="padding:4px 7px">+</button>
+      <button class="cam-btn" onclick="zoomCam(-1)" title="Reinzoomen">+</button>
     </div>
+
     <span class="cam-sep">|</span>
-    <span class="cam-label">NEIGUNG</span>
-    <button class="cam-btn" onclick="tiltCam(-1)" title="Flacher">▲</button>
-    <button class="cam-btn" onclick="tiltCam(1)" title="Steiler">▼</button>
+
+    <!-- Quick-Build shortcuts -->
+    <div class="quick-build">
+      <button class="qb-btn" onclick="buyBuilding('wohnhaus')" title="Wohnhaus bauen (6🪵 3🪨)">🏠</button>
+      <button class="qb-btn" onclick="buyBuilding('waldarbeiter')" title="Waldarbeiter bauen">🪵</button>
+      <button class="qb-btn" onclick="buyBuilding('steinbruch')" title="Steinbruch bauen">🪨</button>
+      <button class="qb-btn" onclick="buyBuilding('feld')" title="Feld bauen">🌾</button>
+    </div>
+
+    <span class="cam-sep">|</span>
+
+    <!-- Road mode + day/night -->
+    <button class="cam-btn" id="road-mode-btn" onclick="toggleRoadMode()" title="Straße bauen (2🪨 pro Feld)">🛤 Straße</button>
+    <span id="time-badge" class="cam-label">☀ Tag</span>
+
+    <span class="cam-sep">|</span>
+
+    <!-- Integrated menu button — keeps id="panel-edge" for JS compatibility -->
+    <div id="panel-edge" onclick="togglePanel()" title="Menü öffnen/schließen">
+      <span id="edge-arrow">≡</span>
+      <span class="edge-label">MENÜ</span>
+    </div>
+
   </div>
 
   <!-- SELECTION INFO -->
@@ -96,41 +152,54 @@
   <!-- MOVE MODE BANNER -->
   <div id="move-banner">✦ Verschiebemodus — Ziel wählen · ESC zum Abbrechen</div>
 
-  <!-- PANEL EDGE BUTTONS -->
-  <div id="panel-edge">
-    <button class="edge-btn" id="edge-toggle" onclick="togglePanel()" title="Panel öffnen/schließen">
-      <span id="edge-arrow">◀</span>
-      <span class="edge-label">MENÜ</span>
-    </button>
-    <button class="edge-btn" id="edge-full" onclick="togglePanelFullscreen()" title="Vollbild">
-      <span id="edge-full-icon">⛶</span>
-      <span class="edge-label">VOLL</span>
-    </button>
+  <!-- ROAD MODE BANNER -->
+  <div id="road-banner">🛤 Straßenbau (2🪨) — Gebäude brauchen Straßenzugang · Klick auf Straße: entfernen · ESC: Beenden</div>
+
+  <!-- SIEGE BANNER -->
+  <div id="siege-banner" style="display:none">
+    ⚔️ <b>BELAGERUNG LÄUFT</b> — Welle <span id="siege-wave">1</span>/<span id="siege-total">?</span>
+    — nächster Angriff in <span id="siege-countdown">--</span>s
+    <div class="banner-hint">Baue Mauern und erhöhe deine Verteidigung!</div>
   </div>
 
-  <!-- PANEL OVERLAY -->
+  <!-- PANEL OVERLAY — centered modal backdrop -->
   <div id="panel-overlay">
-    <!-- RIGHT PANEL -->
+    <!-- wrapper gives the close button a positioned parent -->
+    <div class="modal-wrapper">
+
+    <!-- Close button sits outside right-panel to avoid overflow clipping -->
+    <button id="panel-close-inner" onclick="togglePanel()" title="Schließen">✕</button>
+
     <div id="right-panel">
-      <button id="panel-close-inner" onclick="togglePanel()" title="Schließen">✕ Schließen</button>
+
+      <!-- Ornamental corners -->
+      <div class="modal-corner corner-tl"></div>
+      <div class="modal-corner corner-tr"></div>
+      <div class="modal-corner corner-bl"></div>
+      <div class="modal-corner corner-br"></div>
+
+      <!-- Legacy buttons kept hidden for JS compatibility -->
       <button id="panel-fullscreen-btn" onclick="togglePanelFullscreen()" title="Vollbild">⛶</button>
       <button id="panel-close-btn" onclick="togglePanel()" title="Schließen">✕</button>
+
       <div id="panel-tabs">
         <div class="ptab active" onclick="showTab('bauen')">Bauen</div>
         <div class="ptab" onclick="showTab('forschung')">Forschung</div>
         <div class="ptab" onclick="showTab('dorf')">Dorf</div>
       </div>
+
       <div id="panel-content"></div>
-      <div id="log-box">
-        <div id="log-title">CHRONIK</div>
-        <div id="log"></div>
-      </div>
+
       <div id="bottom-btns">
         <button id="prestige-btn" onclick="prestige()">✦ Aufsteigen ✦</button>
+        <button class="action-btn" id="edge-full-icon" onclick="togglePanelFullscreen()">⛶ Vollbild</button>
         <button class="action-btn" onclick="resetGame()">↺ Reset</button>
       </div>
+
     </div>
-  </div>
+
+    </div><!-- /.modal-wrapper -->
+  </div><!-- /#panel-overlay -->
 
   <!-- EVENT MODAL -->
   <div id="event-overlay">
@@ -140,8 +209,8 @@
   </div>
 
   <div id="tooltip"></div>
+  <div id="hoverTooltip"></div>
   <div id="notify"></div>
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/data.js"></script>

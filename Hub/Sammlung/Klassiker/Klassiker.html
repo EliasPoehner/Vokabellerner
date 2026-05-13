@@ -79,6 +79,118 @@
 
     <!-- TETRIS -->
     <div class="game-screen" id="screen-tetris" data-label="TETRIS.EXE" style="position:relative;">
+
+      <!-- Setup-Overlay (Pre-Game) -->
+      <div id="tetris-setup-overlay" class="overlay">
+        <div class="setup-head">⚙ SPIELMODUS</div>
+        <div class="setup-grid">
+
+          <!-- Links: Modus -->
+          <div class="setup-col">
+            <div class="setup-col-label">Modus</div>
+            <div id="mode-list">
+              <div class="mode-item active" onclick="tSelectMode('klassisch',this)">
+                <span class="mode-dot"></span>
+                <span class="mode-name">🎮 Klassisch</span>
+                <span class="mode-desc">Standard, kein Limit</span>
+              </div>
+              <div class="mode-item" onclick="tSelectMode('blitz',this)">
+                <span class="mode-dot"></span>
+                <span class="mode-name">⚡ Blitz</span>
+                <span class="mode-desc">2 Min, max. Punkte</span>
+              </div>
+              <div class="mode-item" onclick="tSelectMode('sprint',this)">
+                <span class="mode-dot"></span>
+                <span class="mode-name">🏁 Sprint</span>
+                <span class="mode-desc">40 Linien, Stoppuhr</span>
+              </div>
+              <div class="mode-item" onclick="tSelectMode('ueberleben',this)">
+                <span class="mode-dot"></span>
+                <span class="mode-name">💀 Überleben</span>
+                <span class="mode-desc">4 Garbage-Reihen Start</span>
+              </div>
+              <div class="mode-item" onclick="tSelectMode('unsichtbar',this)">
+                <span class="mode-dot"></span>
+                <span class="mode-name">👻 Unsichtbar</span>
+                <span class="mode-desc">Steine verschwinden</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rechts: Perks + Events -->
+          <div class="setup-col">
+            <div class="setup-col-label">Perks</div>
+            <div class="tog-row">
+              <label class="tog-wrap"><input type="checkbox" id="perk-ghost" checked><span class="tog-slider"></span></label>
+              <span class="tog-label">Ghost-Piece</span>
+              <span class="tip-badge" data-tip="Zeigt den Landeplatz des aktiven Steins als transparente Vorschau an.">?</span>
+            </div>
+            <div class="tog-row">
+              <label class="tog-wrap"><input type="checkbox" id="perk-hold"><span class="tog-slider"></span></label>
+              <span class="tog-label">Halten <kbd>C</kbd></span>
+              <span class="tip-badge" data-tip="Stashe den aktuellen Stein für später — einmal pro Piece.">?</span>
+            </div>
+            <div class="tog-row">
+              <label class="tog-wrap"><input type="checkbox" id="perk-preview3"><span class="tog-slider"></span></label>
+              <span class="tog-label">Vorschau ×3</span>
+              <span class="tip-badge" data-tip="Zeigt die nächsten 3 Steine statt nur einen in der Vorschau.">?</span>
+            </div>
+            <div class="tog-row">
+              <label class="tog-wrap"><input type="checkbox" id="perk-softlock"><span class="tog-slider"></span></label>
+              <span class="tog-label">Sanfter Lock</span>
+              <span class="tip-badge" data-tip="Lock-Delay 1000 ms statt 500 ms — mehr Zeit zum Positionieren.">?</span>
+            </div>
+
+            <div class="setup-col-label" style="margin-top:8px;">
+              Events
+              <span class="tip-badge" data-tip="Zufällige Ereignisse alle 15–30 Sek. — einzeln ein-/ausschaltbar.">?</span>
+            </div>
+            <div class="tog-row">
+              <label class="tog-wrap"><input type="checkbox" id="events-master"><span class="tog-slider"></span></label>
+              <span class="tog-label">Aktiv</span>
+            </div>
+            <div class="event-grid">
+              <label class="evt-item"><input type="checkbox" id="evt-erdbeben" checked>
+                <span>🌍</span><span class="evt-name">Erdbeben</span>
+                <span class="tip-badge" data-tip="Canvas wackelt 2 Sek. lang.">?</span>
+              </label>
+              <label class="evt-item"><input type="checkbox" id="evt-zeitlupe" checked>
+                <span>🐢</span><span class="evt-name">Zeitlupe</span>
+                <span class="tip-badge" data-tip="Fallspeed halbiert für 5 Sek., blaues Overlay.">?</span>
+              </label>
+              <label class="evt-item"><input type="checkbox" id="evt-farbchaos" checked>
+                <span>🎨</span><span class="evt-name">Farbchaos</span>
+                <span class="tip-badge" data-tip="Steine erhalten für 10 Sek. eine Zufallsfarbe.">?</span>
+              </label>
+              <label class="evt-item"><input type="checkbox" id="evt-muellregen" checked>
+                <span>🗑</span><span class="evt-name">Müllregen</span>
+                <span class="tip-badge" data-tip="Sofort 1 Garbage-Reihe von unten (mit Lücke).">?</span>
+              </label>
+              <label class="evt-item"><input type="checkbox" id="evt-dunkelheit" checked>
+                <span>🌑</span><span class="evt-name">Dunkelheit</span>
+                <span class="tip-badge" data-tip="Gelegte Steine auf 15 % Sichtbarkeit für 3 Sek.">?</span>
+              </label>
+              <label class="evt-item"><input type="checkbox" id="evt-formwechsel" checked>
+                <span>🔀</span><span class="evt-name">Formwechsel</span>
+                <span class="tip-badge" data-tip="Aktueller Stein bekommt sofort eine zufällige neue Form.">?</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+        <button class="btn btn-cyan setup-play-btn" onclick="tetrisStartFromSetup()">SPIELEN ▶</button>
+      </div>
+
+      <!-- Timer-Bar (Blitz / Sprint) -->
+      <div id="tetris-timer-bar" style="display:none;">
+        <span id="tetris-timer-mode">⏱ Blitz</span>
+        <div id="tetris-timer-track"><div id="tetris-timer-fill"></div></div>
+        <span id="tetris-timer-value">120s</span>
+      </div>
+
+      <!-- Event-Badge -->
+      <div id="tetris-event-badge" style="display:none;"></div>
+
       <div class="hud">
         <div class="hud-item">
           <div class="hud-label">Punkte</div>
@@ -86,18 +198,31 @@
         </div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-cyan" id="tetris-start-btn" onclick="tetrisToggle()">Start</button>
-          <button class="btn btn-pink" onclick="initTetris()">↺ Reset</button>
+          <button class="btn btn-pink" onclick="tetrisShowSetup()">↺ Modus</button>
         </div>
         <div class="hud-item">
           <div class="hud-label">Level</div>
           <div class="hud-value" id="tetris-level">1</div>
         </div>
       </div>
+
       <div id="tetris-area">
-        <canvas id="tetris-canvas" width="200" height="400"></canvas>
+        <!-- Hold-Panel -->
+        <div id="tetris-hold-panel" style="display:none;">
+          <div class="side-label">Hold</div>
+          <canvas id="hold-canvas" width="84" height="84"></canvas>
+        </div>
+
+        <!-- Canvas-Wrapper (für Erdbeben / Zeitlupe) -->
+        <div id="tetris-canvas-wrap">
+          <canvas id="tetris-canvas" width="200" height="400"></canvas>
+        </div>
+
         <div id="tetris-side">
           <div class="side-label">Nächstes</div>
           <canvas id="next-canvas" width="84" height="84"></canvas>
+          <div style="display:none;"><canvas id="next-canvas-2" width="84" height="84"></canvas></div>
+          <div style="display:none;"><canvas id="next-canvas-3" width="84" height="84"></canvas></div>
           <div style="margin-top:16px;">
             <div class="side-label">Linien</div>
             <div
@@ -109,14 +234,17 @@
             <div class="tip"><kbd>↑ / Z</kbd><span>Drehen</span></div>
             <div class="tip"><kbd>↓</kbd><span>Soft Drop</span></div>
             <div class="tip"><kbd>Space</kbd><span>Hard Drop</span></div>
+            <div class="tip"><kbd>C</kbd><span>Halten</span></div>
             <div class="tip"><kbd>P / Esc</kbd><span>Pause</span></div>
           </div>
         </div>
       </div>
+
       <div id="tetris-overlay" class="overlay" style="display:none;">
         <h2>GAME OVER</h2>
         <div class="sub">Punkte: <b id="tetris-final-score"></b></div>
-        <button class="btn btn-cyan" onclick="initTetris()">Nochmal</button>
+        <div id="tetris-over-time" style="display:none;font-size:11px;color:var(--cyan);margin-top:4px;"></div>
+        <button class="btn btn-cyan" onclick="tetrisShowSetup()">Nochmal</button>
       </div>
     </div>
 
@@ -300,6 +428,7 @@
   </div>
   <footer>◈ ARCADE ZONE ◈ &nbsp;·&nbsp; Alle Spiele laufen direkt im Browser</footer>
 
+  <script src="tetris.js"></script>
   <script>
     'use strict';
 
@@ -430,251 +559,7 @@
       }
     }
 
-    // ════════════════════════════════════════════════
-    // TETRIS  — requestAnimationFrame + delta-time
-    // ════════════════════════════════════════════════
-    const TW = 10, TH = 20, BS = 20;
-    const PIECES = [
-      { shape: [[1, 1, 1, 1]], color: '#00f5ff' },
-      { shape: [[1, 1], [1, 1]], color: '#ffe600' },
-      { shape: [[0, 1, 0], [1, 1, 1]], color: '#bc13fe' },
-      { shape: [[1, 0, 0], [1, 1, 1]], color: '#ff6b35' },
-      { shape: [[0, 0, 1], [1, 1, 1]], color: '#1e90ff' },
-      { shape: [[0, 1, 1], [1, 1, 0]], color: '#39ff14' },
-      { shape: [[1, 1, 0], [0, 1, 1]], color: '#ff006e' },
-    ];
-    const KICKS_NORM = [[0, 0], [-1, 0], [1, 0], [0, -1], [-1, -1], [1, -1]];
-    const KICKS_I = [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]];
-
-    // ms per row-drop per level (classic exponential curve)
-    // Level 1=800ms, 2=580, 3=420, 5=220, 8=90, 10+=48ms
-    function levelSpeed(lvl) { return Math.max(48, 800 * Math.pow(0.73, lvl - 1)); }
-
-    let tBoard, tPiece, tNext, tBag;
-    let tScore, tLevel, tLines;
-    let tRunning = false, tRafId, tLastTime, tAccum;
-    let tSoftDrop = false, tLockTimer;
-    let tCanvas, tCtx, tNextCtx;
-    let tKeys = {};
-    let dasLeft = 0, dasRight = 0;
-    const DAS_DELAY = 160, DAS_REPEAT = 45;
-
-    function makeBag() {
-      const b = [...PIECES.keys()];
-      for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[b[i], b[j]] = [b[j], b[i]]; }
-      return b;
-    }
-
-    function nextFromBag() {
-      if (!tBag || tBag.length === 0) tBag = makeBag();
-      const idx = tBag.pop(), p = PIECES[idx];
-      return {
-        shape: p.shape.map(r => [...r]), color: p.color,
-        x: Math.floor(TW / 2) - Math.floor(p.shape[0].length / 2), y: 0
-      };
-    }
-
-    function initTetris() {
-      tCanvas = document.getElementById('tetris-canvas');
-      tCtx = tCanvas.getContext('2d');
-      tNextCtx = document.getElementById('next-canvas').getContext('2d');
-      cancelAnimationFrame(tRafId);
-      tRunning = false;
-      document.getElementById('tetris-start-btn').textContent = 'Start';
-      document.getElementById('tetris-overlay').style.display = 'none';
-      tBoard = Array.from({ length: TH }, () => Array(TW).fill(0));
-      tScore = 0; tLevel = 1; tLines = 0; tBag = makeBag();
-      tNext = nextFromBag(); tPiece = null;
-      tKeys = {}; dasLeft = 0; dasRight = 0; tAccum = 0; tSoftDrop = false; tLockTimer = 0;
-      updateTetrisHUD(); drawTetris(); drawNextPiece();
-    }
-
-    function tSpawn() {
-      tPiece = { ...tNext, shape: tNext.shape.map(r => [...r]) };
-      tNext = nextFromBag(); tLockTimer = 0;
-      drawNextPiece();
-      if (tCollides(tPiece, 0, 0)) {
-        tRunning = false; cancelAnimationFrame(tRafId);
-        document.getElementById('tetris-final-score').textContent = tScore;
-        document.getElementById('tetris-overlay').style.display = 'flex';
-        drawTetris();
-      }
-    }
-
-    function tCollides(piece, dx, dy, shape) {
-      const s = shape || piece.shape;
-      for (let r = 0; r < s.length; r++) for (let c = 0; c < s[r].length; c++) {
-        if (!s[r][c]) continue;
-        const nx = piece.x + c + dx, ny = piece.y + r + dy;
-        if (nx < 0 || nx >= TW || ny >= TH) return true;
-        if (ny >= 0 && tBoard[ny][nx]) return true;
-      }
-      return false;
-    }
-
-    function tRotShape(s) { return s[0].map((_, i) => s.map(r => r[i]).reverse()); }
-
-    function tryRotate(piece) {
-      const rot = tRotShape(piece.shape);
-      const isI = rot.length === 1 || rot[0].length === 4;
-      for (const [kx, ky] of (isI ? KICKS_I : KICKS_NORM)) {
-        if (!tCollides(piece, kx, ky, rot)) { piece.shape = rot; piece.x += kx; piece.y += ky; return true; }
-      }
-      return false;
-    }
-
-    function tLock() {
-      tPiece.shape.forEach((row, r) => row.forEach((v, c) => {
-        if (v && tPiece.y + r >= 0) tBoard[tPiece.y + r][tPiece.x + c] = tPiece.color;
-      }));
-      let cleared = 0;
-      for (let r = TH - 1; r >= 0; r--) {
-        if (tBoard[r].every(v => v)) { tBoard.splice(r, 1); tBoard.unshift(Array(TW).fill(0)); cleared++; r++; }
-      }
-      const PTS = [0, 100, 300, 500, 800];
-      const gain = (PTS[cleared] || 0) * tLevel;
-      if (gain) { tScore += gain; popHud('tetris-score'); }
-      const prevLvl = tLevel;
-      tLines += cleared;
-      tLevel = Math.floor(tLines / 10) + 1;
-      if (tLevel !== prevLvl) {
-        popHud('tetris-level');
-        const flash = document.createElement('div');
-        flash.className = 'level-flash';
-        flash.innerHTML = `<span>LEVEL ${tLevel}!</span>`;
-        document.getElementById('screen-tetris').appendChild(flash);
-        setTimeout(() => flash.remove(), 1300);
-      }
-      updateTetrisHUD();
-      tPiece = null; tAccum = 0; tLockTimer = 0;
-      tSpawn();
-    }
-
-    function tetrisToggle() {
-      if (!tRunning) {
-        tRunning = true;
-        document.getElementById('tetris-start-btn').textContent = 'Pause';
-        if (!tPiece) tSpawn();
-        tLastTime = performance.now();
-        tRafId = requestAnimationFrame(tetrisLoop);
-      } else {
-        tRunning = false; cancelAnimationFrame(tRafId);
-        document.getElementById('tetris-start-btn').textContent = 'Weiter';
-      }
-    }
-
-    function tetrisLoop(now) {
-      if (!tRunning) return;
-      const dt = Math.min(now - tLastTime, 100);
-      tLastTime = now;
-      // Soft drop = 10× faster than current level, but never faster than 50ms
-      const normalSpeed = levelSpeed(tLevel);
-      const speed = tSoftDrop ? Math.max(50, normalSpeed / 10) : normalSpeed;
-      tAccum += dt;
-      // Only drop ONE row per frame — prevents the "teleport to bottom" bug
-      if (tAccum >= speed && tPiece) {
-        tAccum -= speed;
-        if (!tCollides(tPiece, 0, 1)) {
-          tPiece.y++;
-          tLockTimer = 0;
-        } else {
-          tLockTimer += speed;
-          if (tLockTimer >= 500) { tLock(); }
-        }
-      }
-      // DAS
-      if (tPiece) {
-        if (tKeys['ArrowLeft'] || tKeys['a']) {
-          dasLeft += dt;
-          if (dasLeft >= DAS_DELAY && Math.floor((dasLeft - DAS_DELAY) / DAS_REPEAT) > Math.floor((dasLeft - DAS_DELAY - dt) / DAS_REPEAT))
-            if (!tCollides(tPiece, -1, 0)) { tPiece.x--; tLockTimer = 0; }
-        } else dasLeft = 0;
-        if (tKeys['ArrowRight'] || tKeys['d']) {
-          dasRight += dt;
-          if (dasRight >= DAS_DELAY && Math.floor((dasRight - DAS_DELAY) / DAS_REPEAT) > Math.floor((dasRight - DAS_DELAY - dt) / DAS_REPEAT))
-            if (!tCollides(tPiece, 1, 0)) { tPiece.x++; tLockTimer = 0; }
-        } else dasRight = 0;
-      }
-      drawTetris();
-      tRafId = requestAnimationFrame(tetrisLoop);
-    }
-
-    function ghostRow() {
-      if (!tPiece) return 0;
-      let gy = tPiece.y;
-      while (!tCollides(tPiece, 0, gy - tPiece.y + 1)) gy++;
-      return gy;
-    }
-
-    function drawTetris() {
-      const ctx = tCtx;
-      ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, tCanvas.width, tCanvas.height);
-      ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
-      for (let r = 0; r < TH; r++) for (let c = 0; c < TW; c++) ctx.strokeRect(c * BS, r * BS, BS, BS);
-      for (let r = 0; r < TH; r++) for (let c = 0; c < TW; c++) if (tBoard[r][c]) drawBlock(ctx, c, r, tBoard[r][c]);
-      if (tPiece && tRunning) {
-        const gy = ghostRow();
-        tPiece.shape.forEach((row, r) => row.forEach((v, c) => {
-          if (v) {
-            ctx.fillStyle = tPiece.color + '28';
-            ctx.fillRect((tPiece.x + c) * BS + 1, (gy + r) * BS + 1, BS - 2, BS - 2);
-          }
-        }));
-        tPiece.shape.forEach((row, r) => row.forEach((v, c) => { if (v) drawBlock(ctx, tPiece.x + c, tPiece.y + r, tPiece.color); }));
-      }
-    }
-
-    function drawBlock(ctx, x, y, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(x * BS + 1, y * BS + 1, BS - 2, BS - 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.25)';
-      ctx.fillRect(x * BS + 1, y * BS + 1, BS - 2, 3);
-      ctx.fillRect(x * BS + 1, y * BS + 1, 3, BS - 2);
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.fillRect(x * BS + 1, (y + 1) * BS - 4, BS - 2, 3);
-    }
-
-    function drawNextPiece() {
-      const ctx = tNextCtx;
-      ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, 84, 84);
-      const bs = 16, s = tNext.shape;
-      const ox = Math.floor((4 - s[0].length) / 2) * bs + 6;
-      const oy = Math.floor((4 - s.length) / 2) * bs + 6;
-      s.forEach((row, r) => row.forEach((v, c) => {
-        if (v) {
-          ctx.fillStyle = tNext.color; ctx.fillRect(ox + c * bs + 1, oy + r * bs + 1, bs - 2, bs - 2);
-          ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(ox + c * bs + 1, oy + r * bs + 1, bs - 2, 3);
-        }
-      }));
-    }
-
-    function updateTetrisHUD() {
-      document.getElementById('tetris-score').textContent = tScore;
-      document.getElementById('tetris-level').textContent = tLevel;
-      document.getElementById('tetris-lines').textContent = tLines;
-    }
-
-    document.addEventListener('keydown', e => {
-      if (activeGame !== 'tetris') return;
-      tKeys[e.key] = true;
-      if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { tetrisToggle(); return; }
-      if (!tRunning || !tPiece) return;
-      if (e.key === 'ArrowLeft' || e.key === 'a') { if (!tCollides(tPiece, -1, 0)) { tPiece.x--; tLockTimer = 0; dasLeft = 0; } e.preventDefault(); }
-      if (e.key === 'ArrowRight' || e.key === 'd') { if (!tCollides(tPiece, 1, 0)) { tPiece.x++; tLockTimer = 0; dasRight = 0; } e.preventDefault(); }
-      if (e.key === 'ArrowDown' || e.key === 's') { if (!tSoftDrop) { tSoftDrop = true; tAccum = 0; } e.preventDefault(); }
-      if (e.key === 'ArrowUp' || e.key === 'z' || e.key === 'Z') { tryRotate(tPiece); e.preventDefault(); }
-      if (e.key === ' ') {
-        e.preventDefault();
-        const gy = ghostRow();
-        tScore += 2 * (gy - tPiece.y);
-        tPiece.y = gy; tLock();
-      }
-      drawTetris();
-    });
-    document.addEventListener('keyup', e => {
-      tKeys[e.key] = false;
-      if (e.key === 'ArrowDown' || e.key === 's') tSoftDrop = false;
-    });
+    // Tetris → tetris.js
 
     // ════════════════════════════════════════════════
     // SNAKE  — requestAnimationFrame + delta-time

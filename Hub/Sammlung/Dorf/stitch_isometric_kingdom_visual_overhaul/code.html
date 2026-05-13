@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="de"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dorfchronik 3D</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-dim": "#131313",
+                "primary-fixed-dim": "#ffba20",
+                "on-tertiary-container": "#a1170d",
+                "on-surface-variant": "#d5c4ab",
+                "on-primary-fixed": "#271900",
+                "on-error": "#690005",
+                "on-background": "#e5e2e1",
+                "error-container": "#93000a",
+                "surface-container": "#201f1f",
+                "surface-container-low": "#1c1b1b",
+                "surface-variant": "#353534",
+                "on-secondary-fixed-variant": "#454749",
+                "on-secondary-container": "#b4b5b7",
+                "on-secondary": "#2f3133",
+                "secondary-fixed-dim": "#c6c6c9",
+                "primary": "#ffdca1",
+                "tertiary-fixed": "#ffdad4",
+                "on-tertiary-fixed-variant": "#920703",
+                "tertiary": "#ffd8d1",
+                "surface-tint": "#ffba20",
+                "surface-container-high": "#2a2a2a",
+                "on-tertiary-fixed": "#410000",
+                "primary-container": "#ffb800",
+                "on-primary-container": "#6b4c00",
+                "on-secondary-fixed": "#1a1c1e",
+                "secondary-fixed": "#e2e2e5",
+                "outline": "#9e8f78",
+                "inverse-surface": "#e5e2e1",
+                "secondary-container": "#454749",
+                "tertiary-fixed-dim": "#ffb4a8",
+                "tertiary-container": "#ffb1a5",
+                "surface-bright": "#393939",
+                "on-tertiary": "#690000",
+                "error": "#ffb4ab",
+                "surface-container-lowest": "#0e0e0e",
+                "secondary": "#c6c6c9",
+                "inverse-primary": "#7c5800",
+                "surface-container-highest": "#353534",
+                "on-primary-fixed-variant": "#5e4200",
+                "on-primary": "#412d00",
+                "on-error-container": "#ffdad6",
+                "background": "#131313",
+                "outline-variant": "#514532",
+                "primary-fixed": "#ffdea8",
+                "on-surface": "#e5e2e1",
+                "surface": "#131313",
+                "inverse-on-surface": "#313030"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "margin-desktop": "64px",
+                "gutter": "24px",
+                "unit": "4px",
+                "md": "16px",
+                "xs": "4px",
+                "margin-mobile": "16px",
+                "lg": "24px",
+                "sm": "8px",
+                "xl": "48px"
+        },
+        "fontFamily": {
+                "body-md": ["Crimson Text", "serif"],
+                "body-lg": ["Crimson Text", "serif"],
+                "headline-lg": ["Cinzel", "serif"],
+                "headline-md": ["Cinzel", "serif"],
+                "display-lg": ["Cinzel", "serif"],
+                "label-md": ["Cinzel", "serif"],
+                "headline-lg-mobile": ["Cinzel", "serif"]
+        }
+      },
+    },
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Crimson+Text:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #0e0e0e;
+    font-family: "Crimson Text", serif;
+    color: #e5e2e1
+    }
+h1, h2, h3, .headline {
+    font-family: "Cinzel", serif
+    }
+/* Header Overrides */
+#header {
+    background: linear-gradient(to bottom, #2a1b0a, #1a0f05);
+    border-bottom: 2px solid #5e4200;
+    display: flex;
+    align-items: center;
+    padding: 8px 24px;
+    height: 60px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 100
+    }
+#header h1 {
+    font-size: 24px;
+    color: #ffdca1;
+    margin: 0;
+    letter-spacing: 1px
+    }
+#tier-badge {
+    background: #412d00;
+    border: 1px solid #ffba20;
+    color: #ffba20;
+    padding: 2px 12px;
+    border-radius: 4px;
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    margin-left: 16px;
+    text-transform: uppercase
+    }
+#clock {
+    font-family: "Cinzel", serif;
+    color: #ffdca1;
+    font-weight: 700
+    }
+/* Top Resource Bar */
+#resources {
+    background: #1c1b1b;
+    border-bottom: 2px solid #514532;
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    gap: 12px;
+    z-index: 90;
+    position: relative;
+    box-shadow: inset 0 -5px 15px rgba(0, 0, 0, 0.3)
+    }
+.res-item {
+    background: #2a2a2a;
+    border: 1px solid #514532;
+    border-radius: 2px;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s
+    }
+.res-item:hover {
+    border-color: #ffba20;
+    background: #353534
+    }
+.res-icon {
+    font-size: 1.1rem
+    }
+.res-val {
+    font-family: "Cinzel", serif;
+    color: #ffdca1;
+    font-size: 15px;
+    font-weight: 700
+    }
+.res-rate {
+    font-size: 10px;
+    color: #9e8f78
+    }
+.res-label {
+    font-family: "Cinzel", serif;
+    font-size: 9px;
+    color: #9e8f78;
+    text-transform: uppercase;
+    border-left: 1px solid #514532;
+    padding-left: 8px;
+    margin-left: 4px
+    }
+#pop-info {
+    margin-left: auto;
+    background: #201f1f;
+    border: 1px solid #5e4200;
+    padding: 2px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px
+    }
+.pop-bar-bg {
+    background: #0e0e0e;
+    height: 8px;
+    width: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #514532
+    }
+.pop-bar-fill {
+    background: linear-gradient(90deg, #5e4200, #ffba20);
+    height: 100%;
+    transition: width 0.4s ease
+    }
+/* 3D Canvas */
+#canvas-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10
+    }
+/* Main Central UI */
+#panel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 200;
+    display: none;
+    /* Controlled by JS togglePanel */
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px)
+    }
+#central-modal {
+    width: 90%;
+    max-width: 1000px;
+    height: 85vh;
+    background: #1c1b1b;
+    border: 8px solid #353534;
+    outline: 2px solid #ffba20;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAWYH3r94joYkUU0KXAGM8Xcg4WHHDdRm4Hin3-Z7xLVCbG2QAHNtusSwApPG-45TNOTIPaMdK1NfKH9JXoMRIRkaOFxdovIx-c4voPOtq_h6FYYoPQzDBrF2c2RmJwq6VXqnx_moajqLMIg7GTeq3dsCCDvjj0ZnXPf7bp9kmU9DtC_3Nh-j-VzKwV3iIxdmip99TUPIYqH8_ceSxT88ESs_NGvJ00ak1mcDoHuYXFBA60Ad5aMYaxtQOA9-TpiVo4xGnIqVk4Tug);
+    /* Subtle texture */
+    }
+/* Ornate Corners */
+.modal-corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ffba20;
+    z-index: 10
+    }
+.corner-tl {
+    top: -12px;
+    left: -12px;
+    border-right: 0;
+    border-bottom: 0
+    }
+.corner-tr {
+    top: -12px;
+    right: -12px;
+    border-left: 0;
+    border-bottom: 0
+    }
+.corner-bl {
+    bottom: -12px;
+    left: -12px;
+    border-right: 0;
+    border-top: 0
+    }
+.corner-br {
+    bottom: -12px;
+    right: -12px;
+    border-left: 0;
+    border-top: 0
+    }
+#panel-tabs {
+    display: flex;
+    background: #2a1b0a;
+    border-bottom: 3px solid #ffba20
+    }
+.ptab {
+    padding: 16px 32px;
+    font-family: "Cinzel", serif;
+    font-weight: 700;
+    cursor: pointer;
+    color: #9e8f78;
+    transition: all 0.3s;
+    border-right: 1px solid #514532;
+    text-transform: uppercase;
+    letter-spacing: 1px
+    }
+.ptab.active {
+    background: #ffba20;
+    color: #271900
+    }
+.ptab:hover:not(.active) {
+    background: #353534;
+    color: #ffdca1
+    }
+#panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px;
+    background: #fdf5e6;
+    /* Parchment look for content */
+    color: #271900;
+    position: relative
+    }
+/* Building Grid style inside content */
+.building-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px
+    }
+/* Close Button */
+#panel-close-btn {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    background: #93000a;
+    color: white;
+    border: 2px solid #ffba20;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 210;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5)
+    }
+/* Bottom Log Area */
+#log-wrap {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    width: 320px;
+    max-height: 200px;
+    background: rgba(253, 245, 230, 0.85);
+    /* Semi-transparent parchment */
+    border: 2px solid #5e4200;
+    padding: 12px;
+    z-index: 50;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column
+    }
+#log-title {
+    font-family: "Cinzel", serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #412d00;
+    border-bottom: 1px solid #5e4200;
+    margin-bottom: 8px;
+    padding-bottom: 4px
+    }
+#log {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 13px;
+    color: #271900;
+    line-height: 1.4
+    }
+/* Camera Controls Refined */
+#cam-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translatex(-50%);
+    background: #1a0f05;
+    border: 2px solid #ffba20;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 40px;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7)
+    }
+.cam-btn {
+    background: #412d00;
+    border: 1px solid #ffba20;
+    color: #ffdca1;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: "Cinzel", serif;
+    font-size: 14px;
+    transition: all 0.2s
+    }
+.cam-btn:hover {
+    background: #ffba20;
+    color: #271900
+    }
+.cam-label {
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    color: #9e8f78;
+    text-transform: uppercase;
+    letter-spacing: 1px
+    }
+/* Menu Toggle Edge Button */
+#menu-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ffba20;
+    color: #271900;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(255, 184, 0, 0.4);
+    border: 3px solid #1a0f05;
+    transition: transform 0.2s
+    }
+#menu-trigger:hover {
+    transform: scale(1.1)
+    }
+#menu-trigger .label {
+    font-family: "Cinzel", serif;
+    font-size: 9px;
+    font-weight: 700;
+    margin-top: -2px
+    }
+/* Building Cards in Grid */
+.build-card {
+    background: #fff;
+    border: 2px solid #d5c4ab;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s
+    }
+.build-card:hover {
+    transform: translatey(-4px);
+    border-color: #ffba20;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1)
+    }
+#sel-info {
+    position: fixed;
+    top: 140px;
+    right: 20px;
+    width: 280px;
+    background: rgba(28, 27, 27, 0.9);
+    border: 2px solid #ffba20;
+    padding: 16px;
+    z-index: 50;
+    display: none;
+    border-radius: 4px;
+    color: #e5e2e1
+    }
+/* Banners */
+.game-banner {
+    position: fixed;
+    top: 130px;
+    left: 50%;
+    transform: translatex(-50%);
+    z-index: 150;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-family: "Cinzel", serif;
+    font-weight: 700;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    text-align: center
+    }
+#move-banner {
+    background: #ffba20;
+    color: #271900
+    }
+#road-banner {
+    background: #454749;
+    color: #e2e2e5;
+    border: 1px solid #ffdca1
+    }
+#siege-banner {
+    background: #a1170d;
+    color: #ffdad6
+    }</style>
+</head>
+<body>
+<!-- HEADER -->
+<div id="header">
+<h1>⚔ Dorfchronik 3D</h1>
+<span id="tier-badge">Weiler</span>
+<div style="flex:1"></div>
+<span id="clock">Tag 1</span>
+</div>
+<!-- RESOURCES -->
+<div id="resources">
+<div class="res-item" title="Holz"><span class="res-icon">🪵</span>
+<div>
+<div class="res-val" id="r-holz">10</div>
+<div class="res-rate" id="rr-holz">+0/s</div>
+</div><span class="res-label">Holz</span>
+</div>
+<div class="res-item" title="Stein"><span class="res-icon">🪨</span>
+<div>
+<div class="res-val" id="r-stein">6</div>
+<div class="res-rate" id="rr-stein">+0/s</div>
+</div><span class="res-label">Stein</span>
+</div>
+<div class="res-item" title="Nahrung"><span class="res-icon">🌾</span>
+<div>
+<div class="res-val" id="r-nahrung">20</div>
+<div class="res-rate" id="rr-nahrung">+0/s</div>
+</div><span class="res-label">Nahrung</span>
+</div>
+<div class="res-item" title="Gold"><span class="res-icon">🪙</span>
+<div>
+<div class="res-val" id="r-gold">15</div>
+<div class="res-rate" id="rr-gold">+0/s</div>
+</div><span class="res-label">Gold</span>
+</div>
+<div class="res-item" title="Eisen"><span class="res-icon">⚙️</span>
+<div>
+<div class="res-val" id="r-eisen">0</div>
+<div class="res-rate" id="rr-eisen">+0/s</div>
+</div><span class="res-label">Eisen</span>
+</div>
+<div class="res-item" title="Kohle"><span class="res-icon">🔥</span>
+<div>
+<div class="res-val" id="r-kohle">0</div>
+<div class="res-rate" id="rr-kohle">+0/s</div>
+</div><span class="res-label">Kohle</span>
+</div>
+<div id="pop-info">
+<span style="font-family:'Cinzel',serif;font-size:11px;color:#ffba20;display:flex;align-items:center;gap:4px">
+<span class="material-symbols-outlined" style="font-size:16px">group</span> BEV.
+    </span>
+<div class="pop-bar-bg">
+<div class="pop-bar-fill" id="pop-fill" style="width:10%"></div>
+</div>
+<span id="pop-text" style="font-family:'Cinzel',serif; color:#ffdca1; font-size:12px; font-weight:600;">1/10 (2)</span>
+</div>
+</div>
+<!-- 3D CANVAS -->
+<div id="canvas-wrap">
+<canvas id="threeCanvas"></canvas>
+</div>
+<!-- GAME LOG (Parchment corner) -->
+<div id="log-wrap">
+<div id="log-title">CHRONIK</div>
+<div id="log"></div>
+</div>
+<!-- CAMERA CONTROLS -->
+<div class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-[#1a0f05]/95 border-2 border-[#ffba20] flex items-center gap-1 pl-2 pr-0 py-1 rounded-[40px] z-[100] shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all" id="cam-controls"><!-- View Sub-menu (Collapsible) -->
+<div class="relative group">
+<button class="cam-btn flex items-center justify-center w-10 h-10 rounded-full bg-[#412d00] border border-[#ffba20] text-[#ffdca1] hover:bg-[#ffba20] hover:text-[#271900] transition-colors px-2 py-0.5" title="Kameraeinstellungen">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 hidden group-hover:flex flex-col gap-2 p-3 bg-[#1a0f05] border-2 border-[#ffba20] rounded-xl shadow-2xl z-[150]">
+<div class="flex items-center gap-2">
+<span class="cam-label">ANSICHT</span>
+<button class="cam-btn px-2 py-0.5" onclick="rotateCam(-1)" title="Links drehen">◀</button>
+<span class="font-bold text-[#ffdca1] text-[10px] min-w-[20px] text-center" id="view-label">SW</span>
+<button class="cam-btn px-2 py-0.5" onclick="rotateCam(1)" title="Rechts drehen">▶</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="cam-label">NEIGUNG</span>
+<button class="cam-btn px-2 py-0.5" onclick="tiltCam(-1)">▲</button>
+<button class="cam-btn px-2 py-0.5" onclick="tiltCam(1)">▼</button>
+</div>
+</div>
+</div>
+<div class="h-6 w-px bg-[#514532]"></div>
+<!-- Zoom -->
+<div class="flex items-center gap-2 px-2">
+<button class="text-[#ffdca1] hover:text-white" onclick="zoomCam(1)"><span class="material-symbols-outlined text-sm">remove</span></button>
+<div class="w-16 h-1.5 bg-[#0e0e0e] border border-[#514532] rounded-full overflow-hidden cursor-pointer" onclick="zoomClick(event)">
+<div class="h-full bg-[#ffba20]" id="zoom-fill" style="width:45%"></div>
+</div>
+<button class="text-[#ffdca1] hover:text-white" onclick="zoomCam(-1)"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<div class="h-6 w-px bg-[#514532]"></div>
+<!-- Quick Build Bar -->
+<div class="flex items-center gap-3 px-2">
+<button class="w-10 h-10 border border-[#514532] bg-[#2a1b0a] hover:border-[#ffba20] transition-all flex items-center justify-center rounded" onclick="alert('Baue Holzfäller')" title="Holzfällerhütte">
+<span class="text-lg">🪵</span>
+</button>
+<button class="w-10 h-10 border border-[#514532] bg-[#2a1b0a] hover:border-[#ffba20] transition-all flex items-center justify-center rounded" onclick="alert('Baue Steinbruch')" title="Steinbruch">
+<span class="text-lg">🪨</span>
+</button>
+<button class="w-10 h-10 border border-[#514532] bg-[#2a1b0a] hover:border-[#ffba20] transition-all flex items-center justify-center rounded" onclick="alert('Baue Bauernhof')" title="Bauernhof">
+<span class="text-lg">🌾</span>
+</button>
+</div>
+<div class="h-6 w-px bg-[#514532]"></div>
+<!-- Road and Time -->
+<div class="flex items-center gap-4 px-2">
+<button class="cam-btn py-1 px-3 text-[10px] whitespace-nowrap px-2 py-0.5" id="road-mode-btn" onclick="toggleRoadMode()">🛤 STRASSE</button>
+<span class="cam-label text-[10px] whitespace-nowrap" id="time-badge">☀ TAG</span>
+</div>
+<div class="h-6 w-px bg-[#514532]"></div>
+<!-- Integrated Menu -->
+<button class="flex flex-col items-center justify-center px-4 hover:bg-[#ffba20] hover:text-[#271900] transition-colors rounded-r-[40px] text-[#ffba20]" id="menu-trigger-integrated" onclick="togglePanel()">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-['Cinzel'] text-[8px] font-bold">MENÜ</span>
+</button></div>
+<!-- MENU TRIGGER -->
+<!-- CENTRAL UI OVERLAY -->
+<div id="panel-overlay">
+<div id="central-modal">
+<!-- Decorative Corners -->
+<div class="modal-corner corner-tl"></div>
+<div class="modal-corner corner-tr"></div>
+<div class="modal-corner corner-bl"></div>
+<div class="modal-corner corner-br"></div>
+<button id="panel-close-btn" onclick="togglePanel()">✕</button>
+<div id="panel-tabs">
+<div class="ptab active" onclick="showTab('bauen')">Bauen</div>
+<div class="ptab" onclick="showTab('forschung')">Forschung</div>
+<div class="ptab" onclick="showTab('dorf')">Dorf</div>
+</div>
+<div id="panel-content">
+<!-- Content populated by JS showTab() -->
+</div>
+<div class="bg-[#2a1b0a] border-t-2 border-[#ffba20] p-4 flex justify-between items-center">
+<button class="bg-[#ffba20] hover:bg-[#ffdea8] text-[#271900] px-6 py-2 rounded font-bold font-['Cinzel'] text-sm tracking-widest transition-all" id="prestige-btn" onclick="prestige()">✦ AUFSTEIGEN ✦</button>
+<div class="flex gap-4">
+<button class="bg-[#454749] text-white px-3 py-1 rounded text-xs border border-[#514532]" onclick="togglePanelFullscreen()">⛶ VOLLBILD</button>
+<button class="text-[#a1170d] hover:underline font-bold text-xs uppercase tracking-tighter" onclick="resetGame()">↺ Spiel zurücksetzen</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SELECTION INFO -->
+<div id="sel-info"></div>
+<!-- BANNERS -->
+<div class="game-banner" id="move-banner">✦ VERSCHIEBEMODUS — Ziel wählen · ESC zum Abbrechen</div>
+<div class="game-banner" id="road-banner">🛤 STRASSENBAU (2🪨) — Gebäude brauchen Straßenzugang · ESC zum Beenden</div>
+<div class="game-banner" id="siege-banner">
+    ⚔️ <b>BELAGERUNG LÄUFT</b> — Welle <span id="siege-wave">1</span>/<span id="siege-total">?</span>
+    — nächster Angriff in <span id="siege-countdown">--</span>s
+</div>
+<!-- EVENT MODAL -->
+<div class="fixed inset-0 bg-black/80 z-[300] hidden items-center justify-center backdrop-blur-md" id="event-overlay">
+<div class="bg-[#fdf5e6] border-4 border-[#ffba20] p-8 max-w-lg w-full relative" id="event-modal">
+<div class="text-[#271900]" id="event-inner"></div>
+</div>
+</div>
+<!-- TOOLTIPS -->
+<div class="fixed bg-black/90 text-white p-2 text-xs rounded pointer-events-none z-[400] hidden border border-[#ffba20]" id="tooltip"></div>
+<div class="fixed bg-black/90 text-white p-2 text-xs rounded pointer-events-none z-[400] hidden border border-[#514532]" id="hoverTooltip"></div>
+<div class="fixed top-20 right-10 z-[500]" id="notify"></div>
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Placeholder for game logic files - in a real app these would be linked -->
+<!-- <script src="js/data.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/game.js"></script> -->
+<script>
+  // Simple UI glue for the demo/structure since we don't have the full game.js logic here.
+  // These mimic the expected functions to ensure UI works.
+  
+  function togglePanel() {
+    const overlay = document.getElementById('panel-overlay');
+    if (overlay.style.display === 'flex') {
+      overlay.style.display = 'none';
+    } else {
+      overlay.style.display = 'flex';
+      // Default to Bauen if no tab active or just to ensure it refreshes
+      showTab('bauen');
+    }
+  }
+
+  function showTab(tabName) {
+    // Update tab styles
+    const tabs = document.querySelectorAll('.ptab');
+    tabs.forEach(t => {
+      t.classList.remove('active');
+      if (t.innerText.toLowerCase() === tabName.toLowerCase()) t.classList.add('active');
+    });
+
+    const content = document.getElementById('panel-content');
+    
+    // Example content population to demonstrate the new grid layout
+    if (tabName === 'bauen') {
+      content.innerHTML = `
+        <h2 class="text-2xl mb-6 font-['Cinzel'] border-b border-[#d5c4ab] pb-2">Bauwerke</h2>
+        <div class="building-grid">
+          ${[1,2,3,4,5,6].map(i => `
+            <div class="build-card" onclick="alert('Baue Gebäude ${i}')">
+              <div class="text-3xl">🏠</div>
+              <div class="font-bold font-['Cinzel']">Wohnhaus ${i}</div>
+              <div class="text-sm text-gray-600 italic">Bietet Platz für 5 Siedler.</div>
+              <div class="mt-auto pt-2 border-t border-gray-200 flex justify-between text-xs font-bold text-[#6b4c00]">
+                <span>🪵 10</span>
+                <span>🪨 5</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (tabName === 'forschung') {
+      content.innerHTML = `<h2 class="text-2xl mb-6 font-['Cinzel'] border-b border-[#d5c4ab] pb-2">Bibliothek der Weisheit</h2><p>Hier werden neue Technologien erforscht...</p>`;
+    } else if (tabName === 'dorf') {
+      content.innerHTML = `<h2 class="text-2xl mb-6 font-['Cinzel'] border-b border-[#d5c4ab] pb-2">Dorf-Statistiken</h2><p>Deine Siedlung gedeiht prächtig.</p>`;
+    }
+  }
+
+  function togglePanelFullscreen() {
+    const modal = document.getElementById('central-modal');
+    if (modal.style.width === '100%') {
+      modal.style.width = '90%';
+      modal.style.height = '85vh';
+      modal.style.maxWidth = '1000px';
+    } else {
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.maxWidth = 'none';
+    }
+  }
+
+  // Initial Log entries
+  const log = document.getElementById('log');
+  log.innerHTML = "<div><em>Das Dorf 'Weiler' wurde gegründet.</em></div><div><em>Tag 1 bricht an.</em></div>";
+
+  // Mocked camera/road functions for UI feedback
+  function rotateCam(v) { console.log("Rotate", v); }
+  function zoomCam(v) { console.log("Zoom", v); }
+  function tiltCam(v) { console.log("Tilt", v); }
+  function toggleRoadMode() { 
+    const banner = document.getElementById('road-banner');
+    banner.style.display = banner.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+</body></html>
