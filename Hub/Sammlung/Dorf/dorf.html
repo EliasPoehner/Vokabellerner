@@ -183,9 +183,10 @@
       <button id="panel-close-btn" onclick="togglePanel()" title="Schließen">✕</button>
 
       <div id="panel-tabs">
-        <div class="ptab active" onclick="showTab('bauen')">Bauen</div>
-        <div class="ptab" onclick="showTab('forschung')">Forschung</div>
-        <div class="ptab" onclick="showTab('dorf')">Dorf</div>
+        <div class="ptab active" data-tab="bauen" onclick="showTab('bauen')">Bauen</div>
+        <div class="ptab" data-tab="forschung" onclick="showTab('forschung')">Forschung</div>
+        <div class="ptab" data-tab="dorf" onclick="showTab('dorf')">Dorf</div>
+        <div class="ptab" data-tab="faehigkeiten" onclick="showTab('faehigkeiten')">✦ Fähigkeiten</div>
       </div>
 
       <div id="panel-content"></div>
@@ -212,10 +213,7 @@
   <div id="hoverTooltip"></div>
   <div id="notify"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/renderer.js"></script>
-  <script src="js/game.js"></script>
+  <script type="module" src="js/main.ts"></script>
 </body>
 
 </html>

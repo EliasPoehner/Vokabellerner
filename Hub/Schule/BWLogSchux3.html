@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lernzusammenfassung – Produktion & Variantenkonfiguration</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --bg-tertiary: #eeede9;
+    --text: #1a1a1a;
+    --text-muted: #555550;
+    --text-hint: #888882;
+    --border: rgba(0,0,0,0.1);
+    --border-medium: rgba(0,0,0,0.18);
+    --accent: #185FA5;
+    --accent-bg: #E6F1FB;
+    --accent-text: #0C447C;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg-secondary: #252523;
+      --bg-tertiary: #2e2e2b;
+      --text: #f0efe8;
+      --text-muted: #b0afa6;
+      --text-hint: #777770;
+      --border: rgba(255,255,255,0.1);
+      --border-medium: rgba(255,255,255,0.18);
+      --accent: #378ADD;
+      --accent-bg: #0c2a44;
+      --accent-text: #7ab8f0;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .module-tabs {
+    display: flex;
+    gap: 0;
+  }
+
+  .module-tab {
+    padding: 1rem 1.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .module-tab:hover { color: var(--text); }
+  .module-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .header-title {
+    font-size: 13px;
+    color: var(--text-hint);
+    margin-left: auto;
+    padding-left: 1.5rem;
+    white-space: nowrap;
+  }
+
+  /* ── LAYOUT ── */
+  .module-view { display: none; }
+  .module-view.active { display: flex; min-height: calc(100vh - 53px); }
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border-right: 0.5px solid var(--border);
+    padding: 1.25rem 0;
+    position: sticky;
+    top: 53px;
+    height: calc(100vh - 53px);
+    overflow-y: auto;
+  }
+
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    padding: 0 1.25rem 0.5rem;
+  }
+
+  .sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.12s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar-btn:hover { background: var(--bg-secondary); color: var(--text); }
+  .sidebar-btn.active {
+    color: var(--accent);
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .sidebar-btn .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .sidebar-btn.active .dot { opacity: 1; }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    max-width: 820px;
+    overflow-y: auto;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 14px;
+  }
+
+  .card h3 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .card p, .card li {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  .card ul { padding-left: 1.2rem; }
+  .card li { margin-bottom: 3px; }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+  }
+
+  .tag-blue   { background: #E6F1FB; color: #0C447C; }
+  .tag-teal   { background: #E1F5EE; color: #085041; }
+  .tag-amber  { background: #FAEEDA; color: #633806; }
+  .tag-purple { background: #EEEDFE; color: #3C3489; }
+  .tag-green  { background: #EAF3DE; color: #27500A; }
+  .tag-gray   { background: #F1EFE8; color: #444441; }
+  .tag-coral  { background: #FAECE7; color: #712B13; }
+  .tag-pink   { background: #FBEAF0; color: #72243E; }
+
+  @media (prefers-color-scheme: dark) {
+    .tag-blue   { background: #0c2a44; color: #7ab8f0; }
+    .tag-teal   { background: #04342c; color: #5dcaa5; }
+    .tag-amber  { background: #412402; color: #ef9f27; }
+    .tag-purple { background: #26215c; color: #afa9ec; }
+    .tag-green  { background: #173404; color: #97c459; }
+    .tag-gray   { background: #2c2c2a; color: #b4b2a9; }
+    .tag-coral  { background: #4a1b0c; color: #f0997b; }
+    .tag-pink   { background: #4b1528; color: #ed93b1; }
+  }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-weight: 500;
+    margin: 3px 3px 3px 0;
+  }
+  .badge-ok { background: #EAF3DE; color: #27500A; }
+  .badge-no { background: #FCEBEB; color: #791F1F; }
+  @media (prefers-color-scheme: dark) {
+    .badge-ok { background: #173404; color: #97c459; }
+    .badge-no { background: #501313; color: #f09595; }
+  }
+
+  /* ── STEP ── */
+  .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .step-num {
+    min-width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-body h4 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .step-body p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── DEFINITION ROWS ── */
+  .def-row {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 13px;
+  }
+  .def-row:last-child { border-bottom: none; }
+  .def-label { min-width: 140px; font-weight: 500; color: var(--text); flex-shrink: 0; }
+  .def-val { color: var(--text-muted); line-height: 1.55; }
+
+  /* ── STRATEGY ROWS ── */
+  .strat-row { display: flex; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .strat-row:last-child { border-bottom: none; }
+  .strat-num { min-width: 28px; font-size: 12px; font-weight: 600; color: var(--accent); padding-top: 1px; }
+  .strat-body { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .strat-body strong { color: var(--text); font-weight: 500; }
+
+  /* ── FORMULA / CODE ── */
+  .formula, .code-block {
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--accent);
+    padding: 9px 13px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 12.5px;
+    font-family: 'Menlo', 'Consolas', monospace;
+    color: var(--text);
+    margin: 8px 0;
+    line-height: 1.9;
+  }
+
+  /* ── NOTICE BOXES ── */
+  .info-box {
+    background: var(--accent-bg);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--accent-text);
+    margin: 8px 0;
+  }
+  .warn {
+    background: #FAEEDA;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #633806;
+    margin: 8px 0;
+  }
+  @media (prefers-color-scheme: dark) {
+    .warn { background: #412402; color: #ef9f27; }
+  }
+
+  /* ── GRIDS ── */
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .compare .card { margin-bottom: 0; }
+  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0; }
+  .metric {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .big-num { font-size: 20px; font-weight: 600; color: var(--text); }
+  .big-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── ART-CARD ── */
+  .art-card {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .art-card h4 { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .art-card p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .sidebar { display: none; }
+    .content { padding: 1.25rem; }
+    .row2, .compare, .metric-grid { grid-template-columns: 1fr; }
+    .header-title { display: none; }
+    .module-tab { padding: 1rem 0.85rem; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="module-tabs">
+    <button class="module-tab active" onclick="switchModule('pp')">📦 Produktion</button>
+    <button class="module-tab" onclick="switchModule('vc')">🔧 Variantenkonfiguration</button>
+  </div>
+  <span class="header-title">F11 · Lernzusammenfassung</span>
+</header>
+
+<!-- ═══════════════════════════════════════════ PRODUKTION ═══ -->
+<div id="pp" class="module-view active">
+  <nav class="sidebar" id="pp-sidebar">
+    <div class="sidebar-label">Themen</div>
+    <button class="sidebar-btn active" onclick="showSection('pp','pp-uebersicht',this)"><span class="dot"></span>Übersicht</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-stammdaten',this)"><span class="dot"></span>Stammdaten</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-strategien',this)"><span class="dot"></span>MTS vs. MTO</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-planung',this)"><span class="dot"></span>Planung &amp; SOP</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-prognose',this)"><span class="dot"></span>Prognosemodelle</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-mrp',this)"><span class="dot"></span>MRP &amp; Disposition</button>
+    <button class="sidebar-btn" onclick="showSection('pp','pp-fertigung',this)"><span class="dot"></span>Fertigungsprozess</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- ÜBERSICHT -->
+    <div id="pp-uebersicht" class="section active">
+      <h2 class="section-title">Übersicht: Produktionsprozess</h2>
+      <div class="card">
+        <span class="tag tag-blue">Zwei Hauptbereiche</span>
+        <h3>Produktionsplanung und -steuerung</h3>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Strategische Planung</h4><p>Prognose + Absatz- und Produktionsgrobplanung (SOP) auf Basis von Daten aus VIS (Vertriebsinformationssystem) und CO/PA (Ergebnis- und Marktsegmentrechnung).</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Programmplanung</h4><p>Verbindung zwischen strategischer Planung und Detailplanung. Planprimärbedarf-Kundenbestandsabgleich. Strategiewahl: MTS, MTO oder konfigurierbare Materialien.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Detailplanung</h4><p>Leitteileplanung (MPS): konzentriert sich auf wertbestimmende Materialien. Ziel: Lagerkapital reduzieren und Planungsstabilität erhöhen.<br>Materialbedarfsplanung (MRP): berechnet den konkreten Bedarf aller Komponenten.</p></div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Fertigungsprozess</span>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Beschaffung</h4><p>Bereitstellung aller benötigten Materialien und Komponenten.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Produktionsdurchführung</h4><p>Durchführung der geplanten Fertigungsschritte.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Auftragsabrechnung</h4><p>Erfassung und Verrechnung der tatsächlichen Kosten des Auftrags.</p></div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-gray">Organisationsstrukturen</span>
+        <h3>Werk, Lagerort, Arbeitsplatz</h3>
+        <div class="def-row"><div class="def-label">Werk</div><div class="def-val">Betriebsstätte, die für Produktion, Disposition, Beschaffung und Instandhaltung genutzt wird.</div></div>
+        <div class="def-row"><div class="def-label">Lagerort</div><div class="def-val">Organisatorische Einheit innerhalb eines Werkes zur Unterscheidung von Beständen (z.B. Rohstoff-, Halbfabrikate-, Fertigteillager).</div></div>
+        <div class="def-row"><div class="def-label">Arbeitsplatz</div><div class="def-val">Definiert wo und wann ein Arbeitsablauf durchgeführt wird. Kapazität hängt von Fabrikkalender, Schichtplan und Ruhezeiten ab. Kann Maschine, Person, Produktionslinie oder Gruppe sein.</div></div>
+        <div class="info-box">Wertschöpfung = Marktwert der hergestellten Güter minus Kosten der beschafften Materialien und Vorleistungen.</div>
+      </div>
+    </div>
+
+    <!-- STAMMDATEN -->
+    <div id="pp-stammdaten" class="section">
+      <h2 class="section-title">Stammdaten der Produktion</h2>
+      <div class="card">
+        <span class="tag tag-blue">Stückliste</span>
+        <h3>Was ist eine Stückliste?</h3>
+        <p>Eine vollständige Liste aller Komponenten mit Mengenangaben, die zur Fertigung eines Produkts benötigt werden. Grundlage für Beschaffung und Bedarfsermittlung. Es gibt einstufige und mehrstufige Stücklisten (Komponenten selbst wieder aus Unterkomponenten aufgebaut).</p>
+        <div style="margin-top:10px">
+          <span class="badge badge-ok">✓ Komponenten + Mengen</span>
+          <span class="badge badge-ok">✓ ein- und mehrstufig</span>
+          <span class="badge badge-ok">✓ Basis für MRP-Lauf</span>
+          <span class="badge badge-no">✗ keine Arbeitsreihenfolge</span>
+          <span class="badge badge-no">✗ keine Kapazitätsdaten</span>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Arbeitsplan</span>
+        <h3>Was ist ein Arbeitsplan?</h3>
+        <p>Geordnete Folge von Arbeitsschritten zur Herstellung eines Produkts. Für jeden Schritt wird ein Arbeitsplatz festgelegt. Enthält Zeiten für Mensch und Maschine sowie Pufferzeiten.</p>
+        <div style="margin-top:10px">
+          <span class="badge badge-ok">✓ Reihenfolge der Schritte</span>
+          <span class="badge badge-ok">✓ Rüst-, Transport-, Liegezeiten</span>
+          <span class="badge badge-ok">✓ Arbeitsplatzzuordnung je Schritt</span>
+          <span class="badge badge-ok">✓ Zeiten Mensch + Maschine</span>
+          <span class="badge badge-no">✗ listet keine Komponenten auf</span>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Arbeitsplatz</span>
+        <h3>Was ist ein Arbeitsplatz?</h3>
+        <p>Ein konkreter Ort im Werk, an dem Fertigungsschritte ausgeführt werden. Verfügt über definierte Kapazitäten (Mensch oder Maschine). Kapazität hängt von Fabrikkalender, Schichtplan und Ruhezeiten ab. Nicht ausschließlich für manuelle Tätigkeiten.</p>
+        <div style="margin-top:10px">
+          <span class="badge badge-ok">✓ Ort im Werk</span>
+          <span class="badge badge-ok">✓ Kapazitäten (Mensch/Maschine)</span>
+          <span class="badge badge-no">✗ enthält keine Stückliste</span>
+          <span class="badge badge-no">✗ nicht nur manuelle Arbeit</span>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag tag-gray">Produktgruppe</span>
+        <p>Fasst verschiedene Materialien zusammen, um eine Grobplanung (SOP) auf Gruppenebene durchführen zu können. Mehrere Produktgruppen können zu Produktfamilien zusammengefasst werden.</p>
+      </div>
+    </div>
+
+    <!-- MTS vs MTO -->
+    <div id="pp-strategien" class="section">
+      <h2 class="section-title">Planungsstrategien: MTS vs. MTO</h2>
+      <div class="compare">
+        <div class="card">
+          <span class="tag tag-blue">MTS – Lagerfertigung</span>
+          <h3>Wie funktioniert MTS?</h3>
+          <p>Produktion wird durch einen Produktionsplan ausgelöst, der auf Planprimärbedarfen (prognostizierten Absatzmengen) basiert. Es wird auf Vorrat gefertigt, bevor ein Kundenauftrag vorliegt.</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-teal">MTO – Auftragsfertigung</span>
+          <h3>Wie funktioniert MTO?</h3>
+          <p>Produktion wird erst durch einen konkreten Kundenauftrag ausgelöst. Auch als Just-in-Time (JIT) bezeichnet – bedarfssynchrone Produktion direkt nach Kundenwunsch.</p>
+        </div>
+      </div>
+      <div class="compare">
+        <div class="card">
+          <h3>MTS – Vor- und Nachteile</h3>
+          <p style="font-size:12px;font-weight:500;margin-bottom:4px;color:var(--text)">Vorteile</p>
+          <ul><li>Kurze Lieferzeiten für Kunden</li><li>Gleichmäßige Kapazitätsauslastung</li></ul>
+          <p style="font-size:12px;font-weight:500;margin:8px 0 4px;color:var(--text)">Nachteile</p>
+          <ul><li>Kapitalbindung durch Lagerbestand</li><li>Hohe Lagerkosten</li><li>Präzise Prognose zwingend nötig</li></ul>
+        </div>
+        <div class="card">
+          <h3>MTO – Vor- und Nachteile</h3>
+          <p style="font-size:12px;font-weight:500;margin-bottom:4px;color:var(--text)">Vorteile</p>
+          <ul><li>Keine Kapitalbindung im Lager</li><li>Keine Lagerkosten</li><li>Hohes Maß an Personalisierung</li></ul>
+          <p style="font-size:12px;font-weight:500;margin:8px 0 4px;color:var(--text)">Nachteile</p>
+          <ul><li>Längere Lieferzeiten</li><li>Enge Lieferantenzusammenarbeit nötig</li></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-gray">Zeitstrahl: Wann wird produziert?</span>
+        <svg viewBox="0 0 410 122" style="width:100%;display:block;margin-top:10px">
+          <!-- MTS label -->
+          <text x="6" y="35" font-size="11" font-weight="600" fill="var(--accent)">MTS</text>
+          <text x="6" y="47" font-size="9" fill="var(--text-muted)">Lager-</text>
+          <text x="6" y="57" font-size="9" fill="var(--text-muted)">fertigung</text>
+          <!-- MTS boxes -->
+          <rect x="55" y="20" width="62" height="24" rx="4" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="86" y="36" font-size="9" fill="var(--accent-text)" text-anchor="middle">Prognose</text>
+          <polygon points="117,32 123,28 123,36" fill="var(--accent)"/>
+          <rect x="123" y="20" width="66" height="24" rx="4" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="156" y="36" font-size="9" fill="var(--accent-text)" text-anchor="middle">Produktion</text>
+          <polygon points="189,32 195,28 195,36" fill="var(--accent)"/>
+          <rect x="195" y="20" width="48" height="24" rx="4" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="219" y="36" font-size="9" fill="var(--accent-text)" text-anchor="middle">Lager</text>
+          <!-- Kundenauftrag -->
+          <line x1="243" y1="12" x2="243" y2="20" stroke="var(--text-hint)" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="243" y="9" font-size="8" fill="var(--text-hint)" text-anchor="middle">Kundenauftrag</text>
+          <polygon points="243,32 249,28 249,36" fill="var(--accent)"/>
+          <rect x="249" y="20" width="62" height="24" rx="4" fill="#EAF3DE" stroke="#27500A" stroke-width="1"/>
+          <text x="280" y="36" font-size="9" fill="#27500A" text-anchor="middle">Lieferung</text>
+          <!-- Short delivery indicator -->
+          <line x1="243" y1="52" x2="311" y2="52" stroke="#22c55e" stroke-width="1.2"/>
+          <polygon points="311,52 305,49 305,55" fill="#22c55e"/>
+          <text x="277" y="63" font-size="8" fill="#22c55e" text-anchor="middle">kurze Lieferzeit</text>
+
+          <!-- MTO label -->
+          <text x="6" y="92" font-size="11" font-weight="600" fill="#5dcaa5">MTO</text>
+          <text x="6" y="104" font-size="9" fill="var(--text-muted)">Auftrags-</text>
+          <text x="6" y="114" font-size="9" fill="var(--text-muted)">fertigung</text>
+          <!-- MTO boxes -->
+          <rect x="55" y="78" width="78" height="24" rx="4" fill="#E1F5EE" stroke="#085041" stroke-width="1"/>
+          <text x="94" y="94" font-size="9" fill="#085041" text-anchor="middle">Kundenauftrag</text>
+          <polygon points="133,90 139,86 139,94" fill="#085041"/>
+          <rect x="139" y="78" width="70" height="24" rx="4" fill="#E1F5EE" stroke="#085041" stroke-width="1"/>
+          <text x="174" y="94" font-size="9" fill="#085041" text-anchor="middle">Produktion</text>
+          <polygon points="209,90 215,86 215,94" fill="#085041"/>
+          <rect x="215" y="78" width="62" height="24" rx="4" fill="#EAF3DE" stroke="#27500A" stroke-width="1"/>
+          <text x="246" y="94" font-size="9" fill="#27500A" text-anchor="middle">Lieferung</text>
+          <!-- Long delivery indicator -->
+          <line x1="55" y1="110" x2="277" y2="110" stroke="#f97316" stroke-width="1.2"/>
+          <polygon points="277,110 271,107 271,113" fill="#f97316"/>
+          <text x="166" y="120" font-size="8" fill="#f97316" text-anchor="middle">längere Lieferzeit (Produktion startet erst nach Auftragseingang)</text>
+        </svg>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-blue">MTS-Strategien</span>
+        <div class="strat-row"><div class="strat-num">10</div><div class="strat-body"><strong>Nettoplanung</strong> – Massenfertigungsumgebungen, Serienfertigung, CPG-Ware, saisonale Nachfrage.</div></div>
+        <div class="strat-row"><div class="strat-num">11</div><div class="strat-body"><strong>Bruttoplanung</strong> – Produktion unabhängig vom Bestand (z.B. Stahl, Zement, Hochöfen).</div></div>
+        <div class="strat-row"><div class="strat-num">30</div><div class="strat-body"><strong>Losfertigung</strong> – Produktion für Großkunden + zusätzlicher Lagerverkauf.</div></div>
+        <div class="strat-row"><div class="strat-num">40</div><div class="strat-body"><strong>Planung mit Endmontage</strong> – häufigste Strategie. Planprimärbedarfe werden mit eintreffenden Kundenaufträgen verrechnet.</div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">MTO-Strategien</span>
+        <div class="strat-row"><div class="strat-num">20</div><div class="strat-body"><strong>Kundeneinzelfertigung</strong> – Produkt wird speziell für einen bestimmten Kunden gefertigt.</div></div>
+        <div class="strat-row"><div class="strat-num">50</div><div class="strat-body"><strong>Planung ohne Endmontage</strong> – Großteil der Wertschöpfung fällt bei der Endmontage an.</div></div>
+        <div class="strat-row"><div class="strat-num">60</div><div class="strat-body"><strong>Planung mit Vorplanungsmaterial</strong> – für Stücklisten mit Varianten- und Gleichteilen (z.B. Produkte in 1L oder 2L Packungen).</div></div>
+      </div>
+    </div>
+
+    <!-- PLANUNG & SOP -->
+    <div id="pp-planung" class="section">
+      <h2 class="section-title">Planungsebenen: Grob- und Feinplanung</h2>
+      <div class="card">
+        <span class="tag tag-amber">Strategische Planung – SOP</span>
+        <h3>Absatz- und Produktionsgrobplan</h3>
+        <p style="margin-bottom:10px">Informationen aus Vertrieb, Marketing, Produktion, Einkauf u.a. fließen zusammen. Planung für mehrere Perioden (z.B. 12 Monate). Nutzt Daten aus VIS und CO/PA.</p>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Absatzplan</h4><p>Welche Mengen sollen in welchen Perioden verkauft werden? Erster Schritt der SOP.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Produktionsplan</h4><p>Ableitung aus dem Absatzplan. Berücksichtigt die gewünschte Reichweite der Lagerbestände.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Kapazitätsgrobplanung</h4><p>Prüfung, ob die benötigten Kapazitäten in den Planungsperioden verfügbar sind.</p></div></div>
+        <div class="warn">Merke: Die SOP plant nicht immer nur eine Woche – typisch sind 12 Perioden (1 Jahr).</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Feinplanung – Programmplanung &amp; Disaggregation</span>
+        <h3>Verbindung SOP → Detailplanung</h3>
+        <p>Die Grobmengen der Produktgruppe werden per <strong>Disaggregation</strong> auf die einzelnen Materialien aufgeteilt. So entstehen konkrete Planprimärbedarfe je Material für den MRP-Lauf.</p>
+        <div class="warn" style="margin-top:10px">Achtung: Programmplanung ≠ Kapazitätsgrobplanung – die Kapazitätsgrobplanung ist ein eigener Schritt der SOP.</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-gray">Leitteileplanung (MPS)</span>
+        <p>Konzentriert sich auf Materialien, die die Wertschöpfung des Unternehmens stark beeinflussen (wertbestimmende Teile). Ziel: Lagerkapital reduzieren und Planungsstabilität erhöhen. Läuft vor dem vollständigen MRP-Lauf.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-gray">Planungshierarchie: Von Grob zu Fein</span>
+        <svg viewBox="0 0 360 128" style="width:100%;display:block;margin-top:8px">
+          <!-- Level 1: SOP (widest) -->
+          <rect x="10" y="6" width="340" height="30" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.2"/>
+          <text x="180" y="19" font-size="11" font-weight="600" fill="var(--accent-text)" text-anchor="middle">Absatz- &amp; Produktionsgrobplan (SOP)</text>
+          <text x="180" y="31" font-size="9" fill="var(--accent-text)" text-anchor="middle">Strategisch · 12 Monate · Produktgruppen · Daten aus VIS / CO/PA</text>
+          <line x1="180" y1="36" x2="180" y2="48" stroke="var(--border-medium)" stroke-width="1.5"/>
+          <polygon points="180,51 176,44 184,44" fill="var(--border-medium)"/>
+          <!-- Level 2: MPS (medium) -->
+          <rect x="50" y="51" width="260" height="28" rx="6" fill="#E1F5EE" stroke="#085041" stroke-width="1.2"/>
+          <text x="180" y="64" font-size="11" font-weight="600" fill="#085041" text-anchor="middle">Leitteileplanung (MPS)</text>
+          <text x="180" y="75" font-size="9" fill="#085041" text-anchor="middle">Wertbestimmende Materialien · Planungsstabilität sichern</text>
+          <line x1="180" y1="79" x2="180" y2="91" stroke="var(--border-medium)" stroke-width="1.5"/>
+          <polygon points="180,94 176,87 184,87" fill="var(--border-medium)"/>
+          <!-- Level 3: MRP (narrowest) -->
+          <rect x="90" y="94" width="180" height="28" rx="6" fill="#FAEEDA" stroke="#633806" stroke-width="1.2"/>
+          <text x="180" y="107" font-size="11" font-weight="600" fill="#633806" text-anchor="middle">Materialbedarfsplanung (MRP)</text>
+          <text x="180" y="118" font-size="9" fill="#633806" text-anchor="middle">Alle Komponenten · Beschaffungsvorschläge</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:6px">Je tiefer die Ebene, desto detaillierter die Planung und desto kürzer der Planungshorizont.</p>
+      </div>
+    </div>
+
+    <!-- PROGNOSE -->
+    <div id="pp-prognose" class="section">
+      <h2 class="section-title">Prognosemodelle</h2>
+      <div class="row2">
+        <div class="card">
+          <span class="tag tag-gray">Konstant</span>
+          <p>Nachfrage schwankt statistisch um einen gleichbleibenden Durchschnittswert. Keine Tendenz nach oben oder unten.</p>
+          <p style="margin-top:6px;font-size:13px;font-style:italic">Beispiel: gleichmäßig verkauftes Standardprodukt</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-blue">Trend</span>
+          <p>Langfristige Grundtendenz, die sich nur langsam ändert. Einflussfaktoren: Bevölkerungsentwicklung, technischer Fortschritt, Volkseinkommensentwicklung.</p>
+          <p style="margin-top:6px;font-size:13px;font-style:italic">Beispiel: stetig wachsende Produktkategorie</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-teal">Saison</span>
+          <p>Wiederkehrende Schwankungen innerhalb eines Jahres durch jahreszeitliche oder institutionelle Einflüsse (Feiertage, Ferien, Witterung).</p>
+          <p style="margin-top:6px;font-size:13px;font-style:italic">Beispiel: Winterjacken, Weihnachtsartikel</p>
+        </div>
+        <div class="card">
+          <span class="tag tag-purple">Trend + Saison</span>
+          <p>Kombination: saisonale Schwankungen um einen stetig steigenden Durchschnitt. Langfristiger Aufwärtstrend mit wiederkehrenden Mustern.</p>
+          <p style="margin-top:6px;font-size:13px;font-style:italic">Beispiel: wachsende Marke mit saisonalem Muster</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-blue">Grafische Muster im Vergleich</span>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">Jedes Modell zeigt ein anderes Nachfragemuster – erkennbar am Verlauf der Linie:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--bg-secondary);border-radius:8px;padding:10px">
+            <p style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Konstant</p>
+            <svg id="fc-const" viewBox="0 0 200 55" style="width:100%;display:block"></svg>
+            <p style="font-size:11px;color:var(--text-hint);margin-top:5px">Schwankt um einen festen Mittelwert</p>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:8px;padding:10px">
+            <p style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Trend</p>
+            <svg id="fc-trend" viewBox="0 0 200 55" style="width:100%;display:block"></svg>
+            <p style="font-size:11px;color:var(--text-hint);margin-top:5px">Langfristige Steigung oder Gefälle</p>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:8px;padding:10px">
+            <p style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Saison</p>
+            <svg id="fc-saison" viewBox="0 0 200 55" style="width:100%;display:block"></svg>
+            <p style="font-size:11px;color:var(--text-hint);margin-top:5px">Wiederkehrende jährliche Muster</p>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:8px;padding:10px">
+            <p style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Trend + Saison</p>
+            <svg id="fc-ts" viewBox="0 0 200 55" style="width:100%;display:block"></svg>
+            <p style="font-size:11px;color:var(--text-hint);margin-top:5px">Wachstum mit saisonalen Schwankungen</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="tag tag-amber">Glättungsfaktoren (Prognosesteuerung)</span>
+        <h3>Alpha, Beta, Gamma, Delta</h3>
+        <div class="def-row"><div class="def-label">Alphafaktor</div><div class="def-val">Glättung des Grundwerts (Standard: 0,2)</div></div>
+        <div class="def-row"><div class="def-label">Betafaktor</div><div class="def-val">Glättung des Trendwerts (Standard: 0,1)</div></div>
+        <div class="def-row"><div class="def-label">Gammafaktor</div><div class="def-val">Glättung des Saisonindex (Standard: 0,3)</div></div>
+        <div class="def-row"><div class="def-label">Deltafaktor</div><div class="def-val">Glättung des MAD (Mittlere Absolute Abweichung) = Summe der absoluten Fehler / Anzahl der Fehler</div></div>
+        <div class="info-box">Signalgrenze: gibt an, wie groß die Abweichung des Prognosewerts vom tatsächlichen Wert maximal sein darf.</div>
+      </div>
+    </div>
+
+    <!-- MRP -->
+    <div id="pp-mrp" class="section">
+      <h2 class="section-title">MRP-Lauf &amp; Disposition</h2>
+      <div class="card">
+        <span class="tag tag-blue">MRP-Lauf – Ablauf</span>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Stücklistenauflösung (alle Ebenen)</h4><p>Aus dem Primärbedarf wird der Sekundärbedarf für alle Komponenten ermittelt – mehrstufig über alle Ebenen der Stückliste.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Dispositiv verfügbare Menge ermitteln</h4><p>Bestand + feste Zugänge (Bestellungen, Fertigungsaufträge) werden dem Sicherheitsbestand + Bedarfen gegenübergestellt.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Nettobedarfsrechnung</h4><p>Ist die dispositiv verfügbare Menge &lt; 0 → Unterdeckung. Das System erzeugt Beschaffungsvorschläge.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Beschaffungsvorschläge</h4><p>Interne Fertigung → Planauftrag. Externe Beschaffung → Bestellanforderung. Menge nach Losgrößenverfahren aus Materialstamm.</p></div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Bedarfsarten &amp; Formeln</span>
+        <div class="def-row"><div class="def-label">Primärbedarf</div><div class="def-val">Bedarf an verkaufsfähigen Enderzeugnissen</div></div>
+        <div class="def-row"><div class="def-label">Sekundärbedarf</div><div class="def-val">Bedarf an Rohstoffen, Teilen und Gruppen zur Fertigung des Primärbedarfs</div></div>
+        <div class="def-row"><div class="def-label">Tertiärbedarf</div><div class="def-val">Bedarf an Hilfs- und Betriebsstoffen</div></div>
+        <div class="def-row"><div class="def-label">Zusatzbedarf</div><div class="def-val">Mehrbedarf für Wartung/Reparatur, Ausschuss, Schwund, seltene Teile</div></div>
+        <div class="formula">Sekundärbedarf  = Primärbedarf × Stücklistenmenge
+Bruttobedarf    = Sekundärbedarf + Zusatzbedarf
+Nettobedarf     = Bruttobedarf − Lagerbestand − Bestellbestand + Vormerkbestand</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Verbrauchsgesteuert – Bestellpunktverfahren</span>
+        <div class="formula">Meldebestand     = Tagesverbrauch × Lieferzeit + Mindestbestand
+Bestellmenge     = opt. Lagerbestand − Meldebestand + (Tagesverbrauch × Tage)
+Bestellintervall = (opt. Bestand − Sicherheitsbestand) / Tagesverbrauch
+Eiserne Reserve  = Sicherheitszeit × täglicher Verbrauch (Durchschnitt)</div>
+        <p style="font-size:13px;margin-top:6px">Unterschreitet der Bestand den Meldebestand → Mitteilung an Einkauf → neue Bestellung, damit der Mindestbestand bis zur Lieferung nicht angetastet werden muss.</p>
+        <svg viewBox="0 0 370 158" style="width:100%;display:block;margin-top:14px">
+          <!-- Axes -->
+          <line x1="44" y1="8" x2="44" y2="130" stroke="var(--border-medium)" stroke-width="1"/>
+          <line x1="44" y1="130" x2="355" y2="130" stroke="var(--border-medium)" stroke-width="1"/>
+          <polygon points="44,5 40,16 48,16" fill="var(--border-medium)"/>
+          <polygon points="358,130 348,126 348,134" fill="var(--border-medium)"/>
+          <text x="22" y="72" font-size="9" fill="var(--text-muted)" text-anchor="middle" transform="rotate(-90,22,72)">Lagerbestand</text>
+          <text x="200" y="145" font-size="9" fill="var(--text-muted)" text-anchor="middle">Zeit →</text>
+          <!-- Sicherheitsbestand -->
+          <line x1="44" y1="110" x2="352" y2="110" stroke="#ef9f27" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <text x="46" y="107" font-size="8" fill="#ef9f27">Sicherheitsbestand</text>
+          <!-- Meldebestand -->
+          <line x1="44" y1="83" x2="352" y2="83" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="5,4"/>
+          <text x="46" y="80" font-size="8" fill="var(--accent)">Meldebestand</text>
+          <!-- Cycle 1: decline (44,22)→(130,83), dashed (130,83)→(160,102), delivery ↑ to (160,22) -->
+          <line x1="44" y1="22" x2="130" y2="83" stroke="var(--text)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="130" y1="83" x2="160" y2="101" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="160" y1="101" x2="160" y2="26" stroke="#22c55e" stroke-width="1.5"/>
+          <polygon points="160,22 155,32 165,32" fill="#22c55e"/>
+          <circle cx="130" cy="83" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>
+          <!-- Cycle 2: (160,26)→(246,83)→(276,101)→delivery→(276,26) -->
+          <line x1="160" y1="26" x2="246" y2="83" stroke="var(--text)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="246" y1="83" x2="276" y2="99" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <line x1="276" y1="99" x2="276" y2="26" stroke="#22c55e" stroke-width="1.5"/>
+          <polygon points="276,22 271,32 281,32" fill="#22c55e"/>
+          <circle cx="246" cy="83" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>
+          <!-- Cycle 3 partial: (276,26)→(348,82) -->
+          <line x1="276" y1="26" x2="348" y2="82" stroke="var(--text)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="348" cy="82" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>
+          <!-- Lieferzeit bracket -->
+          <line x1="130" y1="122" x2="160" y2="122" stroke="var(--text-hint)" stroke-width="1"/>
+          <line x1="130" y1="118" x2="130" y2="126" stroke="var(--text-hint)" stroke-width="1"/>
+          <line x1="160" y1="118" x2="160" y2="126" stroke="var(--text-hint)" stroke-width="1"/>
+          <text x="145" y="134" font-size="8" fill="var(--text-hint)" text-anchor="middle">Lieferzeit</text>
+          <!-- Annotations -->
+          <text x="46" y="20" font-size="8" fill="var(--text-muted)">Max. Bestand</text>
+          <text x="162" y="19" font-size="8" fill="#22c55e" text-anchor="middle">Lieferung</text>
+          <text x="100" y="98" font-size="8" fill="var(--accent)">Bestellung ●</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:4px">● Bestellung ausgelöst wenn Bestand den Meldebestand unterschreitet · ↑ Lieferung trifft ein · Dünne Linie = Bestand im Lieferfenster</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Plangesteuert vs. verbrauchsgesteuert</span>
+        <div class="compare" style="margin-top:8px">
+          <div style="font-size:13px;line-height:1.7;color:var(--text-muted)">
+            <strong style="color:var(--text);font-weight:500">Plangesteuert (MRP/deterministisch)</strong><br>
+            Orientiert sich am zukünftigen Absatz. Exakte Bedarfsmengen aus Kundenaufträgen + Stücklistenauflösung. Tagesgenaue Planung möglich. Niedrige Sicherheitsbestände ausreichend.
+          </div>
+          <div style="font-size:13px;line-height:1.7;color:var(--text-muted)">
+            <strong style="color:var(--text);font-weight:500">Verbrauchsgesteuert</strong><br>
+            Orientiert sich am vergangenen Verbrauch. Bestellung bei Erreichen des Meldebestands. Höhere Sicherheitsbestände nötig, da keine exakten Bedarfsmengen vorliegen.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FERTIGUNG -->
+    <div id="pp-fertigung" class="section">
+      <h2 class="section-title">Fertigungsprozess</h2>
+      <div class="card">
+        <span class="tag tag-blue">Plan- → Fertigungsauftrag</span>
+        <p>Der MRP-Lauf erzeugt einen <strong>Planauftrag</strong> – beschreibt einen zukünftigen Bedarf (Planungsinstrument). Dieser wird in einen <strong>Fertigungsauftrag</strong> umgewandelt – die verbindliche interne Anweisung, ein bestimmtes Produkt zu einem bestimmten Zeitpunkt zu produzieren.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Terminierung &amp; Freigabe</span>
+        <p style="margin-bottom:6px">Bei Anlage des Fertigungsauftrags werden Produktionstermine und Kapazitätsanforderungen für alle Vorgänge berechnet. Dazu werden Zeiten aus dem Arbeitsplan und Kapazitäten der Arbeitsplätze herangezogen.</p>
+        <p>Nach der Freigabe ist der Auftrag zur Ausführung bereit. Reservierungen werden wirksam → Materialentnahme möglich.</p>
+        <div class="warn">Überlasteter Arbeitsplatz → Terminverschiebung des Fertigungsauftrags.</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Warenbewegungen</span>
+        <p style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--text)">Wareneingang vor Produktion</p>
+        <p style="margin-bottom:8px;font-size:14px">Verfügbarkeitsprüfung: Sind die laut Stückliste benötigten Materialien im Lager? Falls nicht → Beschaffung → Einbuchung ins Lager.</p>
+        <p style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--text)">Warenausgang zum Auftrag</p>
+        <p style="font-size:14px">Nach Freigabe werden reservierte Materialien aus dem Bestand entnommen. Reservierung und Bestand werden aktualisiert. Materialkosten werden dem Auftrag als tatsächliche Kosten zugeordnet.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Rückmeldung</span>
+        <p style="margin-bottom:6px">Nach Abschluss der Produktion wird das Ergebnis rückgemeldet. Grundlage für realistische Planung und Auftragsabrechnung.</p>
+        <p style="font-size:12px;font-weight:500;margin-bottom:4px;color:var(--text)">Inhalt der Rückmeldung:</p>
+        <ul>
+          <li>Mengen: Output, Ausschuss, Nacharbeit</li>
+          <li>Zeiten: Rüstzeit, Maschinenzeit, Beginn/Ende</li>
+          <li>Personaldaten: Person, Anzahl Mitarbeiter</li>
+          <li>Arbeitsplatz, Warenbewegungen, Abweichungsgründe</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag tag-green">Wareneingang nach Produktion &amp; Auftragsabrechnung</span>
+        <p style="margin-bottom:6px">Die produzierte Menge wird ins Fertigteillager eingebucht. Dabei entstehen drei Belege: Materialbeleg, Finanzbeleg, Kostenrechnungsbeleg.</p>
+        <p style="font-size:12px;font-weight:500;margin:8px 0 4px;color:var(--text)">Auftragsabrechnung</p>
+        <p style="margin-bottom:6px;font-size:14px">Tatsächliche Kosten werden ermittelt und an einen Empfänger übertragen. Mögliche Empfänger: Material, Kostenstelle, Innenauftrag, Kundenauftrag, Projekt, Netzplan, Sachanlage.</p>
+        <div class="info-box">Differenz zwischen Belastungen und Entlastung → wird auf das Preisdifferenzkonto gebucht.</div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- end #pp -->
+
+
+<!-- ═══════════════════════════════════════════ VARIANTENKONFIGURATION ═══ -->
+<div id="vc" class="module-view">
+  <nav class="sidebar" id="vc-sidebar">
+    <div class="sidebar-label">Themen</div>
+    <button class="sidebar-btn active" onclick="showSection('vc','vc-grundidee',this)"><span class="dot"></span>Grundidee</button>
+    <button class="sidebar-btn" onclick="showSection('vc','vc-objekte',this)"><span class="dot"></span>Objekte &amp; Aufbau</button>
+    <button class="sidebar-btn" onclick="showSection('vc','vc-beziehung',this)"><span class="dot"></span>Beziehungswissen</button>
+    <button class="sidebar-btn" onclick="showSection('vc','vc-stueckliste',this)"><span class="dot"></span>Maximalstückliste</button>
+    <button class="sidebar-btn" onclick="showSection('vc','vc-arbeitsplan',this)"><span class="dot"></span>Maximalarbeitsplan</button>
+    <button class="sidebar-btn" onclick="showSection('vc','vc-preise',this)"><span class="dot"></span>Variantenpreise</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- GRUNDIDEE -->
+    <div id="vc-grundidee" class="section active">
+      <h2 class="section-title">Grundidee der Variantenkonfiguration</h2>
+      <div class="card">
+        <span class="tag tag-blue">Was ist das Problem?</span>
+        <h3>Zu viele Produktvarianten, zu wenig Nummern</h3>
+        <p style="margin-bottom:10px">Bei einer Dusche mit 5 Breiten, 2 Farben und 2 Glasarten entstehen bereits <strong>5 × 2 × 2 = 20 mögliche Kombinationen</strong>. Bei komplexeren Produkten explodiert die Zahl schnell.</p>
+        <div class="metric-grid">
+          <div class="metric"><div class="big-num">3,7 Mio.</div><div class="big-label">theoretische Duschkabinen-Varianten</div></div>
+          <div class="metric"><div class="big-num">300.000</div><div class="big-label">davon tatsächlich angeboten</div></div>
+          <div class="metric"><div class="big-num">70.000</div><div class="big-label">bei Kermi je Produkt nachgefragt</div></div>
+        </div>
+        <p>Würde man jede Variante als einzelnes Material anlegen, wäre der Pflegeaufwand enorm. Die Variantenkonfiguration löst das: Statt einzelner Materialien gibt es ein <strong>konfigurierbares Basisprodukt (KMAT)</strong>, das erst beim Kundenauftrag zur konkreten Variante wird.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Was leistet der Produktkonfigurator?</span>
+        <ul>
+          <li>Sicherstellen, dass das Produkt in der gewünschten Weise gefertigt werden kann</li>
+          <li>Informationsaustausch zwischen Vertrieb, Konstruktion und Produktion verbessern</li>
+          <li>Fertigungskosten kontrollieren</li>
+          <li>Ungültige Kombinationen automatisch ausschließen</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Wichtige Vorentscheidung: Lohnt sich VC überhaupt?</span>
+        <ul>
+          <li>Wie viele Merkmale hat das Material? (Performance-Überlegung)</li>
+          <li>Bei nur 2–3 Ausprägungen lohnt sich VC oft nicht – dann lieber einzelne Materialien anlegen</li>
+          <li>Einstufig oder mehrstufig konfigurieren?</li>
+          <li>Wie unterschiedlich sind die Stücklisten je Variante?</li>
+        </ul>
+        <div class="warn">Devise: „Erst denken, dann handeln!" – Die VC berührt alle Module des ERP-Systems und hat Einfluss auf Laufzeit und Performance.</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Einstufig vs. mehrstufig</span>
+        <div class="def-row"><div class="def-label">Einstufige Konfiguration</div><div class="def-val">Das Produkt wird nur auf der höchsten Ebene der Stückliste konfiguriert. Einfacher, aber weniger flexibel.</div></div>
+        <div class="def-row"><div class="def-label">Mehrstufige Konfiguration</div><div class="def-val">Varianten werden auf bis zu drei Ebenen des Produkts konfiguriert. Ermöglicht flexiblere Stücklisten und bessere Differenzierung von Durchlaufzeiten je Variante.</div></div>
+      </div>
+    </div>
+
+    <!-- OBJEKTE -->
+    <div id="vc-objekte" class="section">
+      <h2 class="section-title">Objekte &amp; Aufbau der Variantenkonfiguration</h2>
+      <div class="card">
+        <span class="tag tag-blue">Die vier zentralen Objekte</span>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Merkmal</h4><p>Eine konfigurierbare Eigenschaft des Produkts, z.B. Breite, Farbe, Glas. Jedes Merkmal hat einen Datentyp, eine Länge und definierte Ausprägungen (Werte). Es kann einwertig (nur ein Wert wählbar) oder mehrwertig (mehrere Werte gleichzeitig) sein. Optional: Pflichtfeld.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Klasse</h4><p>Fasst mehrere Merkmale zu einer Gruppe zusammen. Diese Klasse wird dem konfigurierbaren Material (KMAT) zugeordnet. Die Reihenfolge der Merkmale ist verbindlich festgelegt.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Konfigurierbares Material (KMAT)</h4><p>Das Basisprodukt im Materialstamm, das mit der Klasse verknüpft wird. Materialart: "konfigurierbares Material". Enthält den Grundpreis (Preis der günstigsten Variante). Erst beim Kundenauftrag werden die Merkmale zur konkreten Variante ausgeprägt.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Konfigurationsprofil</h4><p>Verbindet Material und Klasse. Legt fest, welche Merkmalsausprägungen für dieses Material zur Verfügung stehen. Ordnet auch Beziehungswissen dem Material zu.</p></div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Merkmal-Eigenschaften im Überblick</span>
+        <div class="def-row"><div class="def-label">Einwertig</div><div class="def-val">Nur genau ein Wert auswählbar – z.B. Baulänge: man kann nicht zwei Längen gleichzeitig wählen.</div></div>
+        <div class="def-row"><div class="def-label">Mehrwertig</div><div class="def-val">Mehrere Werte gleichzeitig wählbar – z.B. Sonderzubehör beim Auto: Ledersitze UND Klimaanlage UND Radio.</div></div>
+        <div class="def-row"><div class="def-label">Pflichtfeld</div><div class="def-val">Merkmal muss zwingend ausgeprägt werden, bevor der Auftrag gespeichert werden kann.</div></div>
+        <div class="def-row"><div class="def-label">Datentyp</div><div class="def-val">Bestimmt, ob numerische Werte (mit Intervallen und Negativwerten) oder Zeichenwerte erlaubt sind.</div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Globale vs. lokale Anlage</span>
+        <p>Merkmale werden zuerst <strong>global</strong> angelegt – unabhängig von einem konkreten Material. Erst danach werden sie über Klassen und Konfigurationsprofile einem oder mehreren Materialien zugeordnet. So kann dasselbe Merkmal (z.B. "Farbe") für verschiedene Produkte wiederverwendet werden.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-gray">Aufbau &amp; Verknüpfung der vier Objekte</span>
+        <svg viewBox="0 0 420 92" style="width:100%;display:block;margin-top:10px">
+          <!-- Merkmal -->
+          <rect x="4" y="18" width="90" height="48" rx="6" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="49" y="38" font-size="10" font-weight="600" fill="var(--accent-text)" text-anchor="middle">Merkmal</text>
+          <text x="49" y="51" font-size="8" fill="var(--accent-text)" text-anchor="middle">Farbe, Breite,</text>
+          <text x="49" y="62" font-size="8" fill="var(--accent-text)" text-anchor="middle">Glas, …</text>
+          <text x="49" y="80" font-size="8" fill="var(--text-hint)" text-anchor="middle">global anlegen</text>
+          <!-- Arrow n:1 -->
+          <line x1="94" y1="42" x2="113" y2="42" stroke="var(--border-medium)" stroke-width="1.5"/>
+          <polygon points="116,42 109,38 109,46" fill="var(--border-medium)"/>
+          <text x="104" y="36" font-size="8" fill="var(--text-hint)" text-anchor="middle">n:1</text>
+          <!-- Klasse -->
+          <rect x="116" y="18" width="90" height="48" rx="6" fill="#E1F5EE" stroke="#085041" stroke-width="1"/>
+          <text x="161" y="38" font-size="10" font-weight="600" fill="#085041" text-anchor="middle">Klasse</text>
+          <text x="161" y="51" font-size="8" fill="#085041" text-anchor="middle">Fasst Merkmale</text>
+          <text x="161" y="62" font-size="8" fill="#085041" text-anchor="middle">zusammen</text>
+          <text x="161" y="80" font-size="8" fill="var(--text-hint)" text-anchor="middle">global anlegen</text>
+          <!-- Arrow -->
+          <line x1="206" y1="42" x2="225" y2="42" stroke="var(--border-medium)" stroke-width="1.5"/>
+          <polygon points="228,42 221,38 221,46" fill="var(--border-medium)"/>
+          <!-- KMAT -->
+          <rect x="228" y="18" width="90" height="48" rx="6" fill="#FAEEDA" stroke="#633806" stroke-width="1"/>
+          <text x="273" y="38" font-size="10" font-weight="600" fill="#633806" text-anchor="middle">KMAT</text>
+          <text x="273" y="51" font-size="8" fill="#633806" text-anchor="middle">Basisprodukt</text>
+          <text x="273" y="62" font-size="8" fill="#633806" text-anchor="middle">+ Grundpreis</text>
+          <text x="273" y="80" font-size="8" fill="var(--text-hint)" text-anchor="middle">Materialstamm</text>
+          <!-- Arrow -->
+          <line x1="318" y1="42" x2="337" y2="42" stroke="var(--border-medium)" stroke-width="1.5"/>
+          <polygon points="340,42 333,38 333,46" fill="var(--border-medium)"/>
+          <!-- Konfigurationsprofil -->
+          <rect x="340" y="18" width="76" height="48" rx="6" fill="#EEEDFE" stroke="#3C3489" stroke-width="1"/>
+          <text x="378" y="36" font-size="9" font-weight="600" fill="#3C3489" text-anchor="middle">Konfigurations-</text>
+          <text x="378" y="47" font-size="9" font-weight="600" fill="#3C3489" text-anchor="middle">profil</text>
+          <text x="378" y="59" font-size="8" fill="#3C3489" text-anchor="middle">verbindet KMAT</text>
+          <text x="378" y="70" font-size="8" fill="#3C3489" text-anchor="middle">&amp; Klasse</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:6px">Merkmale und Klassen werden global (material-unabhängig) angelegt – so können sie für mehrere Produkte wiederverwendet werden.</p>
+      </div>
+    </div>
+
+    <!-- BEZIEHUNGSWISSEN -->
+    <div id="vc-beziehung" class="section">
+      <h2 class="section-title">Beziehungswissen</h2>
+      <div class="card">
+        <span class="tag tag-blue">Was ist Beziehungswissen?</span>
+        <p>Beziehungswissen beschreibt Abhängigkeiten zwischen Merkmalen und Merkmalswerten. Es steuert, welche Kombinationen erlaubt sind, welche Werte automatisch hergeleitet werden und welche Stücklistenpositionen oder Arbeitsschritte für eine Konfiguration gelten.</p>
+        <div class="info-box">Beziehungswissen ist das "Gehirn" der Variantenkonfiguration – ohne es wären alle Kombinationen gleichwertig und das System wüsste nicht, welche Stückliste oder welchen Arbeitsplan es zusammenstellen soll.</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Global vs. lokal</span>
+        <div class="def-row"><div class="def-label">Globales Beziehungswissen</div><div class="def-val">Wird zentral angelegt und erhält einen eigenen Namen. Kann mehreren Objekten zugeordnet werden. Sinnvoll für wiederkehrende Regeln, z.B. eine Formel für die Längenberechnung.</div></div>
+        <div class="def-row"><div class="def-label">Lokales Beziehungswissen</div><div class="def-val">Wird direkt an einem einzelnen Objekt angelegt. Steht nur für dieses eine Objekt zur Verfügung. Erhält eine systemvergebene Nummer.</div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Die vier Beziehungsarten</span>
+        <div class="art-card">
+          <h4>Vorbedingung</h4>
+          <p>Aufgrund einer vorherigen Merkmalsauswahl wird die Auswahl für nachfolgende Merkmale eingeschränkt. Typisch bei Erzeugnismerkmalen.</p>
+          <div class="code-block">$SELF.DU_BREITE = 800.   → nur Festfeld 300 erlaubt</div>
+        </div>
+        <div class="art-card">
+          <h4>Auswahlbedingung</h4>
+          <p>Steuert, welche Stücklistenposition oder welcher Arbeitsvorgang für eine Konfiguration aktiv ist. Typisch bei Stücklisten.</p>
+          <div class="code-block">$ROOT.DU_FARBE = 'SH'.   → Silber-Profil nur wenn Farbe = silber-hochglanz</div>
+        </div>
+        <div class="art-card">
+          <h4>Prozedur</h4>
+          <p>Rechenoperation oder automatische Wertzuordnung. Kann Mengen in der Stückliste oder Zeiten im Arbeitsplan verändern.</p>
+          <div class="code-block">$SELF.THE_STUELI = DU_HOEHE / 1000 * 2.   → Länge der Alu-Schiene</div>
+        </div>
+        <div class="art-card" style="margin-bottom:0">
+          <h4>Beziehungsnetz</h4>
+          <p>Kombination aus lokaler Auswahlbedingung und globaler Prozedur. Wenn eine Position erst aktiv ist UND zusätzlich eine Mengen- oder Zeitanpassung benötigt.</p>
+          <div class="code-block">Beispiel: Glasscheibe 500 mm – aktiv bei Breite 800/900/1000,
+aber Menge variiert: 2 Stück (800/900) oder 4 Stück (1000)</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Wozu Beziehungswissen nutzen?</span>
+        <ul>
+          <li>Merkmalswerte von der Auswahl ausschließen (ungültige Kombination verhindern)</li>
+          <li>Merkmal als Pflichtfeld erzwingen</li>
+          <li>Werte automatisch herleiten (z.B. Preis, Menge, Zeit)</li>
+          <li>Richtige Stücklistenkomponente automatisch auswählen</li>
+          <li>Arbeitszeiten dynamisch anpassen (z.B. ganzflächiges Sandstrahlen dauert länger)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MAXIMALSTÜCKLISTE -->
+    <div id="vc-stueckliste" class="section">
+      <h2 class="section-title">Maximalstückliste</h2>
+      <div class="card">
+        <span class="tag tag-blue">Was ist die Maximalstückliste?</span>
+        <h3>Die Stückliste des konfigurierbaren Materials</h3>
+        <p>Sie enthält alle Materialien und Komponenten, die zur Fertigung sämtlicher möglicher Varianten benötigt werden – das Maximum. Bei einem Kundenauftrag wird daraus durch Beziehungswissen die passende <strong>Variantenstückliste</strong> abgeleitet, die nur die für diese Variante relevanten Positionen enthält.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Variantenteile vs. Gleichteile</span>
+        <div class="compare" style="margin-top:8px">
+          <div>
+            <p style="font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text)">Variantenteile</p>
+            <p style="font-size:13px;line-height:1.6">Komponenten, die nur bei bestimmten Varianten benötigt werden oder in unterschiedlicher Menge auftreten. Bekommen Beziehungswissen zugeordnet (Häkchen "Bz").</p>
+            <p style="font-size:12px;font-style:italic;margin-top:4px">Beispiel: Lackierfarbe (nur bei Farbe=weiß), verschiedene Glasscheiben</p>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text)">Gleichteile</p>
+            <p style="font-size:13px;line-height:1.6">Komponenten, die bei jeder Variante in gleicher Menge benötigt werden. Kein Beziehungswissen, kein "Bz"-Häkchen.</p>
+            <p style="font-size:12px;font-style:italic;margin-top:4px">Beispiel: Schrauben, Dübel – jede Dusche braucht dieselben</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Stücklistenarten</span>
+        <div class="def-row"><div class="def-label">Dynamische Stückliste</div><div class="def-val">Sinnvoll, wenn das Variantenmodell vollständig ist. Die Stücklistenauflösung für jede Konfiguration ist über Beziehungswissen vollständig sichergestellt.</div></div>
+        <div class="def-row"><div class="def-label">Auftragsstückliste</div><div class="def-val">Wird verwendet, wenn eine höhere Variabilität des KMAT nötig ist – z.B. für Sonderkonfigurationen, die nicht vollständig modelliert wurden.</div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-green">Positionsarten in der Stückliste</span>
+        <div class="def-row"><div class="def-label">L – Lagerposition</div><div class="def-val">Standardkomponente aus dem Lager</div></div>
+        <div class="def-row"><div class="def-label">N – Nichtlagerposition</div><div class="def-val">Wird direkt zum Auftrag beschafft, ohne Lager</div></div>
+        <div class="def-row"><div class="def-label">R – Rohmaßposition</div><div class="def-val">Menge wird über Beziehungswissen variabel berechnet</div></div>
+        <div class="def-row"><div class="def-label">D – Dokumentposition</div><div class="def-val">Verknüpfung zu einem Dokument (z.B. Zeichnung)</div></div>
+        <div class="def-row"><div class="def-label">K – Klassenposition</div><div class="def-val">Indirekte Zuordnung von Komponenten über eine Klasse</div></div>
+      </div>
+    </div>
+
+    <!-- MAXIMALARBEITSPLAN -->
+    <div id="vc-arbeitsplan" class="section">
+      <h2 class="section-title">Maximalarbeitsplan</h2>
+      <div class="card">
+        <span class="tag tag-blue">Was ist der Maximalarbeitsplan?</span>
+        <p>Der Arbeitsplan eines konfigurierbaren Materials enthält alle Arbeitsvorgänge, Vorgangsfolgen und Fertigungshilfsmittel, die zur Fertigung sämtlicher Varianten benötigt werden – das Maximum aller möglichen Schritte. Durch Beziehungswissen werden bei einer konkreten Konfiguration nur die relevanten Vorgänge aktiviert bzw. Zeiten angepasst.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Beziehungswissen im Arbeitsplan</span>
+        <div class="def-row"><div class="def-label">Auswahlbedingung</div><div class="def-val">Steuert, ob ein Arbeitsvorgang für diese Konfiguration ausgeführt wird oder nicht.<br><em>Beispiel: "Lackieren" nur wenn Farbe ≠ silber-hochglanz.</em></div></div>
+        <div class="def-row"><div class="def-label">Prozedur</div><div class="def-val">Verändert Werte von Vorgangsfeldern (Maschinenzeit, Rüstzeit, Personalzeit) abhängig von der Konfiguration.<br><em>Beispiel: Sandstrahlen ganzflächig → Maschinenzeit +100 Minuten.</em></div></div>
+        <div class="def-row"><div class="def-label">Beziehungsnetz</div><div class="def-val">Kombination aus Auswahlbedingung und Prozedur: Vorgang ist nur aktiv UND hat gleichzeitig variantenabhängige Zeiten.</div></div>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Manipulation von Arbeitszeiten (MDATA)</span>
+        <p style="margin-bottom:6px">Manchmal müssen die Zeiten selbst variieren. Dazu wird ein Merkmal mit Tabellenverweis auf die Zeitfelder des Arbeitsplans angelegt. Eine Prozedur greift mit <strong>MDATA</strong> auf den ursprünglichen Stammwert zu und verändert ihn.</p>
+        <div class="code-block">$SELF.Maschinenzeit = MDATA $SELF.Maschinenzeit + 100
+  if DU_SANDSTRAHL in ('STONE-GF','FRESH-GF','IDEOS-GF').</div>
+        <p style="font-size:13px;margin-top:6px">MDATA = ursprünglicher Stammwert (hier: 200 Min.). Bei ganzflächigem Sandstrahlen → Ergebnis: 300 Min.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Beispiel: Duschen-Arbeitsvorgänge</span>
+        <div class="def-row"><div class="def-label">ALU-Schienen zuschneiden</div><div class="def-val">Immer erforderlich – Gleichvorgang</div></div>
+        <div class="def-row"><div class="def-label">Lackieren</div><div class="def-val">Nur wenn Farbe ≠ silber-hochglanz → Auswahlbedingung</div></div>
+        <div class="def-row"><div class="def-label">Sandstrahlen</div><div class="def-val">Nur wenn Dekor gewählt; Zeit variiert bei ganzflächig → Beziehungsnetz</div></div>
+        <div class="def-row"><div class="def-label">Fenster-Montage</div><div class="def-val">Immer erforderlich – Gleichvorgang</div></div>
+        <div class="def-row"><div class="def-label">End-Montage</div><div class="def-val">Immer erforderlich – Gleichvorgang</div></div>
+        <div class="def-row"><div class="def-label">Verpackung und Versand</div><div class="def-val">Immer erforderlich – Gleichvorgang</div></div>
+      </div>
+    </div>
+
+    <!-- VARIANTENPREISE -->
+    <div id="vc-preise" class="section">
+      <h2 class="section-title">Variantenpreise &amp; Zuschläge</h2>
+      <div class="card">
+        <span class="tag tag-blue">Grundprinzip der Preisfindung</span>
+        <p>Im Materialstamm wird der <strong>Grundpreis</strong> hinterlegt – der Preis für die günstigste Variante (Basisausstattung). Wählt der Kunde eine teurere Ausprägung, werden automatisch <strong>Variantenzuschläge</strong> addiert.</p>
+        <div class="info-box">Endpreis = Grundpreis + Summe aller zutreffenden Variantenzuschläge</div>
+      </div>
+      <div class="card">
+        <span class="tag tag-teal">Wie funktionieren Variantenzuschläge?</span>
+        <p>Variantenzuschläge sind Konditionssätze, die mit Merkmalswerten verknüpft sind. Das Beziehungswissen sorgt dafür, dass beim Konfigurieren automatisch die richtigen Zuschläge gezogen werden. Die Verbindung von Merkmal und Konditionstabelle wird über ein spezielles Merkmal mit Tabellenverweis hergestellt.</p>
+        <p style="font-size:13px;font-style:italic;margin-top:6px">Beispiel: Breite 1000/1200 mm → +116 €  ·  Glas Clean → +344 €  ·  Handtuchhalter → +79 €</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-amber">Mehrere Vertriebsbereiche</span>
+        <p>Dasselbe Material kann in verschiedenen Vertriebsbereichen und Währungen unterschiedliche Grundpreise und Zuschläge haben. Der Grundpreis wird je Vertriebsbereich separat gepflegt.</p>
+      </div>
+      <div class="card">
+        <span class="tag tag-purple">Zusammenspiel beim Kundenauftrag</span>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Kunde konfiguriert das Produkt</h4><p>Merkmale werden ausgeprägt. Vorbedingungen schränken ungültige Kombinationen aus.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Preisfindung läuft automatisch</h4><p>Grundpreis + alle zutreffenden Variantenzuschläge ergeben den Auftragspositionspreis.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Variantenstückliste wird erzeugt</h4><p>Auswahlbedingungen filtern die richtigen Komponenten, Prozeduren berechnen die Mengen.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Maximalarbeitsplan wird reduziert</h4><p>Nur die für diese Variante relevanten Vorgänge sind aktiv, Zeiten ggf. angepasst.</p></div></div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- end #vc -->
+
+<script>
+  // ── Prognose-Charts ─────────────────────────────────────────────
+  (function() {
+    const NS = 'http://www.w3.org/2000/svg';
+    const W = 200, H = 55, pad = 10;
+
+    function drawChart(id, yFn, strokeColor, fillColor) {
+      const svg = document.getElementById(id);
+      if (!svg) return;
+      const steps = 50;
+      const pts = [];
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const noise = (Math.sin(i * 2.4 + 0.5) * 0.55 + Math.sin(i * 5.1 + 2) * 0.3) * 4.5;
+        const rawY = yFn(t) + noise;
+        const x = +(pad + t * (W - 2 * pad)).toFixed(1);
+        const y = +Math.max(3, Math.min(H - 3, rawY)).toFixed(1);
+        pts.push([x, y]);
+      }
+      const fillPts = [...pts, [W - pad, H - 1], [pad, H - 1]].map(p => p.join(',')).join(' ');
+      const poly = document.createElementNS(NS, 'polygon');
+      poly.setAttribute('points', fillPts);
+      poly.setAttribute('fill', fillColor);
+      poly.setAttribute('fill-opacity', '0.18');
+      svg.appendChild(poly);
+      const line = document.createElementNS(NS, 'polyline');
+      line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+      line.setAttribute('fill', 'none');
+      line.setAttribute('stroke', strokeColor);
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-linecap', 'round');
+      line.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(line);
+    }
+
+    const s = getComputedStyle(document.documentElement);
+    const accent = s.getPropertyValue('--accent').trim() || '#185FA5';
+    drawChart('fc-const',  t => 28,                                              accent,    accent);
+    drawChart('fc-trend',  t => 50 - 42 * t,                                    '#5dcaa5', '#5dcaa5');
+    drawChart('fc-saison', t => 27 + 18 * Math.sin(t * Math.PI * 4),            '#afa9ec', '#afa9ec');
+    drawChart('fc-ts',     t => 47 - 30 * t + 13 * Math.sin(t * Math.PI * 4),   '#ef9f27', '#ef9f27');
+  })();
+
+  function switchModule(mod) {
+    document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(mod).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function showSection(mod, sectionId, btn) {
+    const view = document.getElementById(mod);
+    view.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    view.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

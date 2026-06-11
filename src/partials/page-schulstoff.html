@@ -1,0 +1,109 @@
+    <!-- ══════════════════════════════════
+       SCHULSTOFF
+       ══════════════════════════════════ -->
+    <main class="hub-page" id="page-schulstoff" style="display:none;">
+      <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-64 flex-shrink-0 flex flex-col border-r border-slate-800 bg-slate-950 overflow-y-auto">
+          <div class="px-lg py-md border-b border-slate-800">
+            <h3 class="text-on-surface font-bold text-base">Schulstoff</h3>
+            <p class="text-[11px] text-slate-500 mt-xs">Lernmaterial &amp; PDFs</p>
+          </div>
+          <div class="flex-1 overflow-y-auto py-sm px-sm">
+
+            <!-- Heitzer Linux -->
+            <div class="mb-xs">
+              <button onclick="ssToggleSubject('ss-linux')"
+                class="w-full flex items-center gap-sm px-sm py-sm rounded-lg hover:bg-surface-container-high transition-colors text-left">
+                <span class="text-base">🐧</span>
+                <span class="text-sm font-semibold text-on-surface flex-1">Heitzer Linux</span>
+                <span class="text-[10px] font-bold px-xs py-xs rounded-full bg-primary/10 text-primary">13</span>
+                <span class="material-symbols-outlined text-slate-600 ss-chevron"
+                  style="font-size:16px">expand_more</span>
+              </button>
+              <div class="ss-topics hidden pl-md pr-sm pb-sm flex flex-col gap-xs" id="ss-linux">
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Ansible','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Ansible.pdf',0,13)">Ansible</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Backups','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Backups.pdf',1,13)">Backups</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','DNS','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\DNS.pdf',2,13)">DNS</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','IPv6','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\IPv6.pdf',3,13)">IPv6</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Kommunikation','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Kommunikation.pdf',4,13)">Kommunikation</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','NFS','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\NFS.pdf',5,13)">NFS</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Samba','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Samba.pdf',6,13)">Samba</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','SSH','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\SSH.pdf',7,13)">SSH</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Systemd','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Systemd.pdf',8,13)">Systemd</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','VirtualBox','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Virtualisierung mit VirtualBox.pdf',9,13)">VirtualBox</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Webserver','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Webserver.pdf',10,13)">Webserver</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Wichtige Befehle','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Wichtige Befehle für Kommunikation.pdf',11,13)">Wichtige
+                  Befehle</button>
+                <button
+                  class="ss-topic-btn text-left text-xs px-sm py-xs rounded-lg text-slate-400 hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  onclick="ssSelect('Heitzer Linux','Windows-Linux','O:\\work\\Allgemein\\Schulstoff-IntegriertinHub\\HeitzerLinux\\Windows-Linux-Integration.pdf',12,13)">Windows-Linux</button>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- Main PDF Viewer -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-surface-container-lowest">
+
+          <!-- Topbar -->
+          <div id="ss-topbar"
+            class="hidden items-center gap-sm px-lg py-sm border-b border-slate-800 bg-slate-900/80 backdrop-blur-md flex-shrink-0">
+            <button onclick="ssNav(-1)" id="ss-prev"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-surface-container-high text-on-surface hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-30">←
+              Zurück</button>
+            <div class="flex items-center gap-xs text-sm text-slate-400 flex-1 min-w-0">
+              <span id="ss-bread-subject" class="text-primary font-semibold truncate">—</span>
+              <span class="text-slate-600">›</span>
+              <span id="ss-bread-topic" class="text-on-surface truncate">—</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-semibold flex-shrink-0" id="ss-counter">— / —</span>
+            <a id="ss-open-btn" href="#" target="_blank"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex-shrink-0">↗
+              Tab</a>
+            <button onclick="ssNav(1)" id="ss-next"
+              class="text-xs font-semibold px-md py-xs rounded-lg bg-surface-container-high text-on-surface hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-30">Weiter
+              →</button>
+          </div>
+
+          <!-- Empty state -->
+          <div id="ss-empty" class="flex-1 flex flex-col items-center justify-center text-center gap-md">
+            <span class="material-symbols-outlined text-slate-700"
+              style="font-size:56px;font-variation-settings:'FILL' 1">folder_open</span>
+            <p class="text-slate-500 text-sm">Wähle links ein Fach und ein Thema,<br>um das PDF zu öffnen.</p>
+          </div>
+
+          <!-- PDF iframe -->
+          <div id="ss-viewer" class="hidden flex-1 overflow-hidden">
+            <iframe id="ss-iframe" src="" title="Schulstoff PDF" class="w-full h-full border-0"></iframe>
+          </div>
+
+        </div>
+      </div>
+    </main>

@@ -14,7 +14,7 @@
 <body>
 
   <div class="hub-back-bar">
-    <a class="hub-back-btn" href=".\Hub.html"
+    <a class="hub-back-btn" href="/"
       onclick="if(window.history.length>1){history.back();return false;}">
       <span class="hub-back-arrow">←</span> F11 HUB · Arcade
     </a>
@@ -229,6 +229,12 @@
               style="font-family:'Press Start 2P',monospace;font-size:13px;color:var(--cyan);text-shadow:var(--glow-cyan);margin-top:4px;"
               id="tetris-lines">0</div>
           </div>
+          <div style="margin-top:16px;">
+            <div class="side-label">Highscore</div>
+            <div
+              style="font-family:'Press Start 2P',monospace;font-size:11px;color:var(--yellow);text-shadow:var(--glow-yellow);margin-top:4px;"
+              id="tetris-hiscore">0</div>
+          </div>
           <div class="tetris-tips">
             <div class="tip"><kbd>← →</kbd><span>Bewegen</span></div>
             <div class="tip"><kbd>↑ / Z</kbd><span>Drehen</span></div>
@@ -244,6 +250,7 @@
         <h2>GAME OVER</h2>
         <div class="sub">Punkte: <b id="tetris-final-score"></b></div>
         <div id="tetris-over-time" style="display:none;font-size:11px;color:var(--cyan);margin-top:4px;"></div>
+        <div id="tetris-new-hi" style="display:none;font-size:10px;color:var(--yellow);text-shadow:var(--glow-yellow);margin-top:6px;letter-spacing:1px;">🏆 NEUER HIGHSCORE!</div>
         <button class="btn btn-cyan" onclick="tetrisShowSetup()">Nochmal</button>
       </div>
     </div>
@@ -428,7 +435,7 @@
   </div>
   <footer>◈ ARCADE ZONE ◈ &nbsp;·&nbsp; Alle Spiele laufen direkt im Browser</footer>
 
-  <script src="tetris.js"></script>
+  <script type="module" src="./tetris.ts"></script>
   <script>
     'use strict';
 
@@ -567,6 +574,7 @@
     const SC = 20, SR = 20, SB = 20;
     let snake, sDir, sNextDir, sDirQueue, sFood, sRunning = false, sRafId, sLastTime, sAccum;
     let sScore, sHi = 0, sCanvas, sCtx, foodAnim = 0;
+    try { sHi = parseInt(localStorage.getItem('snake-hi') || '0') || 0; } catch {}
 
     function snakeInterval() { return Math.max(75, 160 - Math.floor(snake.length / 4) * 8); }
 
@@ -618,7 +626,7 @@
 
     function snakeEnd() {
       sRunning = false; cancelAnimationFrame(sRafId);
-      if (sScore > sHi) { sHi = sScore; document.getElementById('snake-hi').textContent = sHi; }
+      if (sScore > sHi) { sHi = sScore; document.getElementById('snake-hi').textContent = sHi; try { localStorage.setItem('snake-hi', String(sHi)); } catch {} }
       document.getElementById('snake-final').textContent = sScore;
       drawSnake(0);
       document.getElementById('snake-overlay').style.display = 'flex';
@@ -685,6 +693,7 @@
     // 2048  — smooth sliding tiles
     // ════════════════════════════════════════════════
     let g2048Grid, g2048Score = 0, g2048Hi = 0, g2048Won = false, g2048KeepPlaying = false;
+    try { g2048Hi = parseInt(localStorage.getItem('2048-hi') || '0') || 0; } catch {}
     let g2048Animating = false;
 
     // Read actual CSS variable at runtime (handles responsive breakpoint)
@@ -830,6 +839,7 @@
         if (g2048Score > g2048Hi) {
           g2048Hi = g2048Score;
           document.getElementById('g2048-hi').textContent = g2048Hi;
+          try { localStorage.setItem('2048-hi', String(g2048Hi)); } catch {}
         }
         popHud('g2048-score');
 

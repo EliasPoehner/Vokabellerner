@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEXIKON — Vokabeltrainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Space+Grotesk:wght@400;600;700&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./LEXIKONVokabeltrainer.css">
+<script>
+// XLSX inline stub - wird durch CDN überschrieben wenn verfügbar
+window.XLSX = window.XLSX || null;
+</script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onerror="window._xlsxFailed=true"></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;">✦ EDV-Schule Kameraden ✦</div>
+      <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:2px;color:var(--ink);line-height:1.2;margin-bottom:6px;">Vokabeln lernen</div>
+      <div style="font-family:var(--font-body);font-size:1rem;color:var(--ink-dim);font-weight:400;margin-bottom:4px;">für Herrn Renz</div>
+      <div style="font-family:var(--font-mono);font-size:.58rem;color:var(--ink-faint);letter-spacing:1.5px;">entwickelt für alle</div>
+    </div>
+    <div class="login-logo">LEXIKON</div>
+    <p class="login-sub">IT Matters · Vokabeltrainer + SRS</p>
+    <button class="db-load-btn" style="margin-bottom:8px" onclick="cycleThemeLogin()">🎨 Design wechseln · <span id="login-theme-name">Neon Dark</span></button>
+    <button class="db-load-btn" onclick="document.getElementById('db-file-input').click()">📂 Datenbank laden (lexikon_db.json)</button>
+    <input type="file" id="db-file-input" accept=".json" onchange="loadDBFile(event)" style="display:none"/>
+    <div class="div-line"></div>
+    <label class="login-label" for="name-in">Dein Name</label>
+    <input class="login-input" id="name-in" type="text" placeholder="z. B. Elias, Anna …" maxlength="24" autocomplete="off"/>
+    <button class="login-btn" id="login-btn" onclick="loginUser()" disabled>Starten →</button>
+    <div class="saved-section" id="saved-area"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header>
+    <div class="h-logo">LEXIKON</div>
+    <div class="h-stats">
+      <span>✓ <span class="v v-ok"  id="s-ok">0</span></span>
+      <span>✗ <span class="v v-err" id="s-err">0</span></span>
+      <span>∑ <span class="v v-tot" id="s-tot">0</span></span>
+    </div>
+    <div class="h-right">
+      <button class="font-btn" onclick="toggleThemePanel()">🎨 Design ▾</button>
+      <button class="font-btn" onclick="toggleFontPanel()">Aa Schrift ▾</button>
+      <button class="font-btn" onclick="toggleLayoutPanel()">⊞ Layout ▾</button>
+      <div class="user-chip" onclick="logoutUser()">
+        <div class="chip-av" id="chip-av"></div>
+        <span id="chip-name"></span> ✕
+      </div>
+    </div>
+  </header>
+
+  <!-- Font panel -->
+  <div class="font-panel" id="font-panel">
+    <h4>Schriftart wählen</h4>
+    <button class="fo active" id="fo-0" onclick="setFont(0)">
+      <div><span class="fn" style="font-family:'Bebas Neue',sans-serif">BEBAS NEUE</span><span class="fs">Display · Modern</span></div>
+    </button>
+    <button class="fo" id="fo-1" onclick="setFont(1)">
+      <div><span class="fn" style="font-family:'Playfair Display',serif;font-style:italic">Playfair Display</span><span class="fs">Elegant · Serif</span></div>
+    </button>
+    <button class="fo" id="fo-2" onclick="setFont(2)">
+      <div><span class="fn" style="font-family:'Unbounded',sans-serif;font-size:.78rem">Unbounded</span><span class="fs">Tech · Brutal</span></div>
+    </button>
+    <button class="fo" id="fo-3" onclick="setFont(3)">
+      <div><span class="fn" style="font-family:'Space Grotesk',sans-serif">Space Grotesk</span><span class="fs">Clean · Geometric</span></div>
+    </button>
+    <button class="fo" id="fo-4" onclick="setFont(4)">
+      <div><span class="fn" style="font-family:'JetBrains Mono',monospace">JetBrains Mono</span><span class="fs">Code · Terminal</span></div>
+    </button>
+  </div>
+
+  <!-- Theme panel -->
+  <div class="theme-panel" id="theme-panel">
+    <h4>Farbdesign wählen</h4>
+    <div class="theme-section">
+      <div class="theme-section-label">— Dunkel —</div>
+      <button class="to active" id="to-neon" onclick="setTheme('neon')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#ff3cac"></div><div class="theme-dot" style="background:#8338ec"></div><div class="theme-dot" style="background:#00f5d4"></div><div class="theme-dot" style="background:#07080d"></div></div>
+        <div><span class="tn">Neon Dark</span><span class="td">Original · Pink & Teal</span></div>
+      </button>
+      <button class="to" id="to-ocean" onclick="setTheme('ocean')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#00b4d8"></div><div class="theme-dot" style="background:#90e0ef"></div><div class="theme-dot" style="background:#48cae4"></div><div class="theme-dot" style="background:#0a1628"></div></div>
+        <div><span class="tn">Deep Ocean</span><span class="td">Ruhig · Blautöne</span></div>
+      </button>
+      <button class="to" id="to-forest" onclick="setTheme('forest')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#56d364"></div><div class="theme-dot" style="background:#a8e6cf"></div><div class="theme-dot" style="background:#2ea043"></div><div class="theme-dot" style="background:#0d1a0f"></div></div>
+        <div><span class="tn">Forest</span><span class="td">Natur · Grüntöne</span></div>
+      </button>
+      <button class="to" id="to-sunset" onclick="setTheme('sunset')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#ff6b6b"></div><div class="theme-dot" style="background:#ff9f43"></div><div class="theme-dot" style="background:#feca57"></div><div class="theme-dot" style="background:#1a0f0f"></div></div>
+        <div><span class="tn">Sunset</span><span class="td">Warm · Rot & Orange</span></div>
+      </button>
+      <button class="to" id="to-cyberpunk" onclick="setTheme('cyberpunk')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#f0f000"></div><div class="theme-dot" style="background:#00ffff"></div><div class="theme-dot" style="background:#ff0066"></div><div class="theme-dot" style="background:#0a0a0f"></div></div>
+        <div><span class="tn">Cyberpunk</span><span class="td">Grell · Neon-Kontrast</span></div>
+      </button>
+    </div>
+    <div class="theme-section">
+      <div class="theme-section-label">— Hell —</div>
+      <button class="to" id="to-light" onclick="setTheme('light')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#c43e5c"></div><div class="theme-dot" style="background:#2970b8"></div><div class="theme-dot" style="background:#0e9580"></div><div class="theme-dot" style="background:#f5f3ef"></div></div>
+        <div><span class="tn">Clean White</span><span class="td">Schlicht · Hell & Klar</span></div>
+      </button>
+      <button class="to" id="to-pastel" onclick="setTheme('pastel')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#e8849a"></div><div class="theme-dot" style="background:#b388c9"></div><div class="theme-dot" style="background:#82c9a1"></div><div class="theme-dot" style="background:#faf5f5"></div></div>
+        <div><span class="tn">Pastel Dream</span><span class="td">Verspielt · Sanfte Töne</span></div>
+      </button>
+      <button class="to" id="to-lavender" onclick="setTheme('lavender')">
+        <div class="theme-dots"><div class="theme-dot" style="background:#8b5cf6"></div><div class="theme-dot" style="background:#a78bfa"></div><div class="theme-dot" style="background:#6366f1"></div><div class="theme-dot" style="background:#f4f0fa"></div></div>
+        <div><span class="tn">Lavender</span><span class="td">Elegant · Violett-Töne</span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Layout panel -->
+  <div class="layout-panel" id="layout-panel">
+    <h4>Layout wählen</h4>
+    <button class="lo active" id="lo-default" onclick="setLayout('default')">
+      <span class="lo-icon">▦</span>
+      <div>
+        <span class="li">Standard</span>
+        <span class="ld">Zentriert · 900px · Klassisch</span>
+      </div>
+    </button>
+    <button class="lo" id="lo-wide" onclick="setLayout('wide')">
+      <span class="lo-icon">⬛</span>
+      <div>
+        <span class="li">Dashboard</span>
+        <span class="ld">Sidebar · Zwei Spalten · Übersicht</span>
+      </div>
+    </button>
+    <button class="lo" id="lo-compact" onclick="setLayout('compact')">
+      <span class="lo-icon">▪</span>
+      <div>
+        <span class="li">Kompakt</span>
+        <span class="ld">Focus Mode · Schlank · Terminal</span>
+      </div>
+    </button>
+    <button class="lo" id="lo-card" onclick="setLayout('card')">
+      <span class="lo-icon">🃏</span>
+      <div>
+        <span class="li">Immersiv</span>
+        <span class="ld">Fullscreen · Große Karten · Fokus</span>
+      </div>
+    </button>
+  </div>
+  <main>
+    <div class="db-banner">
+      <div>
+        <h3>📦 Lokale Datenbank · <span id="db-wc" style="color:var(--a4)">278</span> Wörter</h3>
+        <p>Excel / CSV / JSON importieren · Datenbank als JSON speichern & laden</p>
+      </div>
+      <div class="db-banner-right">
+        <button class="pill pill-pink"  onclick="document.getElementById('file-input').click()">📥 Importieren</button>
+        <button class="pill pill-ghost" onclick="saveDB()">💾 DB speichern</button>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.json" onchange="handleFileUpload(event)"/>
+
+    <div class="srs-ribbon" id="srs-ribbon"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setMode('flashcard')">🃏 Karteikarten</button>
+      <button class="tab-btn" onclick="setMode('quiz')">🎯 Quiz</button>
+      <button class="tab-btn" onclick="setMode('list')">📋 Liste</button>
+      <button class="tab-btn" onclick="setMode('nikita')" style="white-space:nowrap">✦ Nikita Methode</button>
+    </div>
+
+    <!-- Quellfilter -->
+    <div class="source-row" id="source-row">
+      <button class="src-btn active" onclick="setSource('all')">📚 Alle Quellen</button>
+      <button class="src-btn" onclick="setSource('builtin')">🏫 Nur Standard</button>
+      <button class="src-btn" id="src-custom-btn" onclick="setSource('custom')" style="display:none">📥 Nur Importiert</button>
+    </div>
+
+    <div class="filter-row" id="filter-row"></div>
+
+    <div class="dir-row" id="dir-row">
+      <button class="dir-btn active" onclick="setDir('mixed')">🔀 Gemischt</button>
+      <button class="dir-btn" onclick="setDir('en-de')">EN → DE</button>
+      <button class="dir-btn" onclick="setDir('de-en')">DE → EN</button>
+    </div>
+
+    <div id="app-content" class="card-area"></div>
+    <div id="nikita-view"></div>
+  </main>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-bg" id="import-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2>IMPORTIEREN</h2>
+    <p>Lade eine <strong>.xlsx</strong>, <strong>.csv</strong> oder <strong>.json</strong> Datei hoch. So sieht deine Excel-Tabelle aus:</p>
+    <code>Spalte A    |  Spalte B (Englisch)                    |  Spalte C (Phonetik)         |  Spalte D (Deutsch)
+b48         |  artificial intelligence (AI)           |  [ɑːtɪˌfɪʃl ɪnˈtelɪdʒəns]  |  künstliche Intelligenz (KI)
+b49         |  civil engineering                       |  [ˌsɪvl endʒɪˈnɪərɪŋ]       |  Hoch- und Tiefbau</code>
+    <p style="margin-bottom:8px">Unterstützte Spaltennamen (Großschreibung egal):</p>
+    <code style="margin-bottom:14px">Englisch / English / en / word
+Deutsch / German / de / translation
+Phonetik / phonetic / pronunciation
+Seite / page  ·  Unit / einheit</code>
+    <p>Die erste Spalte (z. B. „b48") wird ignoriert wenn kein passender Spaltenname erkannt wird. <strong>lexikon_db.json</strong> kann auch direkt hochgeladen werden → alle Daten werden wiederhergestellt.</p>
+    <div class="modal-acts">
+      <button class="modal-ok" onclick="document.getElementById('file-input').click();closeModal()">📁 Datei wählen</button>
+      <button class="modal-cancel" onclick="closeModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal" style="max-width:480px">
+    <h2>WORT BEARBEITEN</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+      <div>
+        <label class="modal-field-label">Englisch</label>
+        <input class="modal-input" id="edit-en" type="text" placeholder="Englisches Wort …"/>
+      </div>
+      <div>
+        <label class="modal-field-label">Deutsch</label>
+        <input class="modal-input" id="edit-de" type="text" placeholder="Deutsche Übersetzung …"/>
+      </div>
+      <div>
+        <label class="modal-field-label">Phonetik <span style="opacity:.5">(optional)</span></label>
+        <input class="modal-input" id="edit-ph" type="text" placeholder="z. B. ɪkˈspænd"/>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1">
+          <label class="modal-field-label">Seite</label>
+          <input class="modal-input" id="edit-page" type="number" placeholder="z. B. 48"/>
+        </div>
+        <div style="flex:1">
+          <label class="modal-field-label">Unit</label>
+          <input class="modal-input" id="edit-unit" type="number" placeholder="z. B. 5"/>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="edit-vocab-id"/>
+    <div class="modal-acts">
+      <button class="modal-ok" onclick="saveEditedWord()">✓ Speichern</button>
+      <button class="modal-cancel" onclick="closeEditModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  BUILT-IN VOCAB
+// ============================================================
+const BUILTIN = [
+  {unit:4,page:36,en:"stand-up meeting",de:"kurze Besprechung",ph:"ˌstænd ʌp ˈmiːtɪŋ"},
+  {unit:4,page:36,en:"mobile banking",de:"Mobile-Banking",ph:"ˌməʊbaɪl ˈbæŋkɪŋ"},
+  {unit:4,page:36,en:"agile",de:"agil, flink, beweglich",ph:"ˈædʒaɪl"},
+  {unit:4,page:36,en:"methodology",de:"Methodik",ph:"ˌmeθəˈdɒlədʒi"},
+  {unit:4,page:36,en:"iterative",de:"iterativ",ph:"ˈɪtrətɪv"},
+  {unit:4,page:36,en:"to allow for sth",de:"etw berücksichtigen, etw einkalkulieren, etw vorsehen",ph:"əˈlaʊ fə"},
+  {unit:4,page:36,en:"frequent(ly)",de:"häufig",ph:"ˈfriːkwənt"},
+  {unit:4,page:36,en:"adjustment",de:"Anpassung, Korrektur",ph:"əˈdʒʌstmənt"},
+  {unit:4,page:36,en:"adaptive (to sth)",de:"anpassungsfähig (an etw)",ph:"əˈdæptɪv"},
+  {unit:4,page:36,en:"throughout",de:"während (der/s ganzen …)",ph:"θruːˈaʊt"},
+  {unit:4,page:36,en:"plan-driven",de:"plangesteuert",ph:"ˈplæn drɪvən"},
+  {unit:4,page:36,en:"approach",de:"Ansatz, Vorgehen",ph:"əˈprəʊtʃ"},
+  {unit:4,page:36,en:"sequential",de:"sequenziell, fortlaufend",ph:"sɪˈkwenʃl"},
+  {unit:4,page:36,en:"upfront",de:"im Vorfeld, im Voraus, vorab",ph:"ʌpˈfrɒnt"},
+  {unit:4,page:36,en:"to approach sth",de:"an etw herangehen",ph:"əˈprəʊtʃ"},
+  {unit:4,page:36,en:"to distribute",de:"verteilen",ph:"dɪˈstrɪbjuːt"},
+  {unit:4,page:36,en:"hierarchical",de:"hierarchisch",ph:"ˌhaɪəˈrɑːkɪkl"},
+  {unit:4,page:36,en:"team lead",de:"Teamleiter/in",ph:"ˈtiːm liːd"},
+  {unit:4,page:36,en:"to assign",de:"zuweisen, vergeben",ph:"əˈsaɪn"},
+  {unit:4,page:36,en:"silo",de:"Silo",ph:"ˈsaɪləʊ"},
+  {unit:4,page:36,en:"key",de:"entscheidend, wesentlich",ph:"kiː"},
+  {unit:4,page:36,en:"across functions",de:"über Funktionsgrenzen hinweg",ph:"əˌkrɒs ˈfʌŋkʃnz"},
+  {unit:4,page:36,en:"stakeholder",de:"Projektbeteiligte/r",ph:"ˈsteɪkhəʊldə"},
+  {unit:4,page:36,en:"continuous(ly)",de:"fortwährend, ständig, kontinuierlich",ph:"kənˈtɪnjuəs"},
+  {unit:4,page:36,en:"once",de:"sobald, wenn (einmal)",ph:"wʌns"},
+  {unit:4,page:36,en:"underway",de:"im Gange",ph:"ˌʌndəˈweɪ"},
+  {unit:4,page:36,en:"delayed",de:"verzögert, verspätet",ph:"dɪˈleɪd"},
+  {unit:4,page:36,en:"recognition",de:"Erkennung, Identifizierung",ph:"ˌrekəɡˈnɪʃn"},
+  {unit:4,page:36,en:"issue",de:"Problem, Frage",ph:"ˈɪʃuː"},
+  {unit:4,page:36,en:"misalignment",de:"Nichtübereinstimmung, Diskrepanz",ph:"ˌmɪsəˈlaɪnmənt"},
+  {unit:4,page:36,en:"individual",de:"(Einzel-)Person",ph:"ˌɪndɪˈvɪdʒuəl"},
+  {unit:4,page:36,en:"accountable",de:"verantwortlich, rechenschaftspflichtig",ph:"əˈkaʊntəbl"},
+  {unit:4,page:36,en:"brief(ly)",de:"kurz, knapp",ph:"briːf"},
+  {unit:4,page:37,en:"cycle",de:"Zyklus",ph:"ˈsaɪkl"},
+  {unit:4,page:37,en:"project life cycle",de:"Projektlebenszyklus",ph:"ˌprɒdʒekt ˈlaɪf saɪkl"},
+  {unit:4,page:37,en:"to execute sth",de:"etw ausführen",ph:"ˈeksɪkjuːt"},
+  {unit:4,page:37,en:"accordingly",de:"(dem)entsprechend, demgemäß",ph:"əˈkɔːdɪŋli"},
+  {unit:4,page:37,en:"to gather",de:"sich versammeln",ph:"ˈɡæðə"},
+  {unit:4,page:37,en:"progress report",de:"Statusbericht",ph:"ˈprəʊɡres rɪpɔːt"},
+  {unit:4,page:37,en:"to kick off",de:"beginnen, starten",ph:"ˌkɪk ˈɒf"},
+  {unit:4,page:37,en:"(money) transfer",de:"Überweisung",ph:"ˈtrænsfɜː"},
+  {unit:4,page:37,en:"routine",de:"(gewöhnlicher) Ablauf, Routine",ph:"ruːˈtiːn"},
+  {unit:4,page:37,en:"blocker",de:"Blocker, Hindernis",ph:"ˈblɒkə"},
+  {unit:4,page:37,en:"backend",de:"Backend",ph:"ˈbækend"},
+  {unit:4,page:37,en:"logic",de:"Logik",ph:"ˈlɒdʒɪk"},
+  {unit:4,page:37,en:"frontend",de:"Frontend",ph:"ˈfrʌntend"},
+  {unit:4,page:37,en:"API (application programming interface)",de:"Programmierschnittstelle",ph:"ˌeɪ piː ˈaɪ"},
+  {unit:4,page:37,en:"authorization",de:"Genehmigung, Autorisierung",ph:"ˌɔːθəraɪˈzeɪʃn"},
+  {unit:4,page:37,en:"token",de:"Marke, Token",ph:"ˈtəʊkən"},
+  {unit:4,page:37,en:"to interact",de:"kommunizieren, interagieren",ph:"ˌɪntərˈækt"},
+  {unit:4,page:37,en:"to expire",de:"(Gültigkeit usw.:) ablaufen, auslaufen",ph:"ɪkˈspaɪə"},
+  {unit:4,page:37,en:"to fail",de:"fehlschlagen",ph:"feɪl"},
+  {unit:4,page:37,en:"to reach out to sb for sth",de:"sich wegen etw an jdn wenden, jdn um etw bitten",ph:"ˌriːtʃ ˈaʊt tə"},
+  {unit:4,page:37,en:"to escalate sth",de:"etw ausweiten",ph:"ˈeskəleɪt"},
+  {unit:4,page:37,en:"fix",de:"schnelle/vorübergehende Lösung",ph:"fɪks"},
+  {unit:4,page:37,en:"test case",de:"Testfall",ph:"ˈtest keɪs"},
+  {unit:4,page:37,en:"invalid",de:"ungültig",ph:"ɪnˈvælɪd"},
+  {unit:4,page:37,en:"to exceed sth",de:"etw übersteigen, etw übertreffen",ph:"ɪkˈsiːd"},
+  {unit:4,page:37,en:"proper",de:"echt, richtig",ph:"ˈprɒpə"},
+  {unit:4,page:37,en:"error message",de:"Fehlermeldung",ph:"ˈerə mesɪdʒ"},
+  {unit:4,page:37,en:"end-to-end testing",de:"End-to-End-Testen",ph:"end tu ˌend ˈtestɪŋ"},
+  {unit:4,page:37,en:"error handling",de:"Fehlerbehandlung",ph:"ˈerə hændlɪŋ"},
+  {unit:4,page:37,en:"consistent(ly)",de:"einheitlich, konsistent",ph:"kənˈsɪstənt"},
+  {unit:4,page:37,en:"to sync with sb",de:"sich mit jdm kurzschließen",ph:"sɪŋk"},
+  {unit:4,page:37,en:"to proceed",de:"fortfahren, weitermachen",ph:"prəˈsiːd"},
+  {unit:4,page:37,en:"Good catch!",de:"Gut aufgepasst! Gut gesehen!",ph:"ˌɡʊd ˈkætʃ"},
+  {unit:4,page:37,en:"slider",de:"Schieberegler, Slider",ph:"ˈslaɪdə"},
+  {unit:4,page:37,en:"confirmation",de:"Bestätigung",ph:"ˌkɒnfəˈmeɪʃn"},
+  {unit:4,page:37,en:"tweak",de:"(geringfügige) Korrektur, Optimierung",ph:"twiːk"},
+  {unit:4,page:37,en:"on track",de:"im (Zeit-)Plan",ph:"ɒn ˈtræk"},
+  {unit:4,page:37,en:"progress",de:"Fortschritt(e)",ph:"ˈprəʊɡres"},
+  {unit:4,page:37,en:"to hesitate",de:"zögern",ph:"ˈhezɪteɪt"},
+  {unit:4,page:37,en:"to flag sth",de:"auf etw hinweisen, auf etw aufmerksam machen",ph:"flæɡ"},
+  {unit:4,page:37,en:"draft",de:"Entwurf",ph:"drɑːft"},
+  {unit:4,page:37,en:"prior to",de:"vor",ph:"ˈpraɪə tə"},
+  {unit:4,page:37,en:"to report to sb",de:"jdm Bericht erstatten, jdm berichten",ph:"rɪˈpɔːt tə"},
+  {unit:4,page:37,en:"wearable",de:"(als Kleidungsstück) tragbar; Wearable",ph:"ˈweərəbl"},
+  {unit:4,page:37,en:"tracker",de:"Tracker",ph:"ˈtrækə"},
+  {unit:4,page:37,en:"habit",de:"Gewohnheit",ph:"ˈhæbɪt"},
+  {unit:4,page:38,en:"to expand",de:"expandieren, (in Märkte) vordringen",ph:"ɪkˈspænd"},
+  {unit:4,page:38,en:"to be about to do sth",de:"im Begriff sein, etw zu tun",ph:"bi əˈbaʊt tə"},
+  {unit:4,page:38,en:"network design",de:"Netzwerkaufbau, Netzwerkdesign",ph:"ˈnetwɜːk dɪzaɪn"},
+  {unit:4,page:38,en:"to be in charge of sth",de:"für etw zuständig/verantwortlich sein",ph:"bi ɪn ˈtʃɑːdʒ əv"},
+  {unit:4,page:38,en:"move",de:"Umzug",ph:"muːv"},
+  {unit:4,page:38,en:"to remind sb",de:"jdn (an etw) erinnern",ph:"rɪˈmaɪnd"},
+  {unit:4,page:38,en:"tight",de:"eng, knapp",ph:"taɪt"},
+  {unit:4,page:38,en:"unlimited",de:"unbegrenzt",ph:"ʌnˈlɪmɪtɪd"},
+  {unit:4,page:38,en:"off the shelf",de:"handelsüblich, von der Stange",ph:"ɒf ðə ˈʃelf"},
+  {unit:4,page:38,en:"router",de:"Router",ph:"ˈruːtə"},
+  {unit:4,page:38,en:"load",de:"Last",ph:"ləʊd"},
+  {unit:4,page:38,en:"coverage",de:"(Netz-)Abdeckung, Empfang",ph:"ˈkʌvərɪdʒ"},
+  {unit:4,page:38,en:"to take sth into account",de:"etw berücksichtigen",ph:"ˌteɪk ɪntu əˈkaʊnt"},
+  {unit:4,page:38,en:"for starters",de:"zunächst (einmal)",ph:"fə ˈstɑːtəz"},
+  {unit:4,page:38,en:"roughly",de:"ungefähr",ph:"ˈrʌfli"},
+  {unit:4,page:38,en:"simultaneous(ly)",de:"gleichzeitig",ph:"ˌsɪmlˈteɪniəs"},
+  {unit:4,page:38,en:"consumer-grade",de:"für den Hausgebrauch",ph:"kənˌsjuːmə ˈɡreɪd"},
+  {unit:4,page:38,en:"gear",de:"Gerät(e), Ausrüstung, Ausstattung",ph:"ɡɪə"},
+  {unit:4,page:38,en:"to handle sth",de:"etw bewältigen, mit etw umgehen, etw erledigen",ph:"ˈhændl"},
+  {unit:4,page:38,en:"demand",de:"Anspruch, Anforderung",ph:"dɪˈmɑːnd"},
+  {unit:4,page:38,en:"to expand sth",de:"etw erweitern, etw ausweiten",ph:"ɪkˈspænd"},
+  {unit:4,page:38,en:"to future-proof sth",de:"etw zukunftssicher machen",ph:"ˈfjuːtʃə pruːf"},
+  {unit:4,page:38,en:"to scale",de:"(sich) skalieren, mengenmäßig dem Bedarf anpassen",ph:"skeɪl"},
+  {unit:4,page:38,en:"heavy usage",de:"hohe Belastung, starke Nutzung",ph:"ˌhevi ˈjuːsɪdʒ"},
+  {unit:4,page:38,en:"to plan for sth",de:"etw einplanen, etw vorsehen",ph:"ˈplæn fə"},
+  {unit:4,page:38,en:"slowdown",de:"Verlangsamung",ph:"ˈsləʊdaʊn"},
+  {unit:4,page:38,en:"dropped connection",de:"Verbindungsausfall",ph:"ˌdrɒpt kəˈnekʃn"},
+  {unit:4,page:38,en:"latency",de:"Latenz, Latenzzeit(en)",ph:"ˈleɪtnsi"},
+  {unit:4,page:38,en:"to be designed for sth",de:"für etw ausgelegt sein, für/zu etw gedacht sein",ph:"bi dɪˈzaɪnd fə"},
+  {unit:4,page:38,en:"data rate",de:"Daten(übertragungs)rate",ph:"ˈdeɪtə reɪt"},
+  {unit:4,page:38,en:"capacity",de:"Kapazität, Leistung",ph:"kəˈpæsəti"},
+  {unit:4,page:38,en:"interference",de:"Störung(en), Interferenz(en)",ph:"ˌɪntəˈfɪərəns"},
+  {unit:4,page:38,en:"drop",de:"Abfall, Verlust",ph:"drɒp"},
+  {unit:4,page:38,en:"to serve",de:"dienen, bedienen",ph:"sɜːv"},
+  {unit:4,page:38,en:"frequency band",de:"Frequenzband",ph:"ˈfriːkwənsi bænd"},
+  {unit:4,page:38,en:"range",de:"Reichweite, Bandbreite",ph:"reɪndʒ"},
+  {unit:4,page:38,en:"square meter",de:"Quadratmeter",ph:"ˈskweə miːtə"},
+  {unit:4,page:38,en:"Wi-Fi access point",de:"WLAN-Zugangspunkt, Basisstation",ph:"ˈækses pɔɪnt"},
+  {unit:4,page:38,en:"to cover sth",de:"etw abdecken",ph:"ˈkʌvə"},
+  {unit:4,page:38,en:"mesh network",de:"vermaschtes Netz",ph:"ˈmeʃ netwɜːk"},
+  {unit:4,page:38,en:"spare",de:"Reserve(-), Ersatz(-)",ph:"speə"},
+  {unit:4,page:38,en:"to bear sth in mind",de:"etw berücksichtigen, an etw denken, etw beachten",ph:"ˌbeər ɪn ˈmaɪnd"},
+  {unit:4,page:38,en:"to overload",de:"überlasten",ph:"ˌəʊvəˈləʊd"},
+  {unit:4,page:38,en:"placement",de:"Platzierung, Aufstellung",ph:"ˈpleɪsmənt"},
+  {unit:4,page:38,en:"sheer",de:"rein, bloß, schier",ph:"ʃɪə"},
+  {unit:4,page:38,en:"quantity",de:"Menge, Anzahl",ph:"ˈkwɒntəti"},
+  {unit:4,page:38,en:"to interfere with sth",de:"etw stören",ph:"ˌɪntəˈfɪə wɪð"},
+  {unit:4,page:38,en:"sb realizes sth",de:"jdm ist/wird etw klar/bewusst",ph:"ˈrɪəlaɪzɪz"},
+  {unit:4,page:38,en:"to keep sth in check",de:"etw im Zaum / unter Kontrolle halten",ph:"ˌkiːp ɪn ˈtʃek"},
+  {unit:4,page:38,en:"to aim for sth",de:"etw anpeilen",ph:"ˈeɪm fə"},
+  {unit:4,page:38,en:"to factor sth in",de:"etw einkalkulieren, etw berücksichtigen",ph:"ˌfæktər ˈɪn"},
+  {unit:4,page:38,en:"building materials",de:"Baumaterial(ien)",ph:"ˈbɪldɪŋ mətɪəriəlz"},
+  {unit:4,page:38,en:"concrete",de:"Beton",ph:"ˈkɒŋkriːt"},
+  {unit:4,page:38,en:"frame",de:"Rahmen, Ständer",ph:"freɪm"},
+  {unit:4,page:38,en:"dead zone",de:"Funkloch",ph:"ˈded zəʊn"},
+  {unit:4,page:38,en:"analysis / analyses",de:"Analyse, Analysen",ph:"əˈnæləsɪs / əˈnæləsiːz"},
+  {unit:4,page:38,en:"signal strength",de:"Signalstärke",ph:"ˈsɪɡnəl streŋθ"},
+  {unit:4,page:38,en:"to upgrade",de:"aufrüsten, verbessern, hochstufen",ph:"ʌpˈɡreɪd"},
+  {unit:4,page:38,en:"testing equipment",de:"Prüfgeräte",ph:"ˈtestɪŋ ɪkwɪpmənt"},
+  {unit:4,page:38,en:"in real-time",de:"in Echtzeit",ph:"ɪn ˌrɪəl ˈtaɪm"},
+  {unit:4,page:38,en:"heatmap",de:"Heatmap, Wärmekarte",ph:"ˈhiːtmæp"},
+  {unit:4,page:38,en:"to creep up",de:"herauf-/hinaufkriechen",ph:"ˌkriːp ˈʌp"},
+  {unit:5,page:48,en:"artificial intelligence (AI)",de:"künstliche Intelligenz (KI)",ph:"ɑːtɪˌfɪʃl ɪnˈtelɪdʒəns"},
+  {unit:5,page:48,en:"civil engineering",de:"Hoch- und Tiefbau",ph:"ˌsɪvl endʒɪˈnɪərɪŋ"},
+  {unit:5,page:48,en:"aside from",de:"abgesehen von",ph:"əˈsaɪd frəm"},
+  {unit:5,page:48,en:"to upset sb",de:"jdn aus der Fassung bringen, jdn verärgern",ph:"ʌpˈset"},
+  {unit:5,page:48,en:"robot",de:"Roboter",ph:"ˈrəʊbɒt"},
+  {unit:5,page:48,en:"to face unlock sth",de:"etw per Gesichtserkennung entsperren",ph:"ˌfeɪs ʌnˈlɒk"},
+  {unit:5,page:48,en:"to recognize",de:"erkennen",ph:"ˈrekəɡnaɪz"},
+  {unit:5,page:48,en:"features",de:"Gesichtszüge",ph:"ˈfiːtʃəz"},
+  {unit:5,page:48,en:"appearance",de:"Aussehen, Erscheinungsbild",ph:"əˈpɪərəns"},
+  {unit:5,page:48,en:"fancy",de:"raffiniert, schick",ph:"ˈfænsi"},
+  {unit:5,page:48,en:"It doesn't stop there.",de:"Das ist längst noch nicht alles.",ph:"ɪt ˌdʌznt stɒp ˈðeə"},
+  {unit:5,page:48,en:"search engine",de:"Suchmaschine",ph:"ˈsɜːtʃ endʒɪn"},
+  {unit:5,page:48,en:"to refine",de:"verfeinern",ph:"rɪˈfaɪn"},
+  {unit:5,page:48,en:"healthcare",de:"Gesundheitswesen, Medizin",ph:"ˈhelθkeə"},
+  {unit:5,page:48,en:"fraud detection",de:"Betrugsermittlung",ph:"ˈfrɔːd dɪtekʃn"},
+  {unit:5,page:48,en:"transaction",de:"Vorgang, Transaktion",ph:"trænˈzækʃn"},
+  {unit:5,page:48,en:"unusual(ly)",de:"ungewöhnlich",ph:"ʌnˈjuːʒʊəl"},
+  {unit:5,page:48,en:"to detect sth",de:"etw ermitteln, etw erkennen",ph:"dɪˈtekt"},
+  {unit:5,page:48,en:"invisible (to sth)",de:"unsichtbar (für etw)",ph:"ɪnˈvɪzəbl"},
+  {unit:5,page:48,en:"illness",de:"Krankheit",ph:"ˈɪlnəs"},
+  {unit:5,page:48,en:"to be exposed to sth",de:"mit etw in Berührung kommen",ph:"bi ɪkˈspəʊzd tə"},
+  {unit:5,page:48,en:"mind-blowing",de:"überwältigend, Wahnsinn(s-)",ph:"ˈmaɪnd bləʊɪŋ"},
+  {unit:5,page:48,en:"branch",de:"Zweig, Sparte",ph:"brɑːntʃ"},
+  {unit:5,page:48,en:"to aim to do sth",de:"beabsichtigen, etw zu tun",ph:"ˈeɪm tə duː"},
+  {unit:5,page:48,en:"at its core",de:"im Kern, im Wesentlichen",ph:"ət ɪts ˈkɔː"},
+  {unit:5,page:48,en:"collection",de:"Sammlung",ph:"kəˈlekʃn"},
+  {unit:5,page:48,en:"algorithm",de:"Algorithmus",ph:"ˈælɡərɪðm"},
+  {unit:5,page:48,en:"backbone",de:"Rückgrat",ph:"ˈbækbəʊn"},
+  {unit:5,page:48,en:"fixed",de:"fest, festgelegt",ph:"fɪkst"},
+  {unit:5,page:48,en:"calculator",de:"Taschenrechner",ph:"ˈkælkjuleɪtə"},
+  {unit:5,page:48,en:"to subtract",de:"subtrahieren",ph:"səbˈtrækt"},
+  {unit:5,page:48,en:"to multiply",de:"multiplizieren",ph:"ˈmʌltɪplaɪ"},
+  {unit:5,page:48,en:"in contrast",de:"dagegen, im Gegensatz dazu",ph:"ɪn ˈkɒntrɑːst"},
+  {unit:5,page:48,en:"attribute",de:"Eigenschaft, Attribut",ph:"ˈætrɪbjuːt"},
+  {unit:5,page:48,en:"distinction",de:"Unterscheidung",ph:"dɪˈstɪŋkʃn"},
+  {unit:5,page:49,en:"suspicious",de:"verdächtig",ph:"səˈspɪʃəs"},
+  {unit:5,page:49,en:"edge",de:"Kante, Rand",ph:"edʒ"},
+  {unit:5,page:49,en:"to resemble",de:"ähneln",ph:"rɪˈzembl"},
+  {unit:5,page:49,en:"whiskers",de:"Schnurrhaare",ph:"ˈwɪskəz"},
+  {unit:5,page:49,en:"to drive",de:"antreiben",ph:"draɪv"},
+  {unit:5,page:49,en:"label",de:"kennzeichnen",ph:"ˈleɪbl"},
+  {unit:5,page:49,en:"parameter",de:"Parameter",ph:"pəˈræmɪtə"},
+  {unit:5,page:49,en:"essentially",de:"im Wesentlichen",ph:"ɪˈsenʃəli"},
+  {unit:5,page:49,en:"understanding",de:"Verstehen, Verständnis",ph:"ˌʌndəˈstændɪŋ"},
+  {unit:5,page:49,en:"to fine-tune sth",de:"etw feinjustieren, etw feinabstimmen",ph:"ˈfaɪn tjuːn"},
+  {unit:5,page:49,en:"weight",de:"Gewichtung",ph:"weɪt"},
+  {unit:5,page:49,en:"to illustrate",de:"veranschaulichen",ph:"ˈɪləstreɪt"},
+  {unit:5,page:49,en:"gradual(ly)",de:"allmählich, nach und nach",ph:"ˈɡrædʒuəli"},
+  {unit:5,page:49,en:"dial",de:"Regler, Einstellrad",ph:"ˈdaɪəl"},
+  {unit:5,page:49,en:"in short",de:"kurz gesagt, kurzum",ph:"ɪn ˈʃɔːt"},
+  {unit:5,page:49,en:"importance",de:"Bedeutung, Wichtigkeit",ph:"ɪmˈpɔːtns"},
+  {unit:5,page:49,en:"to matter",de:"von Belang sein, wichtig sein",ph:"ˈmætə"},
+  {unit:5,page:49,en:"to be faced with sth",de:"mit etw konfrontiert werden/sein",ph:"bi ˈfeɪst wɪð"},
+  {unit:5,page:49,en:"to represent",de:"repräsentieren, vertreten",ph:"ˌreprɪˈzent"},
+  {unit:5,page:49,en:"namely",de:"nämlich, und zwar",ph:"ˈneɪmli"},
+  {unit:5,page:49,en:"billion",de:"Milliarde",ph:"ˈbɪliən"},
+  {unit:5,page:49,en:"trillion",de:"Billion",ph:"ˈtrɪljən"},
+  {unit:5,page:49,en:"be unique to sth",de:"ausschließlich in/bei etw vorkommen",ph:"bi juˈniːk tə"},
+  {unit:5,page:49,en:"initial",de:"erste/r/s, Anfangs-",ph:"ɪˈnɪʃl"},
+  {unit:5,page:49,en:"agriculture",de:"Landwirtschaft",ph:"ˈæɡrɪkʌltʃə"},
+  {unit:5,page:49,en:"environmental conservation",de:"Umweltschutz",ph:"ɪnvaɪrənˌmentl ˌkɒnsəˈveɪʃn"},
+  {unit:5,page:49,en:"automotive industry",de:"Automobilbranche",ph:"ɔːtəˌməʊtɪv ˈɪndəstri"},
+  {unit:5,page:49,en:"education",de:"Bildung",ph:"ˌedʒuˈkeɪʃn"},
+  {unit:5,page:50,en:"to task sb with sth",de:"jdn mit etw beauftragen",ph:"ˈtɑːsk wɪð"},
+  {unit:5,page:50,en:"implementation",de:"Einführung, Umsetzung",ph:"ˌɪmplɪmenˈteɪʃn"},
+  {unit:5,page:50,en:"predictive maintenance",de:"vorausschauende Instandhaltung",ph:"prɪˌdɪktɪv ˈmeɪntənəns"},
+  {unit:5,page:50,en:"to employ sth",de:"etw anwenden, etw verwenden",ph:"ɪmˈplɔɪ"},
+  {unit:5,page:50,en:"to forecast",de:"vorhersagen, voraussagen",ph:"ˈfɔːkɑːst"},
+  {unit:5,page:50,en:"deterioration",de:"Abnutzung, Alterung",ph:"dɪˌtɪəriəˈreɪʃn"},
+  {unit:5,page:50,en:"rate",de:"Geschwindigkeit",ph:"reɪt"},
+  {unit:5,page:50,en:"structure",de:"Bauwerk, Gebäude",ph:"ˈstrʌktʃə"},
+  {unit:5,page:50,en:"predictive analytics",de:"prädiktive Analytik",ph:"prɪˌdɪktɪv ˌænəˈlɪtɪks"},
+  {unit:5,page:50,en:"to enable sth",de:"etw ermöglichen",ph:"ɪˈneɪbl"},
+  {unit:5,page:50,en:"(structural) failure",de:"(baulicher) Mangel, Bruch",ph:"ˈfeɪljə"},
+  {unit:5,page:50,en:"to allow for sth",de:"etw ermöglichen, etw zulassen",ph:"əˈlaʊ fə"},
+  {unit:5,page:50,en:"typically",de:"normalerweise, üblicherweise",ph:"ˈtɪpɪkli"},
+  {unit:5,page:50,en:"automated",de:"automatisch, automatisiert",ph:"ˈɔːtəmeɪtɪd"},
+  {unit:5,page:50,en:"scheduling",de:"Terminplanung, Disposition",ph:"ˈʃedjuːlɪŋ"},
+  {unit:5,page:50,en:"to apply sth (to sth)",de:"etw (auf/bei etw) anwenden",ph:"əˈplaɪ tə"},
+  {unit:5,page:50,en:"historical data",de:"historische Daten",ph:"hɪˌstɒrɪkl ˈdeɪtə"},
+  {unit:5,page:50,en:"constraint",de:"(Rahmen-)Bedingung, Einschränkung",ph:"kənˈstreɪnt"},
+  {unit:5,page:50,en:"procurement",de:"Beschaffung",ph:"prəˈkjʊəmənt"},
+  {unit:5,page:50,en:"labour allocation",de:"Einsatz/Zuweisung von Arbeitskräften",ph:"ˈleɪbər æləkeɪʃn"},
+  {unit:5,page:50,en:"shortage",de:"Mangel",ph:"ˈʃɔːtɪdʒ"},
+  {unit:5,page:50,en:"commonly",de:"normalerweise, gewöhnlich",ph:"ˈkɒmənli"},
+  {unit:5,page:50,en:"structural design",de:"Baukonstruktion, Tragwerksplanung",ph:"ˌstrʌktʃərəl dɪˈzaɪn"},
+  {unit:5,page:50,en:"to assist (sb with sth)",de:"(jdm bei etw) helfen, unterstützen",ph:"əˈsɪst"},
+  {unit:5,page:50,en:"load condition",de:"Belastungszustand",ph:"ˈləʊd kəndɪʃn"},
+  {unit:5,page:50,en:"environmental impact",de:"Umwelteinflüsse",ph:"ɪnˌvaɪrənˌmentl ɪmpækt"},
+  {unit:5,page:50,en:"cost constraints",de:"Kostendruck, Kostenrahmen",ph:"ˈkɒst kənstreɪnts"},
+  {unit:5,page:50,en:"proposal",de:"Vorschlag, Entwurf",ph:"prəˈpəʊzl"},
+  {unit:5,page:50,en:"sustainable",de:"nachhaltig",ph:"səˈsteɪnəbl"},
+  {unit:5,page:50,en:"document management",de:"Dokumentenverwaltung",ph:"ˌdɒkjumənt ˈmænɪdʒmənt"},
+  {unit:5,page:50,en:"knowledge retrieval",de:"Wissensgewinnung, -abfrage",ph:"ˈnɒlɪdʒ rɪtriːvl"},
+  {unit:5,page:50,en:"to categorize",de:"kategorisieren",ph:"ˈkætɪɡəraɪz"},
+  {unit:5,page:50,en:"to index sth",de:"etw katalogisieren, etw erfassen",ph:"ˈɪndeks"},
+  {unit:5,page:50,en:"to retrieve sth",de:"etw abrufen, etw abfragen",ph:"rɪˈtriːv"},
+  {unit:5,page:50,en:"blueprint",de:"Plan, technische Zeichnung",ph:"ˈbluːprɪnt"},
+  {unit:5,page:50,en:"records",de:"Unterlagen, Protokolle, Datensätze",ph:"ˈrekɔːdz"},
+  {unit:5,page:50,en:"contract",de:"Vertrag",ph:"ˈkɒntrækt"},
+  {unit:5,page:50,en:"contextual",de:"kontextbezogen, kontextabhängig",ph:"kənˈtekstjuəl"},
+  {unit:5,page:50,en:"vast",de:"enorm, riesig",ph:"vɑːst"},
+  {unit:5,page:50,en:"repository",de:"Archiv, Depot",ph:"rɪˈpɒzətri"},
+  {unit:5,page:50,en:"natural language processing (NLP)",de:"Natürliche Sprachverarbeitung",ph:"ˌnætʃrəl ˌlæŋɡwɪdʒ ˈprəʊsesɪŋ"},
+  {unit:5,page:50,en:"technique",de:"Methode, Technik",ph:"tekˈniːk"},
+  {unit:5,page:51,en:"edge AI",de:"Edge-KI",ph:"ˌedʒ eɪ ˈaɪ"},
+  {unit:5,page:51,en:"edge device",de:"Edge-Gerät",ph:"ˈedʒ dɪvaɪs"},
+  {unit:5,page:51,en:"capability",de:"Vermögen, Fähigkeit, Kompetenz",ph:"ˌkeɪpəˈbɪləti"},
+  {unit:5,page:51,en:"complexity",de:"Komplexität",ph:"kəmˈpleksəti"},
+  {unit:5,page:51,en:"complex",de:"kompliziert, komplex",ph:"ˈkɒmpleks"},
+  {unit:5,page:51,en:"computational",de:"Rechen-",ph:"kɒmpjuˈteɪʃənl"},
+  {unit:5,page:51,en:"alert",de:"Warnhinweis, Alarm",ph:"əˈlɜːt"},
+  {unit:5,page:51,en:"anomaly",de:"Unregelmäßigkeit, Anomalie",ph:"əˈnɒməli"},
+  {unit:5,page:51,en:"large-scale",de:"in großem Maßstab, groß angelegt",ph:"ˈlɑːdʒskeɪl"},
+  {unit:5,page:51,en:"slight",de:"geringfügig, leicht",ph:"slaɪt"},
+  {unit:5,page:51,en:"digital twin",de:"digitaler Zwilling",ph:"ˌdɪdʒɪtl ˈtwɪn"},
+  {unit:5,page:51,en:"simulation",de:"Simulation",ph:"ˌsɪmjuˈleɪʃn"},
+  {unit:5,page:51,en:"Internet of Things (IoT)",de:"Internet der Dinge",ph:"ˈɪntənet əf ˈθɪŋz"},
+  {unit:5,page:51,en:"to inform sth",de:"in etw (Entscheidung usw.) einfließen",ph:"ɪnˈfɔːm"},
+  {unit:5,page:51,en:"fairly",de:"einigermaßen, ziemlich",ph:"ˈfeəli"},
+  {unit:5,page:51,en:"unlike sth",de:"im Gegensatz zu etw",ph:"ʌnˈlaɪk"},
+  {unit:5,page:51,en:"to have sth in common",de:"etw gemeinsam haben",ph:"həv ɪn ˈkɒmən"},
+  {unit:5,page:52,en:"in attendance",de:"anwesend",ph:"ɪn əˈtendəns"},
+  {unit:5,page:52,en:"sensitivity",de:"Vertraulichkeit (von Informationen usw.)",ph:"ˌsensəˈtɪvəti"},
+  {unit:5,page:52,en:"invoice",de:"Rechnung",ph:"ˈɪnvɔɪs"},
+  {unit:5,page:52,en:"ledger",de:"Hauptbuch, Kontenblatt",ph:"ˈledʒə"},
+  {unit:5,page:52,en:"authorized",de:"befugt, berechtigt",ph:"ˈɔːθəraɪzd"},
+  {unit:5,page:52,en:"to safeguard sth",de:"etw wahren, etw sicherstellen",ph:"ˈseɪfɡɑːd"},
+  {unit:5,page:52,en:"confidentiality",de:"Vertraulichkeit, Diskretion",ph:"ˌkɒnfɪˌdenʃiˈæləti"},
+  {unit:5,page:52,en:"audit trail",de:"Protokoll, Belegsammlung",ph:"ˈɔːdɪt treɪl"},
+  {unit:5,page:52,en:"resumé",de:"Lebenslauf",ph:"ˈrezəmeɪ"},
+  {unit:5,page:52,en:"candidate",de:"Bewerber/in",ph:"ˈkændɪdət"},
+  {unit:5,page:52,en:"manual(ly)",de:"händisch, manuell, von Hand",ph:"ˈmænjuəli"},
+  {unit:5,page:52,en:"hiring",de:"Einstellung (von Personal)",ph:"ˈhaɪərɪŋ"},
+  {unit:5,page:52,en:"terms",de:"(Vertrags-)Bedingungen, Bestimmungen",ph:"tɜːmz"},
+  {unit:5,page:52,en:"keyword",de:"Schlagwort, Stichwort",ph:"ˈkiːwɜːd"},
+  {unit:5,page:52,en:"straightforward",de:"einfach, unkompliziert",ph:"ˌstreɪtˈfɔːwəd"},
+];
+
+// ============================================================
+//  FONTS
+// ============================================================
+const FONTS=[
+  {d:"'Bebas Neue',sans-serif",      b:"'Outfit',sans-serif",         m:"'JetBrains Mono',monospace"},
+  {d:"'Playfair Display',serif",     b:"'Outfit',sans-serif",         m:"'JetBrains Mono',monospace"},
+  {d:"'Unbounded',sans-serif",       b:"'Outfit',sans-serif",         m:"'JetBrains Mono',monospace"},
+  {d:"'Space Grotesk',sans-serif",   b:"'Space Grotesk',sans-serif",  m:"'JetBrains Mono',monospace"},
+  {d:"'JetBrains Mono',monospace",   b:"'JetBrains Mono',monospace",  m:"'JetBrains Mono',monospace"},
+];
+let curFont=0;
+function applyFont(i){
+  const f=FONTS[i];const r=document.documentElement.style;
+  r.setProperty('--font-display',f.d);r.setProperty('--font-body',f.b);r.setProperty('--font-mono',f.m);
+  document.querySelectorAll('.fo').forEach((b,j)=>b.classList.toggle('active',j===i));
+  curFont=i;if(DB.settings)DB.settings.font=i;saveLocal();
+}
+function setFont(i){applyFont(i);closeFontPanel();}
+let fpOpen=false;
+function toggleFontPanel(){fpOpen=!fpOpen;document.getElementById('font-panel').classList.toggle('open',fpOpen);}
+function closeFontPanel(){fpOpen=false;document.getElementById('font-panel').classList.remove('open');}
+document.addEventListener('click',e=>{if(fpOpen&&!e.target.closest('#font-panel')&&!e.target.closest('.font-btn'))closeFontPanel();});
+
+// ============================================================
+//  THEMES
+// ============================================================
+const THEMES=['neon','light','ocean','forest','sunset','pastel','cyberpunk','lavender'];
+let curTheme='neon';
+let tpOpen=false;
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.querySelectorAll('.to').forEach(b=>b.classList.toggle('active',b.id==='to-'+t));
+  curTheme=t;
+  if(DB.settings)DB.settings.theme=t;
+  saveLocal();
+}
+function setTheme(t){applyTheme(t);closeThemePanel();}
+function toggleThemePanel(){tpOpen=!tpOpen;document.getElementById('theme-panel').classList.toggle('open',tpOpen);if(tpOpen&&fpOpen)closeFontPanel();}
+function closeThemePanel(){tpOpen=false;document.getElementById('theme-panel').classList.remove('open');}
+document.addEventListener('click',e=>{if(tpOpen&&!e.target.closest('#theme-panel')&&!e.target.closest('.font-btn[onclick*="Theme"]'))closeThemePanel();});
+const THEME_NAMES={neon:'Neon Dark',light:'Clean White',ocean:'Deep Ocean',forest:'Forest',sunset:'Sunset',pastel:'Pastel Dream',cyberpunk:'Cyberpunk',lavender:'Lavender'};
+function updateLoginThemeName(){const el=document.getElementById('login-theme-name');if(el)el.textContent=THEME_NAMES[curTheme]||curTheme;}
+function cycleThemeLogin(){const i=(THEMES.indexOf(curTheme)+1)%THEMES.length;applyTheme(THEMES[i]);updateLoginThemeName();}
+
+// ============================================================
+//  LAYOUT SYSTEM
+// ============================================================
+const LAYOUTS=['default','wide','compact','card'];
+let curLayout='default';
+let lpOpen=false;
+function applyLayout(l){
+  document.body.setAttribute('data-layout',l);
+  document.querySelectorAll('.lo').forEach(b=>b.classList.toggle('active',b.id==='lo-'+l));
+  curLayout=l;
+  if(typeof DB!=='undefined'&&DB.settings)DB.settings.layout=l;
+  if(typeof saveLocal==='function')saveLocal();
+  // Animate transition
+  document.body.style.opacity='0.85';
+  setTimeout(()=>{document.body.style.opacity='1';},180);
+}
+
+function setLayout(l){applyLayout(l);closeLayoutPanel();}
+function toggleLayoutPanel(){
+  lpOpen=!lpOpen;
+  document.getElementById('layout-panel').classList.toggle('open',lpOpen);
+  if(lpOpen&&fpOpen)closeFontPanel();
+  if(lpOpen&&tpOpen)closeThemePanel();
+}
+function closeLayoutPanel(){lpOpen=false;document.getElementById('layout-panel').classList.remove('open');}
+
+// ============================================================
+//  DATABASE
+// ============================================================
+const DB_KEY='lexikon_db_v1';
+function mkDB(){return{version:1,vocab:BUILTIN.map(v=>({...v})),users:{},settings:{font:0,theme:'neon',layout:'default'}};}
+function mergeBuiltin(db){
+  const keys=new Set(db.vocab.map(v=>v.en+'|'+v.de));
+  BUILTIN.forEach(v=>{if(!keys.has(v.en+'|'+v.de))db.vocab.push({...v});});
+  return db;
+}
+let DB=(()=>{try{const r=localStorage.getItem(DB_KEY);if(r)return mergeBuiltin(JSON.parse(r));}catch{}return mkDB();})();
+function saveLocal(){try{localStorage.setItem(DB_KEY,JSON.stringify(DB));}catch(e){}}
+
+let VOCAB=[];
+function rebuildVocab(){VOCAB=DB.vocab.map((v,i)=>({...v,id:i}));document.getElementById('db-wc').textContent=VOCAB.length;}
+rebuildVocab();
+applyFont(DB.settings?.font||0);
+applyTheme(DB.settings?.theme||'neon');
+applyLayout(DB.settings?.layout||'default');
+updateLoginThemeName();
+
+// ============================================================
+//  SRS
+// ============================================================
+const mkCard=()=>({box:0,ef:2.5,interval:0,dueDate:0,reps:0,lastResult:null});
+function processSRS(c,q){
+  const now=Date.now();c={...c};
+  if(q===0){c.reps=0;c.interval=0;c.box=1;c.dueDate=now+60000;c.lastResult='wrong';}
+  else if(q===1){c.reps++;c.ef=Math.max(1.3,c.ef-.15);c.interval=c.reps===1?1:Math.ceil(c.interval*1.2);c.box=c.interval>=21?3:c.interval>=3?2:1;c.dueDate=now+c.interval*60000;c.lastResult='hard';}
+  else if(q===2){c.reps++;if(c.reps===1)c.interval=1;else if(c.reps===2)c.interval=3;else c.interval=Math.ceil(c.interval*c.ef);c.box=c.interval>=21?3:c.interval>=3?2:1;c.dueDate=now+c.interval*60000;c.lastResult='good';}
+  else{c.reps++;c.ef=Math.max(1.3,c.ef+.15);if(c.reps===1)c.interval=4;else if(c.reps===2)c.interval=10;else c.interval=Math.ceil(c.interval*c.ef*1.3);c.box=c.interval>=21?3:c.interval>=3?2:1;c.dueDate=now+c.interval*60000;c.lastResult='easy';}
+  return c;
+}
+const srsLabel=box=>[{text:'Neu',cls:'new'},{text:'Lernen',cls:'learning'},{text:'Wiederholen',cls:'review'},{text:'Gemeistert',cls:'mastered'}][box]||{text:'Neu',cls:'new'};
+
+// ============================================================
+//  USER / STATE
+// ============================================================
+let currentUser=null,userData=null;
+let mode='flashcard',filter='all',dir='mixed',source='all';
+let deck=[],idx=0,revealed=false;
+let sessionStats={correct:0,wrong:0,total:0};
+
+function getUD(name){
+  if(!DB.users[name]){
+    const cards={};VOCAB.forEach(v=>{cards[v.id]=mkCard();});
+    DB.users[name]={cards,streak:0,lastSession:null,totalReviewed:0};saveLocal();
+  }
+  return DB.users[name];
+}
+function ensureCards(){if(!userData)return;VOCAB.forEach(v=>{if(!userData.cards[v.id])userData.cards[v.id]=mkCard();});}
+function saveProgress(){if(currentUser&&userData){userData.lastSession=new Date().toDateString();DB.users[currentUser]=userData;saveLocal();}}
+
+// ============================================================
+//  LOGIN
+// ============================================================
+function renderSaved(){
+  const area=document.getElementById('saved-area');
+  const names=Object.keys(DB.users);
+  if(!names.length){area.innerHTML='';return;}
+  area.innerHTML=`<div class="saved-label">Gespeicherte Profile</div>`+names.map(name=>{
+    const ud=DB.users[name];const t=VOCAB.length;
+    const m=ud?Object.values(ud.cards).filter(c=>c.box===3).length:0;
+    return`<div class="saved-user" onclick="quickLogin('${esc(name)}')">
+      <div class="saved-avatar">${name[0].toUpperCase()}</div>
+      <div class="saved-meta"><span>${name}</span><small>${m}/${t} gemeistert · ${Math.round(m/t*100)}% · 🔥${ud?.streak||0}</small></div>
+      <button class="del-btn" onclick="event.stopPropagation();delUser('${esc(name)}')" title="Löschen">🗑</button>
+    </div>`;
+  }).join('');
+}
+function quickLogin(n){document.getElementById('name-in').value=n;loginUser();}
+function delUser(name){if(!confirm(`"${name}" wirklich löschen?`))return;delete DB.users[name];saveLocal();renderSaved();}
+function loginUser(){
+  const n=document.getElementById('name-in').value.trim();if(!n)return;
+  currentUser=n;userData=getUD(n);
+  const today=new Date().toDateString();
+  if(userData.lastSession&&userData.lastSession!==today){
+    if(Math.floor((new Date(today)-new Date(userData.lastSession))/86400000)>1)userData.streak=0;
+  }
+  sessionStats={correct:0,wrong:0,total:0};ensureCards();saveLocal();
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  document.getElementById('chip-av').textContent=n[0].toUpperCase();
+  document.getElementById('chip-name').textContent=n;
+  buildFilters();buildDeck();render();updateStats();renderSRS();
+}
+function logoutUser(){saveProgress();currentUser=null;userData=null;document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';renderSaved();}
+const nameIn=document.getElementById('name-in'),loginBtn=document.getElementById('login-btn');
+nameIn.addEventListener('input',()=>{loginBtn.disabled=!nameIn.value.trim();});
+nameIn.addEventListener('keydown',e=>{if(e.key==='Enter'&&nameIn.value.trim())loginUser();});
+renderSaved();
+
+// ============================================================
+//  FILTERS / DECK
+// ============================================================
+function setSource(s){
+  source=s;
+  document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(`'${s}'`)));
+  // if current filter is 'custom' and we switch to builtin, reset filter
+  if(s==='builtin'&&filter==='custom'){filter='all';buildFilters();}
+  buildDeck();render();renderSRS();
+}
+function buildFilters(){
+  const hasCust=VOCAB.some(v=>v.unit===99);
+  const srcBtn=document.getElementById('src-custom-btn');
+  if(srcBtn)srcBtn.style.display=hasCust?'':'none';
+  // if source=custom but no custom words, reset
+  if(source==='custom'&&!hasCust){source='all';document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick')?.includes("'all'")));}
+  const pages=[...new Set(VOCAB.map(v=>v.page))].sort((a,b)=>a-b);
+  const units=[...new Set(VOCAB.map(v=>v.unit))].sort();
+  document.getElementById('filter-row').innerHTML=[
+    {k:'all',l:'Alle'},
+    ...units.filter(u=>u!==99).map(u=>({k:'u'+u,l:'Unit '+u})),
+    ...pages.map(p=>({k:'p'+p,l:'S.'+p})),
+    ...(hasCust?[{k:'custom',l:'📥 Importiert'}]:[])
+  ].map(f=>`<button class="fp${filter===f.k?' active':''}" onclick="setFilter('${f.k}')">${f.l}</button>`).join('');
+}
+function getFiltered(){
+  let base=VOCAB;
+  // source filter first
+  if(source==='builtin')base=base.filter(v=>v.unit!==99);
+  else if(source==='custom')base=base.filter(v=>v.unit===99);
+  // then unit/page filter
+  if(filter==='all')return base;
+  if(filter==='custom')return base.filter(v=>v.unit===99);
+  if(filter.startsWith('u'))return base.filter(v=>v.unit===+filter.slice(1));
+  if(filter.startsWith('p'))return base.filter(v=>v.page===+filter.slice(1));
+  return base;
+}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+function buildDeck(){
+  const filtered=getFiltered();const now=Date.now();
+  if(!userData){deck=shuffle(filtered.map(x=>({...x,d:dir==='mixed'?(Math.random()>.5?'en-de':'de-en'):dir})));idx=0;revealed=false;return;}
+  const cards=filtered.map(v=>{const srs=userData.cards[v.id]||mkCard();const isDue=srs.dueDate<=now;let pri=srs.box===0?2:isDue&&srs.box===1?0:isDue&&srs.box===2?1:isDue?3:4;return{vocab:v,srs,pri,isDue};});
+  cards.sort((a,b)=>a.pri-b.pri||Math.random()-.5);
+  const due=cards.filter(c=>c.isDue||c.srs.box===0),notDue=cards.filter(c=>!c.isDue&&c.srs.box!==0);
+  let nc=0;const sess=[];
+  for(const c of due){if(c.srs.box===0){if(nc<20){sess.push(c);nc++;}}else sess.push(c);if(sess.length>=50)break;}
+  if(sess.length<10)notDue.slice(0,15-sess.length).forEach(c=>sess.push(c));
+  deck=shuffle(sess.map(c=>({...c.vocab,d:dir==='mixed'?(Math.random()>.5?'en-de':'de-en'):dir,srsData:c.srs})));
+  idx=0;revealed=false;
+}
+function setMode(m){
+  mode=m;
+  const tabLabels=['flashcard','quiz','list','nikita'];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',tabLabels[i]===m));
+  document.getElementById('dir-row').style.display=(m==='list'||m==='nikita')?'none':'flex';
+  document.getElementById('source-row').style.display=(m==='nikita')?'none':'flex';
+  document.getElementById('filter-row').style.display=(m==='nikita')?'none':'flex';
+
+  const appContent=document.getElementById('app-content');
+  const nikitaView=document.getElementById('nikita-view');
+  if(m==='nikita'){
+    appContent.style.display='none';
+    nikitaView.classList.add('active');
+    nmInit();
+  } else {
+    appContent.style.display='';
+    nikitaView.classList.remove('active');
+    buildDeck();render();renderSRS();
+  }
+}
+function setFilter(f){filter=f;buildFilters();buildDeck();render();renderSRS();}
+function setDir(d){dir=d;document.querySelectorAll('.dir-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(`'${d}'`)));buildDeck();render();}
+function updateStats(){document.getElementById('s-ok').textContent=sessionStats.correct;document.getElementById('s-err').textContent=sessionStats.wrong;document.getElementById('s-tot').textContent=sessionStats.total;}
+function renderSRS(){
+  if(!userData)return;const f=getFiltered();let n=0,l=0,r=0,m=0;
+  f.forEach(v=>{const s=userData.cards[v.id];if(!s||s.box===0)n++;else if(s.box===1)l++;else if(s.box===2)r++;else m++;});
+  document.getElementById('srs-ribbon').innerHTML=`
+    <div class="srs-chip cn"><div class="dot"></div><strong>${n}</strong> Neu</div>
+    <div class="srs-chip cl"><div class="dot"></div><strong>${l}</strong> Lernen</div>
+    <div class="srs-chip cr"><div class="dot"></div><strong>${r}</strong> Wiederholen</div>
+    <div class="srs-chip cm"><div class="dot"></div><strong>${m}</strong> Gemeistert</div>
+    <div class="srs-chip cs"><div class="dot"></div>🔥 ${userData.streak||0} Tage</div>`;
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/\r/g,'').replace(/\n/g,' ').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+function getPC(){const f=getFiltered();const t=f.length;let m=0,r=0,l=0;if(userData)f.forEach(v=>{const s=userData.cards[v.id];if(s&&s.box===3)m++;else if(s&&s.box===2)r++;else if(s&&s.box===1)l++;});return{t,m,r,l};}
+function render(){
+  const app=document.getElementById('app-content');
+  if(mode==='list'){renderList(app);return;}
+  if(idx>=deck.length){renderDone(app);return;}
+  const card=deck[idx];
+  const q=card.d==='en-de'?card.en:card.de,a=card.d==='en-de'?card.de:card.en;
+  const qL=card.d==='en-de'?'ENGLISCH':'DEUTSCH',aL=card.d==='en-de'?'DEUTSCH':'ENGLISCH';
+  const pct=deck.length>0?Math.round(idx/deck.length*100):0;
+  const srs=userData?(userData.cards[card.id]||mkCard()):mkCard();
+  const sl=srsLabel(srs.box);const{t,m,r,l}=getPC();
+  const prog=`<div class="prog-meta"><span>${idx} / ${deck.length}</span> <span>${pct}%</span></div><div class="prog-track"><div class="ps-m" style="width:${t?m/t*100:0}%"></div><div class="ps-r" style="width:${t?r/t*100:0}%"></div><div class="ps-l" style="width:${t?l/t*100:0}%"></div></div>`;
+  if(mode==='flashcard'){
+    app.innerHTML=prog+`<div class="flashcard${revealed?' revealed':''}" id="fc" onclick="revealCard()"><div class="card-meta"><span class="card-lang">${qL}</span><span class="card-page">p.${card.page}${card.unit===99?' · 📥':' · U'+card.unit}</span></div><div class="card-word">${q}</div>${card.d==='en-de'&&card.ph?`<div class="card-ph">[${card.ph}]</div>`:''}<div class="card-rule"></div><div class="card-answer">${a}</div><span class="srs-badge ${sl.cls}">${sl.text}</span></div>${revealed?`<div class="action-row"><button class="act act-wrong" onclick="answerCard(0)">✗ Nochmal</button><button class="act act-hard" onclick="answerCard(1)">⚡ Schwer</button><button class="act act-good" onclick="answerCard(2)">✓ Gut</button><button class="act act-easy" onclick="answerCard(3)">★ Leicht</button></div>`:`<div class="action-row"><button class="act act-reveal" onclick="revealCard()">Aufdecken</button><button class="act act-skip" onclick="skipCard()">→</button></div>`}`;
+  } else {
+    const opts=buildOpts(card,a);
+    app.innerHTML=prog+`<div class="flashcard" style="cursor:default;pointer-events:none;"><div class="card-meta"><span class="card-lang">${qL} → ${aL}</span><span class="card-page">p.${card.page}</span></div><div class="card-word">${q}</div>${card.d==='en-de'&&card.ph?`<div class="card-ph">[${card.ph}]</div>`:''}<span class="srs-badge ${sl.cls}">${sl.text}</span></div><div class="quiz-grid">${opts.map(o=>`<button class="quiz-opt" onclick="checkQuiz(this,'${esc(o)}','${esc(a)}')">${o}</button>`).join('')}</div>`;
+  }
+}
+function buildOpts(card,correct){const pool=getFiltered().filter(v=>v.id!==card.id).map(v=>card.d==='en-de'?v.de:v.en);return shuffle([correct,...shuffle(pool).slice(0,3)]);}
+function revealCard(){if(!revealed){revealed=true;render();}}
+function answerCard(q){
+  const card=deck[idx];
+  if(q>=2)sessionStats.correct++;else sessionStats.wrong++;sessionStats.total++;
+  if(userData){userData.cards[card.id]=processSRS(userData.cards[card.id]||mkCard(),q);userData.totalReviewed=(userData.totalReviewed||0)+1;if(q===0){const pos=Math.min(idx+3+Math.floor(Math.random()*4),deck.length);deck.splice(pos,0,{...card});}saveProgress();}
+  idx++;revealed=false;updateStats();renderSRS();render();
+}
+function skipCard(){idx++;revealed=false;render();}
+function checkQuiz(btn,chosen,correct){
+  const card=deck[idx];
+  document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;if(b.textContent.trim()===correct)b.classList.add('correct');});
+  const ok=chosen===correct;if(!ok)btn.classList.add('wrong');
+  if(ok)sessionStats.correct++;else sessionStats.wrong++;sessionStats.total++;
+  if(userData){userData.cards[card.id]=processSRS(userData.cards[card.id]||mkCard(),ok?2:0);userData.totalReviewed=(userData.totalReviewed||0)+1;if(!ok){const pos=Math.min(idx+3+Math.floor(Math.random()*4),deck.length);deck.splice(pos,0,{...card});}saveProgress();}
+  updateStats();renderSRS();setTimeout(()=>{idx++;render();},900);
+}
+function renderDone(app){
+  const pct=sessionStats.total>0?Math.round(sessionStats.correct/sessionStats.total*100):0;
+  if(userData&&sessionStats.total>0){const today=new Date().toDateString();if(userData.lastSession!==today)userData.streak=(userData.streak||0)+1;userData.lastSession=today;saveProgress();}
+  const f=getFiltered();const m=userData?f.filter(v=>userData.cards[v.id]&&userData.cards[v.id].box===3).length:0;
+  app.innerHTML=`<div class="done-wrap"><div class="done-score">${pct}%</div><div class="done-label">${sessionStats.correct} richtig · ${sessionStats.wrong} falsch · ${sessionStats.total} gesamt<br>${m}/${f.length} gemeistert</div><div class="done-acts"><button class="done-primary" onclick="restart()">Nochmal üben</button><button class="done-sec" onclick="saveDB()">💾 DB speichern</button></div></div>`;
+}
+function restart(){sessionStats={correct:0,wrong:0,total:0};updateStats();buildDeck();render();renderSRS();}
+function renderList(app){
+  const v=getFiltered();
+  const hasCust=VOCAB.some(w=>w.unit===99);
+  app.innerHTML=`<div>
+    <div class="list-toolbar">
+      <input class="list-search" id="ls" style="margin-bottom:0;flex:1;min-width:160px" placeholder="Wort suchen …" oninput="filterList()"/>
+      ${hasCust?`<button class="del-imported-btn" onclick="deleteAllImported()">🗑 Importierte löschen</button>`:''}
+    </div>
+    <table class="vocab-table"><thead><tr>
+      <th>Englisch</th><th>Phonetik</th><th>Deutsch</th><th>Seite</th><th>Status</th><th style="width:64px"></th>
+    </tr></thead><tbody id="ltb">
+    ${v.map(w=>{
+      const s=userData?(userData.cards[w.id]||mkCard()):mkCard();
+      const sl=srsLabel(s.box);
+      const ub=w.unit===99?'ucustom':w.unit===4?'u4':'u5';
+      const ul=w.unit===99?'Importiert':'Unit '+w.unit;
+      const canDel=w.unit===99; // imported words can be individually deleted
+      return`<tr data-e="${w.en.toLowerCase()}" data-d="${w.de.toLowerCase()}">
+        <td><strong>${w.en}</strong></td>
+        <td class="ph-cell">${w.ph?`[${w.ph}]`:''}</td>
+        <td>${w.de}</td>
+        <td><span class="pbadge">p.${w.page||'?'}</span> <span class="ubadge ${ub}">${ul}</span></td>
+        <td><span class="scell ${sl.cls}">${sl.text}</span></td>
+        <td style="white-space:nowrap">
+          <button class="edit-row-btn" onclick="openEditModal(${w.id})" title="Bearbeiten">✏️</button>
+          ${canDel?`<button class="del-row-btn" onclick="deleteSingleImported(${w.id})" title="Löschen">🗑</button>`:''}
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>
+  </div>`;
+}
+function filterList(){const q=document.getElementById('ls').value.toLowerCase();document.querySelectorAll('#ltb tr').forEach(r=>{r.style.display=(r.dataset.e.includes(q)||r.dataset.d.includes(q))?'':'none';});}
+
+// ============================================================
+//  EDIT / DELETE WORDS
+// ============================================================
+function openEditModal(vocabId){
+  const w=VOCAB.find(v=>v.id===vocabId);if(!w)return;
+  document.getElementById('edit-en').value=w.en||'';
+  document.getElementById('edit-de').value=w.de||'';
+  document.getElementById('edit-ph').value=w.ph||'';
+  document.getElementById('edit-page').value=w.page||'';
+  document.getElementById('edit-unit').value=w.unit===99?'':w.unit||'';
+  document.getElementById('edit-vocab-id').value=vocabId;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');}
+function saveEditedWord(){
+  const id=parseInt(document.getElementById('edit-vocab-id').value);
+  const en=document.getElementById('edit-en').value.trim();
+  const de=document.getElementById('edit-de').value.trim();
+  if(!en||!de){toast('Englisch und Deutsch sind Pflichtfelder','red');return;}
+  // find in DB.vocab by matching original vocab
+  const orig=VOCAB.find(v=>v.id===id);if(!orig)return;
+  const dbIdx=DB.vocab.findIndex(v=>v.en===orig.en&&v.de===orig.de);
+  if(dbIdx===-1)return;
+  DB.vocab[dbIdx].en=en;
+  DB.vocab[dbIdx].de=de;
+  DB.vocab[dbIdx].ph=document.getElementById('edit-ph').value.trim();
+  const pg=parseInt(document.getElementById('edit-page').value)||0;
+  const un=parseInt(document.getElementById('edit-unit').value);
+  DB.vocab[dbIdx].page=pg;
+  // keep original unit if builtin (unit !== 99), allow override for imported
+  if(orig.unit===99){DB.vocab[dbIdx].unit=isNaN(un)||un===0?99:un;}
+  rebuildVocab();saveLocal();
+  closeEditModal();
+  if(mode==='list')render();
+  buildFilters();
+  toast('✓ Wort gespeichert','teal');
+}
+
+function deleteAllImported(){
+  const cnt=VOCAB.filter(v=>v.unit===99).length;
+  if(!cnt){toast('Keine importierten Wörter vorhanden','red');return;}
+  if(!confirm(`Alle ${cnt} importierten Wörter löschen?`))return;
+  DB.vocab=DB.vocab.filter(v=>v.unit!==99);
+  rebuildVocab();saveLocal();
+  if(source==='custom'){source='all';document.querySelectorAll('.src-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick')?.includes("'all'")));}
+  if(filter==='custom'){filter='all';}
+  buildFilters();buildDeck();render();renderSRS();
+  toast('🗑 Alle importierten Wörter gelöscht','pink');
+}
+
+function deleteSingleImported(vocabId){
+  const w=VOCAB.find(v=>v.id===vocabId);if(!w||w.unit!==99)return;
+  if(!confirm(`"${w.en}" löschen?`))return;
+  DB.vocab=DB.vocab.filter(v=>!(v.en===w.en&&v.de===w.de&&v.unit===99));
+  rebuildVocab();saveLocal();buildFilters();
+  if(mode==='list')render();
+  else{buildDeck();render();}
+  renderSRS();
+  toast('🗑 Wort gelöscht','pink');
+}
+
+document.addEventListener('click',e=>{if(lpOpen&&!e.target.closest('#layout-panel')&&!e.target.closest('.font-btn[onclick*="Layout"]'))closeLayoutPanel();});
+
+// ============================================================
+//  DB SAVE / LOAD
+// ============================================================
+function saveDB(){
+  if(currentUser&&userData)saveProgress();
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='lexikon_db.json';a.click();URL.revokeObjectURL(url);
+  toast('💾 lexikon_db.json gespeichert — alle Vokabeln & Profile drin!','teal');
+}
+function loadDBFile(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      if(parsed.vocab&&parsed.users!==undefined){
+        DB=mergeBuiltin(parsed);rebuildVocab();saveLocal();
+        if(DB.settings?.font!=null)applyFont(DB.settings.font);
+        if(DB.settings?.theme)applyTheme(DB.settings.theme);
+        if(DB.settings?.layout)applyLayout(DB.settings.layout);
+        renderSaved();
+        toast(`✓ DB geladen · ${DB.vocab.length} Wörter · ${Object.keys(DB.users).length} Profile`,'teal');
+      } else if(Array.isArray(parsed)&&parsed.length&&parsed[0].en&&parsed[0].de){
+        importVocabList(parsed);
+      } else toast('Ungültige Datei','red');
+    }catch{toast('JSON-Fehler','red');}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+
+// ============================================================
+//  EXCEL / CSV IMPORT
+// ============================================================
+function closeModal(){document.getElementById('import-modal').classList.remove('open');}
+function handleFileUpload(event){
+  const file=event.target.files[0];if(!file)return;
+  const name=file.name.toLowerCase();const reader=new FileReader();
+  if(name.endsWith('.json')){
+    reader.onload=e=>{try{const p=JSON.parse(e.target.result);if(p.vocab&&p.users!==undefined){DB=mergeBuiltin(p);rebuildVocab();saveLocal();if(DB.settings?.font!=null)applyFont(DB.settings.font);if(DB.settings?.theme)applyTheme(DB.settings.theme);if(DB.settings?.layout)applyLayout(DB.settings.layout);renderSaved();toast(`✓ DB geladen · ${DB.vocab.length} Wörter`,'teal');}else if(Array.isArray(p)&&p.length&&p[0].en&&p[0].de)importVocabList(p);else toast('Ungültiges JSON','red');}catch{toast('JSON-Fehler','red');}};reader.readAsText(file);
+  } else {
+    if(!window.XLSX){toast('Excel-Import nicht verfügbar (XLSX-Bibliothek blockiert). Bitte CSV oder JSON verwenden.','red');event.target.value='';return;}
+    reader.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];parseAndImport(XLSX.utils.sheet_to_json(ws,{defval:''}));}catch{toast('Datei konnte nicht gelesen werden','red');}};reader.readAsArrayBuffer(file);
+  }
+  event.target.value='';
+}
+function nk(k){return String(k).toLowerCase().trim().replace(/\s+/g,'');}
+function stripBrackets(s){return s?s.replace(/^\[|\]$/g,'').trim():'';}
+function parseAndImport(rows){
+  const imported=[];
+  for(const row of rows){
+    const keys=Object.keys(row);
+    const vals=keys.map(k=>String(row[k]).trim()).filter(v=>v);
+
+    // Named column detection first
+    const get=(...ns)=>{for(const n of ns){const k=keys.find(k=>nk(k)===nk(n)||nk(k).includes(nk(n)));if(k&&String(row[k]).trim())return String(row[k]).trim();}return'';};
+    let en=get('Englisch','English','en','word');
+    let de=get('Deutsch','German','de','übersetzung','translation');
+    let ph=get('Phonetik','phonetic','pronunciation');
+    let pg=parseInt(get('Seite','page'))||0;
+    let un=parseInt(get('Unit','einheit'))||99;
+
+    // Fallback: positional detection for format like "b48 | english | [phonetic] | german"
+    // If no named columns found, try to detect by position / content pattern
+    if(!en||!de){
+      // Filter out the reference column (starts with letter+number like "b48", "a12")
+      const dataVals=vals.filter(v=>!/^[a-z]\d+$/i.test(v));
+      // Detect phonetic by [brackets] or IPA characters
+      const phIdx=dataVals.findIndex(v=>/^\[.*\]$/.test(v)||/[ˌˈæɪʊəɒʌɜː]/.test(v));
+      const phVal=phIdx>=0?dataVals[phIdx]:'';
+      const nonPh=dataVals.filter((_,i)=>i!==phIdx);
+      if(nonPh.length>=2){
+        // Heuristic: English word is usually shorter or comes first
+        // Check which one has more German-specific chars (ü,ö,ä,ß)
+        const hasGerman=s=>/[äöüÄÖÜß]/.test(s)||s.includes('etw')||s.includes('jdn')||s.includes('jdm');
+        if(hasGerman(nonPh[0])&&!hasGerman(nonPh[1])){en=nonPh[1];de=nonPh[0];}
+        else{en=nonPh[0];de=nonPh[1];}
+        ph=phVal?stripBrackets(phVal):'';
+      }
+    } else {
+      ph=stripBrackets(ph);
+    }
+
+    if(!en||!de)continue;
+    imported.push({en,de,ph,page:pg,unit:un});
+  }
+  if(!imported.length){toast('Keine gültigen Vokabeln gefunden','red');return;}
+  importVocabList(imported);
+}
+function importVocabList(list){
+  DB.vocab=DB.vocab.filter(v=>v.unit!==99);
+  list.forEach(v=>DB.vocab.push({...v,unit:v.unit||99,page:v.page||0,ph:v.ph||''}));
+  rebuildVocab();
+  // init SRS cards for all users
+  Object.keys(DB.users).forEach(name=>{VOCAB.forEach(v=>{if(!DB.users[name].cards[v.id])DB.users[name].cards[v.id]=mkCard();});});
+  if(userData)ensureCards();
+  saveLocal();buildFilters();setFilter('custom');
+  toast(`✓ ${list.length} Vokabeln importiert & in Datenbank gespeichert!`,'teal');
+}
+
+// ============================================================
+//  TOAST
+// ============================================================
+let toastTimer=null;
+function toast(msg,cls=''){
+  const el=document.getElementById('toast');el.textContent=msg;el.className='toast'+(cls?' '+cls:'');
+  requestAnimationFrame(()=>el.classList.add('show'));clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+window.addEventListener('beforeunload',saveProgress);
+// ============================================================
+//  NIKITA LERN-METHODE
+// ============================================================
+const NM_HINTS = {
+  // Unit 4 p.36
+  "stand-up meeting": {txt:"Alle stehen (stand up) — wer steht, macht es kurz! Kein Stuhl → keine lange Rede.", key:"stehen = kurz bleiben"},
+  "mobile banking": {txt:"Mobile = beweglich wie ein Handy. Banking = Bank. Die Bank bewegt sich mit dir — immer in der Tasche!", key:"Handy + Bank = Bank überall"},
+  "agile": {txt:"Stell dir eine Katze vor — sie springt blitzschnell in jede Richtung. Agile Teams sind wie diese Katze: beweglich und schnell.", key:"Katze springt schnell = beweglich anpassen"},
+  "methodology": {txt:"Method + ology (Wissenschaft, wie Biologie). Die Wissenschaft der Methoden — ein System von Regeln.", key:"Methode + Wissenschaft = Methodensystem"},
+  "iterative": {txt:"Iteration kennt man aus der Programmierung. Immer wieder wiederholen und verbessern — wie Stufe für Stufe eine Treppe hochgehen.", key:"Iteration = Schritt für Schritt wiederholen"},
+  "to allow for sth": {txt:"Allow = erlauben. „Erlaube Platz dafür im Plan“ — einplanen, Raum lassen für etwas.", key:"Platz erlauben = berücksichtigen"},
+  "frequent(ly)": {txt:"Frequenz (Physik) = wie oft etwas schwingt. Hohe Frequenz = oft. Frequent = häufig wiederkehrend.", key:"Frequenz hoch = häufig"},
+  "adjustment": {txt:"Adjust = einstellen (wie Helligkeit am Handy). Adjustment = das Ergebnis der Einstellung — eine kleine Korrektur.", key:"einstellen → kleine Anpassung"},
+  "adaptive (to sth)": {txt:"Adaptieren = anpassen — das Wort ist gleich! Adaptive = fähig sich anzupassen, wie ein Chamäleon.", key:"adaptieren = anpassen können"},
+  "throughout": {txt:"Through = durch, out = hinaus. Durch und durch, von Anfang bis Ende — den ganzen Weg durch.", key:"durch + hinaus = die ganze Zeit hindurch"},
+  "plan-driven": {txt:"Plan + driven = angetrieben. Vom Plan angetrieben — alles folgt dem Plan, wie ein Zug auf Schienen.", key:"Zug auf Schienen = vom Plan gesteuert"},
+  "approach": {txt:"Approach = Herangehensweise. Wie man sich einer Festung nähert — die Strategie, um heranzukommen.", key:"Annäherung an eine Aufgabe"},
+  "sequential": {txt:"Sequence = Reihenfolge (wie DNA-Sequenz). Sequential = Schritt für Schritt in Reihenfolge — 1, 2, 3, nie überspringen.", key:"Sequenz → einer nach dem anderen"},
+  "upfront": {txt:"Up front = nach vorne. Was ganz vorne steht, kommt zuerst — vorab, bevor alles andere beginnt.", key:"nach vorne stellen = vorab erledigen"},
+  "to approach sth": {txt:"Wie man sich etwas nähert — die Art und Weise, wie man an eine Aufgabe herangeht.", key:"herangehen = sich annähern"},
+  "to distribute": {txt:"Dis = auseinander, tribute = Tribut. Den Tribut auf alle verteilen — wie Bonbons in der Klasse verteilen.", key:"auseinander + verteilen = aufteilen"},
+  "hierarchical": {txt:"Hierarchie = Rangordnung — das Wort kennt man! Wie eine Pyramide: ganz oben der Chef, unten die Mitarbeiter.", key:"Pyramide oben–unten = hierarchisch"},
+  "team lead": {txt:"Lead = führen (wie ein Anführer). Der Team-Anführer — der Kapitän der Gruppe.", key:"Lead = anführen → Teamkapitän"},
+  "to assign": {txt:"Sign = Zeichen, Unterschrift. Jemandem ein Zeichen geben — eine Aufgabe offiziell zuweisen.", key:"unterzeichnen → offiziell zuweisen"},
+  "silo": {txt:"Ein Silo ist ein großes Getreidemagazin auf dem Bauernhof. Das Getreide kommt nicht heraus — wie eine Abteilung, die keine Infos teilt.", key:"Getreidespeicher = geschlossene Abteilung"},
+  "key": {txt:"Key = Schlüssel. Ein Schlüssel öffnet alles Wichtige. Das Wichtigste, das Entscheidende — der Schlüssel zum Erfolg.", key:"Schlüssel → entscheidend wichtig"},
+  "across functions": {txt:"Across = quer durch, functions = Funktionen/Abteilungen. Quer durch alle Abteilungen — Grenzen überschreiten.", key:"quer durch Abteilungen hinweg"},
+  "stakeholder": {txt:"Stake = Einsatz (wie beim Poker), holder = Halter. Wer einen Einsatz hält — wer etwas zu gewinnen oder verlieren hat.", key:"Pokereinsatz halten = Projektbeteiligter"},
+  "continuous(ly)": {txt:"Continue = fortfahren — fast dasselbe Wort! Continuous = immer weiter fortfahrend, ohne Pause.", key:"fortfahren ohne Pause = ständig"},
+  "once": {txt:"Once = einmal, ABER auch: sobald. „Once it's ready“ = sobald es fertig ist. Zwei Bedeutungen — hier die zweite!", key:"once = sobald (zweite Bedeutung!)"},
+  "underway": {txt:"Under way = unter dem Weg. Das Schiff ist schon auf seinem Weg — der Prozess läuft bereits.", key:"Schiff ist schon unterwegs = im Gange"},
+  "delayed": {txt:"Delay = Verspätung (kennt man vom Flughafen-Anzeigebrett!). Delayed = verspätet, später als geplant.", key:"Flughafen-Anzeigebrett = verspätet"},
+  "recognition": {txt:"Recognize = erkennen. Recognition = der Moment des Erkennens — wie wenn man ein bekanntes Gesicht wiedererkennt.", key:"wiedererkennen → Erkennung"},
+  "issue": {txt:"Issue = Problem (in der IT: GitHub Issue = Aufgabe oder Fehler). Professioneller als „Problem“ — sachlich und neutral.", key:"GitHub Issue = sachliches Problem"},
+  "misalignment": {txt:"Mis = falsch, align = ausrichten. Falsch ausgerichtet — wie zwei Zahnräder, die nicht zusammenpassen.", key:"falsch ausgerichtet = Diskrepanz"},
+  "individual": {txt:"Individual = Individuum — das Wort ist gleich! Ein einzelner Mensch, die einzelne Person.", key:"Individuum = Einzelperson"},
+  "accountable": {txt:"Account = Konto, Rechenschaft. Accountable = wer Rechenschaft ablegen muss — wer Bericht erstatten muss.", key:"Rechenschaft ablegen = verantwortlich"},
+  "brief(ly)": {txt:"Briefing = kurze Lagebesprechung vor einer Mission. Brief = kurz. Briefly = in Kürze, knapp und präzise.", key:"Briefing vor Mission = kurz und knapp"},
+  // p.37
+  "cycle": {txt:"Zyklus — das Wort ist gleich! Wie ein Fahrrad (bicycle = Zwei-Zyklus-Rad). Etwas dreht sich im Kreis.", key:"Zyklus = Kreisbewegung, Wiederholung"},
+  "project life cycle": {txt:"Life cycle = Lebenszyklus (wie in der Biologie). Projekte haben ein Leben: Geburt → Wachstum → Ende.", key:"Lebenszyklus = Projekt von Anfang bis Ende"},
+  "to execute sth": {txt:"Execute = ausführen (wie Befehl ausführen in der Armee). Etwas in die Tat umsetzen — ausführen.", key:"Befehl ausführen = umsetzen"},
+  "accordingly": {txt:"Accord = Übereinstimmung (wie ein Akkord in der Musik — alles klingt zusammen). Accordingly = entsprechend dazu.", key:"Akkord-Harmonie → entsprechend"},
+  "to gather": {txt:"Gatherer = Sammler (Jäger und Sammler!). Zusammenkommen oder Daten sammeln — wie Beeren sammeln.", key:"Sammler = sich versammeln, sammeln"},
+  "progress report": {txt:"Progress = Fortschritt (gleich wie im Deutschen!). Report = Bericht (Reportage). Bericht über den Fortschritt.", key:"Fortschritt + Bericht = Statusbericht"},
+  "to kick off": {txt:"Kick-off = Anstoß beim Fußball! Der Schiedsrichter pfeift — das Spiel beginnt. Der offizielle Start.", key:"Fußball-Anstoß = offizieller Start"},
+  "(money) transfer": {txt:"Transfer = Transfer (wie Spielertransfer im Fußball). Geld wird von A nach B transferiert — Überweisung.", key:"Spielertransfer → Geldüberweisung"},
+  "routine": {txt:"Routine = Routine — das Wort ist gleich! Was man jeden Tag macht, fast automatisch.", key:"Routine = gewohnter Ablauf"},
+  "blocker": {txt:"Block = blockieren (wie im Basketball geblockt werden). Blocker = etwas, das einen blockiert und aufhält.", key:"geblockt werden = Hindernis"},
+  "backend": {txt:"Back = hinten, end = Ende/Teil. Der hintere Teil — wie die Küche im Restaurant, unsichtbar aber die echte Arbeit.", key:"Rückseite = unsichtbarer Arbeitsteil"},
+  "logic": {txt:"Logik — das Wort ist überall gleich! Die Regeln und Denkweise, nach denen ein System funktioniert.", key:"Logik = Denkregeln des Systems"},
+  "frontend": {txt:"Front = vorne, end = Teil. Der vordere Teil — wie das Schaufenster eines Geschäfts, was jeder sieht.", key:"Schaufenster = sichtbarer Teil"},
+  "API (application programming interface)": {txt:"Stell dir einen Kellner vor. Du (App) bestellst beim Kellner (API), der zur Küche (Server) geht. Die Schnittstelle!", key:"Kellner zwischen App und Server"},
+  "authorization": {txt:"Author = Autor/Schöpfer. Nur der Schöpfer hat die Erlaubnis. Authorization = offizielle Genehmigung.", key:"Autor hat Erlaubnis = Autorisierung"},
+  "token": {txt:"Token = U-Bahn-Chip! Ohne Chip kommt man nicht in die U-Bahn. Ohne Token kommt man nicht ins System.", key:"U-Bahn-Chip = digitaler Zugangschip"},
+  "to interact": {txt:"Inter = zwischen (international = zwischen Nationen). Act = handeln. Zwischen zwei Seiten handeln = interagieren.", key:"zwischen + handeln = miteinander kommunizieren"},
+  "to expire": {txt:"Expire = auslaufen. Ex + spire (spiritus = Atem). Der Atem geht aus — die Gültigkeit ist abgelaufen.", key:"Atem ausatmen = Gültigkeit läuft ab"},
+  "to fail": {txt:"Fail = scheitern (Game Over beim Spielen). In der IT: „Request failed“ = Anfrage fehlgeschlagen.", key:"Game Over = fehlschlagen"},
+  "to reach out to sb for sth": {txt:"Reach out = die Hand ausstrecken. Jemandem die Hand entgegenstrecken = Kontakt aufnehmen.", key:"Hand ausstrecken = jemanden kontaktieren"},
+  "to escalate sth": {txt:"Escalator = Rolltreppe! Das Problem auf der Rolltreppe nach oben transportieren — an Vorgesetzte weitergeben.", key:"Rolltreppe nach oben = Problem weitergeben"},
+  "fix": {txt:"Fix it! Wie der Heimwerker der schnell etwas repariert. Eine schnelle, provisorische Lösung.", key:"schnell reparieren = vorläufige Lösung"},
+  "test case": {txt:"Case = Fall (wie ein Gerichtsfall). Ein konkreter Testfall — ein spezifischer Fall zum Testen.", key:"Gerichtsfall = konkreter Testfall"},
+  "invalid": {txt:"In = nicht, valid = gültig (wie ein gültiges Ticket). Ungültig — nicht gültig, nicht akzeptiert.", key:"nicht gültig = abgelehnt"},
+  "to exceed sth": {txt:"Ex = aus, ceed = gehen. Über eine Grenze hinausgehen — das Budget überschreiten.", key:"über die Grenze hinausgehen = überschreiten"},
+  "proper": {txt:"Proper English = richtiges, echtes Englisch. Proper = wie es sein soll, richtig, ordentlich.", key:"richtiges Englisch = wie es sein soll"},
+  "error message": {txt:"Error = Fehler, Message = Nachricht. Die Fehlermeldung — die Nachricht, die bei einem Fehler erscheint.", key:"Fehler + Nachricht = Fehlermeldung"},
+  "end-to-end testing": {txt:"Von Ende zu Ende — den gesamten Weg testen. Wie ein ganzer Hindernisparcours durchlaufen.", key:"von Anfang bis Ende = ganzer Weg"},
+  "error handling": {txt:"Handle = mit etwas umgehen (Türklinke = Griff). Wie man mit Fehlern umgeht — Fehler behandeln.", key:"mit Fehlern umgehen = Fehlerbehandlung"},
+  "consistent(ly)": {txt:"Consist = bestehen aus etwas Konstantem. Consistent = immer gleich, keine Überraschungen — zuverlässig.", key:"immer gleich = einheitlich"},
+  "to sync with sb": {txt:"Sync = Synchronisation (wie Dropbox sync). Mit jemandem synchronisieren = abstimmen und angleichen.", key:"Dropbox-Sync = mit jemandem abstimmen"},
+  "to proceed": {txt:"Pro = vorwärts, ceed = gehen. Vorwärtsgehen, weitermachen — wie „Bitte zur Sicherheitskontrolle gehen“.", key:"vorwärts gehen = weitermachen"},
+  "Good catch!": {txt:"Catch = fangen (wie einen Ball fangen). Gut gefangen! = Gut gesehen, dass du diesen Fehler bemerkt hast!", key:"Ball fangen = Fehler bemerken"},
+  "slider": {txt:"Slide = gleiten. Ein Slider ist ein Regler, der gleitet — wie der Lautstärkeregler am alten Radio.", key:"gleiten → Schieberegler"},
+  "confirmation": {txt:"Confirm = bestätigen — fast dasselbe Wort! Confirmation = die offizielle Bestätigung.", key:"bestätigen → Bestätigung"},
+  "tweak": {txt:"Tweak = zwicken, leicht drehen. Eine kleine Korrektur — wie ein kleiner Drehknopf, den man minimal dreht.", key:"leicht drehen = kleine Korrektur"},
+  "on track": {txt:"On track = auf der Spur/auf den Schienen. Ein Zug auf den Schienen = er kommt pünktlich. Im Zeitplan.", key:"Zug auf Schienen = im Zeitplan"},
+  "progress": {txt:"Fortschritt — das Wort kennt man! Progress = pro (vorwärts) + gress (Schritt). Schritte nach vorne.", key:"Schritte vorwärts = Fortschritt"},
+  "to hesitate": {txt:"Stell dir vor, du stehst am Rand des Schwimmbeckens. Du willst springen, aber zögerst — das ist hesitate.", key:"am Beckenrand zögern = unentschlossen sein"},
+  "to flag sth": {txt:"Flag = Flagge. Eine rote Flagge hissen = auf etwas aufmerksam machen. Ein Problem markieren.", key:"rote Flagge hissen = aufmerksam machen"},
+  "draft": {txt:"Draft beer = Fassbier (noch nicht in der Flasche, noch nicht fertig). Draft = Entwurf, noch nicht final.", key:"Fassbier noch offen = Entwurf noch offen"},
+  "prior to": {txt:"Prior = vorherig (Priorität = was zuerst kommt). Prior to = bevor, früher als — formelles „vor“.", key:"Priorität vorher = vor etwas"},
+  "to report to sb": {txt:"Report = Bericht. An jemanden berichten = dieser Person unterstellt sein. Wem erstattest du Bericht?", key:"Bericht erstatten = Vorgesetzter"},
+  "wearable": {txt:"Wear = tragen (Kleidung). Wearable = was man tragen kann — Technologie am Körper wie eine Uhr.", key:"tragen + fähig = Technologie am Körper"},
+  "tracker": {txt:"Track = verfolgen, aufzeichnen (Tracking der Lieferung!). Tracker = Gerät, das etwas verfolgt.", key:"Sendungsverfolgung = Aufzeichnungsgerät"},
+  "habit": {txt:"Habitat = Lebensraum (Biologie). Habitat = der Ort wo etwas normalerweise lebt. Habit = was man normalerweise tut.", key:"Habitat → gewohnter Lebensraum → Gewohnheit"},
+  // p.38
+  "to expand": {txt:"Expandieren — das Wort ist gleich! Wie Teig in der Pfanne — er dehnt sich aus, wird größer.", key:"Teig dehnt sich aus = expandieren"},
+  "to be about to do sth": {txt:"About = ungefähr, herum. „Um etwas herum“ im Begriff sein — kurz davor, fast soweit.", key:"kurz davor stehen = gleich tun"},
+  "network design": {txt:"Network = Netzwerk (gleich wie im Deutschen!). Design = Planung. Das Netzwerk planen und aufbauen.", key:"Netzwerk + Planung = Netzwerkaufbau"},
+  "to be in charge of sth": {txt:"Charge = Ladung/Verantwortung. In charge = unter der Verantwortungslast. Der Chef trägt die Last.", key:"Verantwortung tragen = zuständig sein"},
+  "move": {txt:"Move = Bewegung, Umzug. Office move = der Büro-Umzug. Alle bewegen sich an einen neuen Ort.", key:"Bewegung = Umzug"},
+  "to remind sb": {txt:"Re = wieder, mind = Verstand. Etwas wieder in jemandes Verstand bringen — erinnern.", key:"wieder im Verstand = erinnern"},
+  "tight": {txt:"Tight = eng (wie eine enge Hose). Tight budget = enger Spielraum — kein Platz zum Atmen.", key:"enge Hose = kein Spielraum"},
+  "unlimited": {txt:"Un = nicht, limited = begrenzt. Nicht begrenzt — wie ein „Flatrate“-Tarif, ohne Limit.", key:"Flatrate = ohne Begrenzung"},
+  "off the shelf": {txt:"Shelf = Regal. Off the shelf = vom Regal nehmen — ein fertiges Standardprodukt kaufen, nicht selbst bauen.", key:"vom Regal nehmen = Standardprodukt"},
+  "router": {txt:"Route = Weg/Strecke (wie eine Navigationsroute). Router = das Gerät, das Datenpakete auf Routen leitet.", key:"Navigationsroute → Datenwegweiser"},
+  "load": {txt:"Load = Last, Ladung. Network load = die Last des Netzwerks — wie viel Gewicht es trägt.", key:"Gewicht tragen = Netzwerklast"},
+  "coverage": {txt:"Cover = abdecken (wie ein Deckel eine Dose abdeckt). Coverage = das abgedeckte Gebiet — Empfangsbereich.", key:"Deckel deckt ab = Empfangsgebiet"},
+  "to take sth into account": {txt:"Account = Rechnung/Konto. Etwas auf die Rechnung setzen — es berücksichtigen und einplanen.", key:"auf die Rechnung setzen = berücksichtigen"},
+  "for starters": {txt:"Starters = Vorspeise im Restaurant. Für den Anfang, als erstes — bevor das Hauptgericht kommt.", key:"Vorspeise zuerst = für den Anfang"},
+  "roughly": {txt:"Rough = rau, grob (raue Oberfläche). Rough estimate = grobe Schätzung. Roughly = ungefähr, nicht exakt.", key:"grobe Oberfläche = ungefähr, nicht exakt"},
+  "simultaneous(ly)": {txt:"Simultanübersetzung = Dolmetschen in Echtzeit, gleichzeitig. Simultaneous = zur gleichen Zeit.", key:"Simultanübersetzung = gleichzeitig"},
+  "consumer-grade": {txt:"Consumer = Verbraucher, grade = Klasse/Qualitätsstufe. Verbraucherklasse = für Heimgebrauch, nicht professionell.", key:"Verbraucherklasse = für zu Hause"},
+  "gear": {txt:"Gear = Gang (Autogang) oder Ausrüstung. Alle Zahnräder der Ausrüstung zusammen — das gesamte Equipment.", key:"Ausrüstung, alle Zahnräder zusammen"},
+  "to handle sth": {txt:"Handle = Griff (Türklinke hat einen Griff). Einen Griff auf etwas haben = damit umgehen können.", key:"Griff haben = damit umgehen"},
+  "demand": {txt:"Demand = fordern (wie „Ich verlange den Manager!“). Demands = die Anforderungen, die man stellt.", key:"fordern = Anforderungen stellen"},
+  "to expand sth": {txt:"Expandieren — gleich wie im Deutschen. Etwas vergrößern oder ausweiten — mehr Kapazität schaffen.", key:"expandieren = ausweiten, vergrößern"},
+  "to future-proof sth": {txt:"Future = Zukunft, proof = sicher (bulletproof = kugelsicher). Zukunftssicher machen — für die Zukunft rüsten.", key:"kugelsicher für die Zukunft = zukunftssicher"},
+  "to scale": {txt:"Scale = Maßstab, Waage. Skalieren = den Maßstab proportional vergrößern — wächst mit dem Bedarf.", key:"Maßstab vergrößern = skalieren"},
+  "heavy usage": {txt:"Heavy = schwer (heavy metal!), usage = Nutzung. Schwere Nutzung — wenn alle gleichzeitig das System belasten.", key:"schwere Nutzung = hohe Last"},
+  "to plan for sth": {txt:"Plan = Plan (gleich!). Für etwas planen = es bewusst einplanen, Raum dafür schaffen.", key:"bewusst einplanen = vorsehen"},
+  "slowdown": {txt:"Slow = langsam, down = runter. Die Geschwindigkeit geht runter — Verlangsamung des Systems.", key:"Geschwindigkeit runter = Verlangsamung"},
+  "dropped connection": {txt:"Dropped = fallen lassen, connection = Verbindung. Die Verbindung wurde fallen gelassen — Verbindungsabbruch.", key:"Verbindung fallenlassen = Verbindungsabbruch"},
+  "latency": {txt:"Latent = versteckt (latentes Talent). Latency = die versteckte Verzögerung — der unsichtbare Zeitverlust.", key:"versteckte Verzögerung = Latenz/Ping"},
+  "to be designed for sth": {txt:"Design = entworfen. Für etwas entworfen sein — speziell für diesen Zweck entwickelt.", key:"speziell entworfen = ausgelegt für"},
+  "data rate": {txt:"Data = Daten, rate = Rate/Tempo. Das Tempo der Datenübertragung — wie schnell Daten fließen.", key:"Datentempo = Übertragungsgeschwindigkeit"},
+  "capacity": {txt:"Kapazität — das Wort ist gleich! Die maximale Kapazität, wie viel ein System aufnehmen kann.", key:"Kapazität = Aufnahmevermögen"},
+  "interference": {txt:"Interferenz — aus der Physik bekannt! Wellen, die sich gegenseitig stören. WLAN-Störungen durch andere Geräte.", key:"Interferenz (Physik) = gegenseitige Störung"},
+  "drop": {txt:"Drop = Tropfen oder fallen. Ein Signalabfall = das Signal fällt wie ein Tropfen — plötzliche Verschlechterung.", key:"fallen wie ein Tropfen = plötzlicher Abfall"},
+  "to serve": {txt:"Server kommt von serve = bedienen. Wie ein Kellner bedient der Server Anfragen — er liefert Daten.", key:"Kellner bedient = Server liefert Daten"},
+  "frequency band": {txt:"Frequenz + Band (Bereich). Der Frequenzbereich — wie UKW-Radio hat seinen Bereich, WLAN auch.", key:"UKW-Radio hat Bereich = Frequenzband"},
+  "range": {txt:"Range = Reichweite (wie Schussweite beim Bogenschießen). Wie weit reicht das Signal — die Reichweite.", key:"Schussweite = Reichweite des Signals"},
+  "square meter": {txt:"Square = Quadrat, meter = Meter. Quadratmeter — die Fläche eines Quadrats mit 1 Meter Seite.", key:"Quadrat + Meter = Flächenmaß"},
+  "Wi-Fi access point": {txt:"Access = Zugang, point = Punkt. Der Zugangspunkt — die Tür zum WLAN-Netzwerk, durch die man eintritt.", key:"Zugangstür zum WLAN"},
+  "to cover sth": {txt:"Cover = abdecken (wie ein Buchcover). Das Signal deckt einen Bereich ab — versorgt ihn mit Empfang.", key:"abdecken = Bereich mit Signal versorgen"},
+  "mesh network": {txt:"Mesh = Gittergeflecht (wie ein Maschendrahtzaun). Alle Knoten verbunden wie ein Geflecht — kein einzelner Ausfallpunkt.", key:"Maschendrahtzaun = alle verbunden"},
+  "spare": {txt:"Spare tire = Reservereifen im Kofferraum. Spare = Reserve, für den Notfall bereithalten.", key:"Reservereifen = Ersatz für Notfall"},
+  "to bear sth in mind": {txt:"Bear = tragen (wie ein Bär, der etwas trägt). Im Kopf tragen — sich etwas merken und beachten.", key:"im Kopf tragen = im Gedächtnis behalten"},
+  "to overload": {txt:"Over = über, load = Last. Überladen — wie ein LKW, der zu viel Gewicht trägt und langsamer wird.", key:"LKW überladen = zu viel Last"},
+  "placement": {txt:"Place = Platz. Placement = Platzierung — wo genau etwas aufgestellt wird, die optimale Position.", key:"Platz bestimmen = Aufstellung/Position"},
+  "sheer": {txt:"Sheer cliff = senkrechte Felswand. Sheer = nur das, nichts anderes. Die bloße Anzahl allein — nur dadurch.", key:"senkrecht, nichts anderes = rein, bloß"},
+  "quantity": {txt:"Quality vs. Quantity = Qualität gegen Quantität. Quantity = die Menge, wie viel es gibt.", key:"Qualität vs. Quantität = Menge"},
+  "to interfere with sth": {txt:"Inter = zwischen (wie Interference). Sich zwischen zwei Dinge schieben = stören, behindern.", key:"sich dazwischenschieben = stören"},
+  "sb realizes sth": {txt:"Real = echt. Realize = etwas als real erkennen. Einem wird etwas klar — man versteht plötzlich.", key:"als real erkennen = etwas begreifen"},
+  "to keep sth in check": {txt:"Check = Schach! Den König im Schach halten — er kann sich nicht bewegen. Etwas unter Kontrolle halten.", key:"Schach halten = unter Kontrolle"},
+  "to aim for sth": {txt:"Aim = zielen (wie mit einem Pfeil zielen). Aim for = auf etwas zielen — ein Ziel anpeilen.", key:"mit Pfeil zielen = anstreben"},
+  "to factor sth in": {txt:"Faktor — das Wort ist gleich! Einen Faktor in die Berechnung einfließen lassen — berücksichtigen.", key:"Faktor einrechnen = berücksichtigen"},
+  "building materials": {txt:"Building = Gebäude, materials = Materialien. Baumaterialien — was man braucht, um zu bauen.", key:"Gebäude + Material = Baumaterial"},
+  "concrete": {txt:"Konkret — das Wort ist gleich! Beton ist konkret, fest und real — und das englische Wort bedeutet beides.", key:"Beton = konkret (doppelte Bedeutung)"},
+  "frame": {txt:"Frame = Rahmen (wie ein Bilderrahmen oder Fensterrahmen). Ein Rahmen gibt Struktur und Form.", key:"Bilderrahmen = strukturgebender Rahmen"},
+  "dead zone": {txt:"Dead = tot, zone = Zone. Eine tote Zone — dort gibt es kein Signal, kein Leben für die Verbindung.", key:"tote Zone = kein Signal"},
+  "analysis / analyses": {txt:"Analyse — das Wort ist gleich! Analyses ist der Plural (Plural auf -es). Eine genaue Untersuchung.", key:"Analyse → Plural: analyses"},
+  "signal strength": {txt:"Signal = Signal, strength = Stärke. Die Stärke des Signals — wie viele Balken dein Handy anzeigt.", key:"Signalstärke = Handybalken-Anzeige"},
+  "to upgrade": {txt:"Up = rauf, grade = Stufe/Klasse. Eine Stufe höher gehen — wie beim Upgrade im Flugzeug in die Business Class.", key:"Klassenaufstieg = verbessern/aufrüsten"},
+  "testing equipment": {txt:"Testing = Testen, equipment = Ausrüstung. Prüfgeräte — die Ausrüstung zum Testen und Messen.", key:"Testausrüstung = Prüfgeräte"},
+  "in real-time": {txt:"Real-time = Echtzeit. Keine Verzögerung — was jetzt passiert, wird jetzt angezeigt. Live-Daten.", key:"ohne Verzögerung = sofort, live"},
+  "heatmap": {txt:"Heat = Wärme, map = Karte. Eine Wärmekarte — Rot (heiß) = starkes Signal, Blau (kalt) = schwaches Signal.", key:"Wärmekarte: Rot = stark, Blau = schwach"},
+  "to creep up": {txt:"Creep = schleichen (wie ein Insekt). Langsam hochschleichen — die Werte steigen unmerklich an.", key:"hochschleichen = langsam steigen"},
+  // Unit 5 p.48
+  "artificial intelligence (AI)": {txt:"Artificial = künstlich (wie künstliche Blumen), intelligence = Intelligenz. Einfach übersetzt: Künstliche Intelligenz!", key:"künstlich + Intelligenz = KI"},
+  "civil engineering": {txt:"Civil = bürgerlich, zivil (Zivilist = Nicht-Soldat). Engineering für Bürger — Brücken, Straßen, Gebäude.", key:"zivil + Ingenieurwesen = Bauwesen"},
+  "aside from": {txt:"Aside = zur Seite. Etwas zur Seite legen und ignorieren — abgesehen davon, außer diesem.", key:"zur Seite legen = abgesehen von"},
+  "to upset sb": {txt:"Upset = umkippen (wie ein umgekipptes Glas). Jemanden emotional umkippen — aus der Fassung bringen.", key:"Glas umkippen = emotional destabilisieren"},
+  "robot": {txt:"Roboter — das Wort ist gleich! Kommt vom tschechischen „robota“ (Zwangsarbeit). Der automatische Arbeiter.", key:"Roboter = automatischer Arbeiter"},
+  "to face unlock sth": {txt:"Face = Gesicht, unlock = entsperren. Mit dem Gesicht entsperren — Gesichtserkennung als Schlüssel.", key:"Gesicht als Schlüssel = entsperren"},
+  "to recognize": {txt:"Re = wieder, cognize (cogito = ich denke, Latein). Wieder erkennen — etwas wiedererkennen, identifizieren.", key:"wieder denken = wiedererkennen"},
+  "features": {txt:"Feature = Merkmal, Funktion. Gesichtszüge = die Merkmale des Gesichts. Auch: Funktion einer Software.", key:"Merkmal/Funktion → Gesichtszug"},
+  "appearance": {txt:"Appear = erscheinen (wie auf der Bühne erscheinen). Appearance = wie man erscheint — das äußere Erscheinungsbild.", key:"erscheinen → Erscheinungsbild/Aussehen"},
+  "fancy": {txt:"Fancy = schick, raffiniert. Ein schickes Restaurant ist ein „fancy restaurant“. Ausgeklügelt und beeindruckend.", key:"schickes Restaurant = raffiniert, ausgeklügelt"},
+  "It doesn't stop there.": {txt:"Stop = stoppen, there = dort. Es hört dort nicht auf — das ist noch nicht alles! Noch mehr folgt.", key:"hört dort nicht auf = das ist noch nicht alles"},
+  "search engine": {txt:"Search = suchen, engine = Motor/Maschine. Die Suchmaschine — der Motor, der das Internet durchsucht.", key:"Suchmotor = Suchmaschine"},
+  "to refine": {txt:"Raffinieren = verfeinern — das Wort ist gleich! Wie Zucker raffinieren = reinigen und verbessern.", key:"Zucker raffinieren = verfeinern"},
+  "healthcare": {txt:"Health = Gesundheit (healthy = gesund), care = Fürsorge (wie Kinderfürsorge). Gesundheitsfürsorge.", key:"Gesundheit + Fürsorge = Gesundheitswesen"},
+  "fraud detection": {txt:"Fraud = Betrug (kennt man aus Krimis!). Detection = Erkennung (Detektiv!). Betrugserkennung.", key:"Betrug + Detektiv = Betrugserkennung"},
+  "transaction": {txt:"Transaktion — das Wort ist gleich! Trans = durch, action = Handlung. Eine Handlung, die durchgeführt wird.", key:"Transaktion = Vorgang/Übertragung"},
+  "unusual(ly)": {txt:"Un = nicht, usual = gewöhnlich (usually = normalerweise). Nicht gewöhnlich — ungewöhnlich, aus dem Rahmen.", key:"nicht gewöhnlich = ungewöhnlich"},
+  "to detect sth": {txt:"Detektiv erkennt Hinweise! Detect = aufspüren und erkennen — wie ein Detektiv verborgene Dinge findet.", key:"Detektiv spürt auf = erkennen/aufdecken"},
+  "invisible (to sth)": {txt:"In = nicht, visible = sichtbar (Video = sehen). Nicht sichtbar — der Unsichtbare Mann ist invisible!", key:"nicht sichtbar = unsichtbar"},
+  "illness": {txt:"Ill = krank (I feel ill = mir ist schlecht). Illness = der Zustand des Krankseins.", key:"krank (ill) + Zustand = Krankheit"},
+  "to be exposed to sth": {txt:"Expose = aussetzen (Fotobelichtung = exposure). Exposed = dem ausgesetzt — in Berührung kommen mit.", key:"Fotobelichtung = etwas ausgesetzt sein"},
+  "mind-blowing": {txt:"Mind = Verstand, blowing = sprengend. Verstand wird gesprengt! = Es ist unglaublich, kaum zu fassen.", key:"Verstand gesprengt = unglaublich!"},
+  "branch": {txt:"Branch = Ast (eines Baumes). Wie ein Ast vom Stamm abgeht — ein Zweig eines größeren Feldes.", key:"Baumast = Teilgebiet, Zweig"},
+  "to aim to do sth": {txt:"Aim = zielen (Pfeil auf Ziel). Aim to do = darauf abzielen, etwas zu tun — beabsichtigen.", key:"auf Ziel zielen = beabsichtigen"},
+  "at its core": {txt:"Core = Kern (wie Erdkern oder Apfelkern). Im Kern der Sache — das Wesentlichste, der innerste Punkt.", key:"Apfelkern = Kern der Sache"},
+  "collection": {txt:"Collect = sammeln (wie Briefmarken sammeln). Collection = die Sammlung — alles, was gesammelt wurde.", key:"sammeln → Sammlung"},
+  "algorithm": {txt:"Algorithmus — das Wort ist gleich! Benannt nach dem Mathematiker Al-Chwarizmi. Schritt-für-Schritt-Anleitung.", key:"Algorithmus = Schritt-für-Schritt-Regeln"},
+  "backbone": {txt:"Back = Rücken, bone = Knochen. Das Rückgrat — ohne Wirbelsäule kann man nicht stehen. Das Fundament.", key:"Wirbelsäule = Hauptstütze des Systems"},
+  "fixed": {txt:"Fix = befestigen, festmachen. Fixed = festgelegt, unveränderlich — wie ein fest angebrachtes Schild an der Wand.", key:"fest angebracht = unveränderlich"},
+  "calculator": {txt:"Kalkulator — das Wort ist gleich! Calculate = berechnen. Folgt festen Regeln, lernt nicht wie KI.", key:"Kalkulator = Rechenmaschine mit Regeln"},
+  "to subtract": {txt:"Sub = unter/weg, tract = ziehen. Wegnehmen — 10 minus 3 = 7. Das Entfernen einer Zahl.", key:"wegnehmen/abziehen = subtrahieren"},
+  "to multiply": {txt:"Multi = viel, ply = falten. Mehrfach falten = vervielfachen. 3 × 4 = 12, die Zahl vervielfachen.", key:"mehrfach falten = vervielfachen"},
+  "in contrast": {txt:"Kontrast — das Wort ist gleich! Im Kontrast zu etwas — der Gegensatz, das genaue Gegenteil.", key:"Kontrast = im Gegensatz dazu"},
+  "attribute": {txt:"Attribut — das Wort ist gleich! Eigenschaft oder Merkmal. In der KI: jede Spalte in Daten ist ein Attribut.", key:"Attribut = Eigenschaft/Merkmal"},
+  "distinction": {txt:"Distinct = eindeutig unterschiedlich. Distinction = der klare Unterschied — Dinge klar voneinander trennen.", key:"eindeutig unterschiedlich = Unterscheidung"},
+  // p.49
+  "suspicious": {txt:"Suspect = Verdächtiger (aus Krimiserien!). Suspicious = verdächtig — wer Verdacht erweckt.", key:"Verdächtiger in Serie = verdächtig"},
+  "edge": {txt:"Edge = Kante, Rand (wie die Kante eines Tisches). Die äußere Grenze — der Rand zwischen zwei Bereichen.", key:"Tischkante = äußerer Rand"},
+  "to resemble": {txt:"Re + semblance (Äußerlichkeit). Ähnliche Äußerlichkeit haben = ähneln, gleich aussehen wie.", key:"ähnliche Erscheinung = ähneln"},
+  "whiskers": {txt:"Whiskey und Katzenbart — beides durch den Mund. Nein: Whiskers = die Schnurrhaare der Katze!", key:"Katze hat Schnurrhaare = whiskers"},
+  "to drive": {txt:"Drive = fahren/antreiben. Übertragen: was etwas antreibt — die treibende Kraft hinter etwas.", key:"Auto fahren = im übertragenen Sinn antreiben"},
+  "label": {txt:"Label = Etikett (Kleidungsetikett). In der KI: Daten bekommen ein Etikett — ein Label als richtige Antwort.", key:"Kleidungsetikett = Datenetikett"},
+  "parameter": {txt:"Parameter — das Wort ist gleich! Eine einstellbare Größe im Modell. Milliarden solcher Regler.", key:"Parameter = einstellbare Größe"},
+  "essentially": {txt:"Essence = Wesen, Kern (wie Rosenessenz). Essentially = im Wesentlichen — am wichtigsten Kern.", key:"Essenz/Kern → im Wesentlichen"},
+  "understanding": {txt:"Understand = verstehen (wörtlich: darunter stehen — die Basis kennen). Understanding = das Verständnis.", key:"darunter stehen = das Fundament kennen"},
+  "to fine-tune sth": {txt:"Fine = fein, tune = abstimmen (eine Gitarre stimmen). Fein abstimmen — kleine präzise Verbesserungen.", key:"Gitarre fein stimmen = präzise anpassen"},
+  "weight": {txt:"Weight = Gewicht (Gewichtheben). In der KI: wie schwer/wichtig ein Faktor ist — die Gewichtung.", key:"Gewicht heben = Wichtigkeit eines Faktors"},
+  "to illustrate": {txt:"Illustration = Illustration/Bild — das Wort ist gleich! Veranschaulichen = mit einem Bild erklären.", key:"Illustration = veranschaulichen"},
+  "gradual(ly)": {txt:"Grade = Stufe/Klasse. Stufe für Stufe, Schritt für Schritt — wie eine Treppe langsam hochgehen.", key:"Stufe für Stufe = allmählich"},
+  "dial": {txt:"Ein Drehknopf am alten Radio oder Telefon (Wählen = dialing). Dial = Einstellrad, das man dreht.", key:"Drehknopf am Radio = Einstellrad"},
+  "in short": {txt:"Short = kurz. In short = kurz gesagt — alles auf einen kurzen Punkt bringen.", key:"kurz = kurz gesagt, zusammengefasst"},
+  "importance": {txt:"Important = wichtig — bekanntes Wort! Importance = die Wichtigkeit, die Bedeutung von etwas.", key:"wichtig → Wichtigkeit"},
+  "to matter": {txt:"Matter = Materie/Stoff. Etwas ist von Bedeutung — es existiert als wichtige Materie in der Diskussion.", key:"Materie = von Belang sein"},
+  "to be faced with sth": {txt:"Face = Gesicht, Seite. Mit etwas konfrontiert werden — es steht einem gegenüber, Auge in Auge.", key:"etwas ins Gesicht schauen = konfrontiert sein"},
+  "to represent": {txt:"Repräsentieren — das Wort ist gleich! Re = wieder, present = präsentieren. Erneut zeigen, darstellen.", key:"repräsentieren = darstellen, vertreten"},
+  "namely": {txt:"Name = Name. Namely = namentlich, also beim Namen nennen — nämlich, und zwar genau das.", key:"namentlich nennen = nämlich"},
+  "billion": {txt:"Achtung! Auf Englisch: billion = Milliarde (1.000.000.000). Nicht Billion! Das ist eine häufige Verwechslung.", key:"⚠ billion = Milliarde (nicht Billion!)"},
+  "trillion": {txt:"Trillion = Billion (auf Deutsch!). Eine Million Millionen = 1.000.000.000.000. Die Zahlen sind verschoben.", key:"trillion = deutsch Billion (verschobene Zahlen)"},
+  "be unique to sth": {txt:"Unique = einzigartig — das Wort kennt man! Unique to = nur bei diesem/dieser vorkommend.", key:"einzigartig → ausschließlich bei"},
+  "initial": {txt:"Initial = Anfangsbuchstabe (Initialen = erste Buchstaben des Namens). Initial = der erste, anfängliche.", key:"Initialen/Anfangsbuchstaben = erster/anfänglicher"},
+  "agriculture": {txt:"Agri = Feld (lateinisch ager). Culture = Kultur/Anbau. Feldkultur = Ackerbau = Landwirtschaft.", key:"Feld + Anbau = Landwirtschaft"},
+  "environmental conservation": {txt:"Environment = Umwelt. Conservation = Erhalt (conserve = erhalten). Umwelterhalt = Umweltschutz.", key:"Umwelt erhalten = Umweltschutz"},
+  "automotive industry": {txt:"Auto + motive = selbst bewegend (Automobil!). Automotive industry = Automobilbranche.", key:"selbst bewegend = Automobil → Automobilbranche"},
+  "education": {txt:"Educare (Latein) = herausführen. Bildung führt den Menschen heraus aus der Unwissenheit.", key:"herausführen aus Unwissenheit = Bildung"},
+  // p.50
+  "to task sb with sth": {txt:"Task = Aufgabe (Task-Manager!). Jemanden mit einer Aufgabe beauftragen — eine Aufgabe zuweisen.", key:"Aufgabe (Task) zuweisen = beauftragen"},
+  "implementation": {txt:"Implementieren — das Wort ist gleich! Implement = Werkzeug/umsetzen. Die Umsetzung in die Praxis.", key:"implementieren = in die Praxis umsetzen"},
+  "predictive maintenance": {txt:"Predict = vorhersagen. Maintenance = Wartung (maintain = aufrechterhalten). Vorausschauende Wartung.", key:"vorhersagen + Wartung = vorausschauende Instandhaltung"},
+  "to employ sth": {txt:"Employ = beschäftigen (employer = Arbeitgeber). Etwas „beschäftigen“ = anwenden, einsetzen.", key:"beschäftigen → anwenden, einsetzen"},
+  "to forecast": {txt:"Fore = vorher (foreground = Vordergrund), cast = werfen. Vorher werfen = in die Zukunft schauen = vorhersagen.", key:"vorher werfen = Voraussage"},
+  "deterioration": {txt:"Deteriorate = sich verschlechtern. -ation = Prozess. Der Prozess des Schlechterwerdens — Abnutzung.", key:"sich verschlechtern + Prozess = Abnutzung"},
+  "rate": {txt:"Rate = Geschwindigkeit oder Bewertung (wie Herzrate). Hier: die Geschwindigkeit, mit der etwas passiert.", key:"Herzrate = Geschwindigkeit/Tempo"},
+  "structure": {txt:"Struktur — das Wort ist gleich! Ein Bauwerk oder die Art, wie etwas aufgebaut ist.", key:"Struktur = Bauwerk oder Aufbau"},
+  "predictive analytics": {txt:"Predictive = vorhersagend, analytics = Analytik (gleich!). Vorhersagende Datenanalyse.", key:"vorhersagend + Analytik = prädiktive Analyse"},
+  "to enable sth": {txt:"En = machen, able = fähig. Etwas fähig machen = ermöglichen. Wie „Enable“ in den Einstellungen aktivieren.", key:"fähig machen = ermöglichen"},
+  "(structural) failure": {txt:"Fail = scheitern, -ure = Ergebnis. Das Ergebnis des Scheiterns — ein Versagen, ein Bruch.", key:"Scheitern als Ergebnis = Versagen/Bruch"},
+  "to allow for sth": {txt:"Allow = erlauben, for = für. Etwas erlauben/zulassen — Raum schaffen für etwas.", key:"Raum erlauben = ermöglichen/zulassen"},
+  "typically": {txt:"Typisch — das Wort ist gleich! Typically = typischerweise, wie es normalerweise ist.", key:"typisch → typischerweise = normalerweise"},
+  "automated": {txt:"Automatisch — das Wort ist gleich! Automated = automatisiert — ohne menschliches Eingreifen.", key:"automatisch = ohne menschliche Hilfe"},
+  "scheduling": {txt:"Schedule = Zeitplan. Scheduling = Terminplanung — den Zeitplan für Aufgaben und Ressourcen erstellen.", key:"Zeitplan → Terminplanung"},
+  "to apply sth (to sth)": {txt:"Apply = anwenden (Bewerbung = application, man wendet sich an). Etwas auf etwas anwenden.", key:"anwenden = in der Praxis einsetzen"},
+  "historical data": {txt:"Historisch — das Wort ist gleich! Daten aus der Vergangenheit — die Geschichte in Zahlen.", key:"historisch = aus der Vergangenheit"},
+  "constraint": {txt:"Constrain = einengen (con + strain = zusammenziehen). Wie ein enges Band — eine Einschränkung.", key:"zusammenziehen = Einschränkung/Bedingung"},
+  "procurement": {txt:"Procure = beschaffen (wie Nahrung beschaffen auf Expeditionen). Procurement = die Beschaffung von Gütern.", key:"beschaffen = Einkauf/Beschaffung"},
+  "labour allocation": {txt:"Labour = Arbeit (Labour Day = Tag der Arbeit!), allocation = Zuteilung. Arbeitskräfte zuteilen.", key:"Arbeit + Zuteilung = Personalplanung"},
+  "shortage": {txt:"Short = kurz/knapp (I'm short on time = Ich habe wenig Zeit). Shortage = Knappheit, es reicht nicht.", key:"zu kurz = Mangel/Knappheit"},
+  "commonly": {txt:"Common = gewöhnlich (commonplace = alltäglich). Commonly = normalerweise, wie es üblicherweise ist.", key:"gewöhnlich → üblicherweise"},
+  "structural design": {txt:"Structural = strukturell, design = Entwurf. Der strukturelle Entwurf — Tragwerksplanung.", key:"Struktur entwerfen = Tragwerksplanung"},
+  "to assist (sb with sth)": {txt:"Assist = unterstützen (Assist beim Basketball = Vorlage). Jemandem helfen, etwas zu erreichen.", key:"Basketball-Vorlage = unterstützen"},
+  "load condition": {txt:"Load = Last, condition = Zustand. Der Belastungszustand — wie stark etwas gerade belastet wird.", key:"Last + Zustand = Belastungszustand"},
+  "environmental impact": {txt:"Environment = Umwelt, impact = Aufprall/Auswirkung. Die Auswirkungen auf die Umwelt.", key:"Umwelt + Aufprall = Umweltauswirkung"},
+  "cost constraints": {txt:"Cost = Kosten, constraints = Einschränkungen. Die Kostengrenzen — das Budget, das nicht überschritten werden darf.", key:"Kosten + Grenzen = Kostenrahmen"},
+  "proposal": {txt:"Propose = vorschlagen (wie einen Heiratsantrag machen). Proposal = der formelle Vorschlag.", key:"Heiratsantrag = offizieller Vorschlag"},
+  "sustainable": {txt:"Sustain = aufrechterhalten (nachhaltig aufrechterhalten). -able = möglich. Dauerhaft aufrechtzuerhalten.", key:"aufrechterhalten können = nachhaltig"},
+  "document management": {txt:"Document = Dokument, management = Verwaltung. Dokumente verwalten — sie ordnen und abrufen.", key:"Dokument + Verwaltung = Dokumentenverwaltung"},
+  "knowledge retrieval": {txt:"Knowledge = Wissen, retrieval = Abruf (retrieve = abrufen). Wissen aus dem System abrufen.", key:"Wissen abrufen = Wissensabfrage"},
+  "to categorize": {txt:"Kategorie — das Wort ist gleich! Categorize = in Kategorien einteilen — sortieren und ordnen.", key:"Kategorie → kategorisieren = sortieren"},
+  "to index sth": {txt:"Index = Verzeichnis (wie Buchindex). Etwas indexieren = in ein Verzeichnis aufnehmen, auffindbar machen.", key:"Buchindex = erfassen und auffindbar machen"},
+  "to retrieve sth": {txt:"Retriever (Hund, der apportiert!). Retrieve = apportieren/abholen. Daten holen und zurückbringen.", key:"Retriever holt den Ball = Daten abrufen"},
+  "blueprint": {txt:"Blue = blau, print = Druck. Alte Baupläne wurden blau gedruckt (Blaupause). Technische Zeichnung.", key:"blau gedruckter Plan = technische Zeichnung"},
+  "records": {txt:"Record = aufzeichnen (like recording a song). Records = die Aufzeichnungen — alle gespeicherten Daten.", key:"Song aufnehmen = Aufzeichnungen/Datensätze"},
+  "contract": {txt:"Kontrakt — das Wort ist gleich! Con + tract = zusammenziehen. Beide Seiten ziehen sich vertraglich zusammen.", key:"Kontrakt = verbindlicher Vertrag"},
+  "contextual": {txt:"Kontext — das Wort kennt man! Contextual = vom Kontext abhängig — bedeutungsabhängig von der Situation.", key:"Kontext abhängig = kontextbezogen"},
+  "vast": {txt:"Vast = riesig. Stell dir eine endlose Wüste vor — vast = so groß, dass man kein Ende sieht.", key:"endlose Wüste = enorm, riesig"},
+  "repository": {txt:"Re + posit = ablegen. Ein Ort, wo Dinge deponiert werden — wie ein Archiv oder Lager für Daten.", key:"Depot/Lager = Archiv/Datenspeicher"},
+  "natural language processing (NLP)": {txt:"Natural language = natürliche Sprache (wie wir reden). Processing = verarbeiten. KI lernt unsere Sprache.", key:"natürliche Sprache + verarbeiten = NLP"},
+  "technique": {txt:"Technik — das Wort ist gleich! Eine spezifische Methode oder Kunst, etwas zu tun.", key:"Technik = spezifische Methode"},
+  // p.51
+  "edge AI": {txt:"Edge = Rand/Kante. KI am Rand des Netzwerks — direkt auf dem Gerät, nicht in der fernen Cloud.", key:"Rand des Netzes = KI direkt auf dem Gerät"},
+  "edge device": {txt:"Edge = Rand, device = Gerät. Ein Gerät am Rand des Netzwerks — Smartphone, Sensor, Kamera.", key:"Gerät am Netzwerkrand = lokales Gerät"},
+  "capability": {txt:"Capable = fähig (I'm capable = ich bin fähig). Capability = die Fähigkeit, Kompetenz.", key:"fähig sein → Fähigkeit/Kompetenz"},
+  "complexity": {txt:"Komplex — das Wort ist gleich! Complexity = die Komplexität — viele miteinander verflochtene Teile.", key:"komplex → Komplexität"},
+  "complex": {txt:"Komplex — das Wort ist gleich! Viele miteinander verbundene Teile. Ein Gebäudekomplex hat viele Teile.", key:"Gebäudekomplex = viele Teile zusammen"},
+  "computational": {txt:"Computer kommt von compute = berechnen. Computational = mit der Berechnung zusammenhängend.", key:"Computer → rechnerisch = Rechen-"},
+  "alert": {txt:"Alert = Alarm! Wie eine Alarmanlage, die auslöst. Ein Warnhinweis, der sofort Aufmerksamkeit verlangt.", key:"Alarmanlage = Warnhinweis"},
+  "anomaly": {txt:"Anomalie — das Wort ist gleich! Etwas, das nicht der Norm entspricht — eine Unregelmäßigkeit.", key:"Anomalie = Abweichung von der Norm"},
+  "large-scale": {txt:"Large = groß, scale = Maßstab. In großem Maßstab — nicht klein und lokal, sondern weit und groß.", key:"großer Maßstab = groß angelegt"},
+  "slight": {txt:"Slight = leicht, geringfügig. Eine leichte Verbesserung — kaum merklich, nur ein kleiner Hauch.", key:"kaum merklich = geringfügig, leicht"},
+  "digital twin": {txt:"Digital = digital, twin = Zwilling. Der digitale Zwilling — eine exakte Kopie im Computer.", key:"digitaler Zwilling = virtuelle Kopie"},
+  "simulation": {txt:"Simulation — das Wort ist gleich! Wie ein Flugsimulator — echt wirkend, aber virtuell.", key:"Simulator = Simulation"},
+  "Internet of Things (IoT)": {txt:"Things = Dinge. Das Internet der Dinge — alle Alltagsgegenstände sind mit dem Internet verbunden.", key:"Dinge verbinden = Internet der Dinge"},
+  "to inform sth": {txt:"Inform = informieren. In eine Entscheidung einfließen = sie mit Informationen gestalten.", key:"informieren → in Entscheidung einfließen"},
+  "fairly": {txt:"Fair = gerecht. Fairly = ziemlich, in fairer Weise — nicht extrem, sondern in vernünftigem Maß.", key:"fair/gerecht → ziemlich, einigermaßen"},
+  "unlike sth": {txt:"Un = nicht, like = wie. Nicht wie etwas — im Gegensatz zu, das Gegenteil von.", key:"nicht wie = im Gegensatz zu"},
+  "to have sth in common": {txt:"Common = gemeinsam (commonplace). Etwas Gemeinsames haben — geteilte Eigenschaften besitzen.", key:"gemeinsam haben = in common"},
+  // p.52
+  "in attendance": {txt:"Attend = teilnehmen, anwesend sein (attend a class = am Unterricht teilnehmen). In attendance = anwesend.", key:"teilnehmen → anwesend sein"},
+  "sensitivity": {txt:"Sensitive = empfindlich (sensitive Haut). Sensitivity = Empfindlichkeit — auch: Vertraulichkeit von Daten.", key:"empfindlich → Vertraulichkeit"},
+  "invoice": {txt:"In + voice = Stimme hinein. Der Händler sprach früher die Rechnung aus. Invoice = Rechnung.", key:"gesprochen forderte man → Rechnung"},
+  "ledger": {txt:"Ledge = Sims/Ablage. Ein Hauptbuch liegt auf dem Regal. Ledger = das Buch aller Transaktionen.", key:"Buch auf dem Regal = Hauptbuch"},
+  "authorized": {txt:"Author = Autor, Schöpfer. Authorized = wer die Autorenrechte hat — offiziell berechtigt.", key:"Autor hat Rechte = offiziell berechtigt"},
+  "to safeguard sth": {txt:"Safe = Tresor/sicher, guard = Wächter. Der Tresorwächter schützt. Safeguard = schützen, sichern.", key:"Tresorwächter = schützen und sichern"},
+  "confidentiality": {txt:"Confide = jemandem anvertrauen (I confide in you). Confidentiality = die Verschwiegenheit darüber.", key:"anvertrauen → Verschwiegenheit"},
+  "audit trail": {txt:"Audit = Prüfung/Revision (Wirtschaftsprüfer), trail = Spur (wie Indianerpfad). Die Spur aller Aktionen.", key:"Prüfung + Spur = Protokoll aller Aktionen"},
+  "resumé": {txt:"Résumé = Zusammenfassung (auf Französisch/Englisch). Der Lebenslauf ist eine Zusammenfassung des Lebens.", key:"Zusammenfassung (des Lebens) = Lebenslauf"},
+  "candidate": {txt:"Candidatus (Latein) = der Weiß gekleidete. Römische Bewerber trugen weiße Toga. Kandidat = Bewerber.", key:"weiße Toga = Bewerber/Kandidat"},
+  "manual(ly)": {txt:"Manus = Hand (Latein). Manual = mit der Hand gemacht — manuell, händisch, nicht automatisch.", key:"Hand (manus) = per Hand, manuell"},
+  "hiring": {txt:"Hire = mieten oder einstellen (hire a car / hire someone). Hiring = der Einstellungsprozess.", key:"einstellen → Einstellungsprozess"},
+  "terms": {txt:"Terms = Bedingungen. Terms and Conditions = AGB, die man immer akzeptiert ohne zu lesen!", key:"AGB = Vertragsbedingungen"},
+  "keyword": {txt:"Key = Schlüssel, word = Wort. Das Schlüsselwort — das Wort, das wie ein Schlüssel die Suche öffnet.", key:"Schlüssel + Wort = Schlüsselwort"},
+  "straightforward": {txt:"Straight = gerade, forward = vorwärts. Gerade vorwärts gehen — ohne Umwege, einfach und klar.", key:"gerade vorwärts = einfach und direkt"},
+};
+
+let nmDeck=[], nmIdx=0, nmRevealed=false, nmFilter='all';
+
+function nmGetHint(en){
+  const key=en.toLowerCase().replace(/\s+/g,' ').trim();
+  // Try exact match first
+  if(NM_HINTS[key]) return NM_HINTS[key];
+  // Try partial match
+  for(const k of Object.keys(NM_HINTS)){
+    if(key.includes(k)||k.includes(key)) return NM_HINTS[k];
+  }
+  return null;
+}
+
+function nmInit(){
+  const nv=document.getElementById('nikita-view');
+  nv.innerHTML='';
+
+  // Build filter list
+  const pages=[...new Set(VOCAB.map(v=>v.page))].sort((a,b)=>a-b);
+  const units=[...new Set(VOCAB.map(v=>v.unit))].sort().filter(u=>u!==99);
+  const filterItems=[{k:'all',l:'Alle Wörter'},...units.map(u=>({k:'u'+u,l:'Unit '+u})),...pages.map(p=>({k:'p'+p,l:'S.'+p}))];
+
+  nv.innerHTML=`
+    <div class="nm-header">
+      <h2>✦ NIKITA METHODE</h2>
+      <p>Eselsbrücken · Klick zum Aufdecken</p>
+    </div>
+    <div class="nm-filters">${filterItems.map(f=>`<button class="fp${nmFilter===f.k?' active':''}" onclick="nmSetFilter('${f.k}')">${f.l}</button>`).join('')}</div>
+    <div class="nm-progress" id="nm-prog">
+      <div class="nm-prog-meta"><span id="nm-prog-txt">0 / 0</span><span id="nm-prog-pct">0%</span></div>
+      <div class="nm-prog-track"><div class="nm-ps-done" id="nm-ps-done" style="width:0%"></div></div>
+    </div>
+    <div class="nm-counter" id="nm-counter"></div>
+    <div id="nm-card-area"></div>
+  `;
+  nmBuildDeck();
+  nmRender();
+}
+
+function nmSetFilter(f){
+  nmFilter=f;
+  document.querySelectorAll('#nikita-view .fp').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick').includes(`'${f}'`));
+  });
+  nmBuildDeck();nmRender();
+}
+
+function nmBuildDeck(){
+  let base=VOCAB.filter(v=>v.unit!==99);
+  if(nmFilter!=='all'){
+    if(nmFilter.startsWith('u')) base=base.filter(v=>v.unit===+nmFilter.slice(1));
+    else if(nmFilter.startsWith('p')) base=base.filter(v=>v.page===+nmFilter.slice(1));
+  }
+  const arr=[...base];
+  for(let i=arr.length-1;i>0;i--){const j=0|Math.random()*(i+1);[arr[i],arr[j]]=[arr[j],arr[i]];}
+  nmDeck=arr; nmIdx=0; nmRevealed=false;
+}
+
+function nmRender(){
+  const area=document.getElementById('nm-card-area');
+  if(!area) return;
+
+  const total=nmDeck.length;
+  const pct=total>0?Math.round(nmIdx/total*100):0;
+  const progTxt=document.getElementById('nm-prog-txt');
+  const progPct=document.getElementById('nm-prog-pct');
+  const progBar=document.getElementById('nm-ps-done');
+  const counter=document.getElementById('nm-counter');
+  if(progTxt) progTxt.textContent=`${nmIdx} / ${total}`;
+  if(progPct) progPct.textContent=pct+'%';
+  if(progBar) progBar.style.width=pct+'%';
+  if(counter) counter.innerHTML=`<strong>${nmIdx}</strong> von <strong>${total}</strong> Wörtern`;
+
+  if(nmIdx>=nmDeck.length){
+    area.innerHTML=`<div class="nm-done">
+      <div class="nm-done-score">✓</div>
+      <div class="nm-done-label">Alle ${nmDeck.length} Wörter durch!<br>Sehr gut gemacht!</div>
+      <button class="nm-done-btn" onclick="nmBuildDeck();nmRender()">Nochmal von vorne</button>
+    </div>`;
+    return;
+  }
+
+  const card=nmDeck[nmIdx];
+  const hint=nmGetHint(card.en);
+
+  area.innerHTML=`
+    <div class="nm-card-wrap">
+      <div class="nm-card" id="nm-fc" onclick="nmReveal()">
+        <div class="nm-unit-badge">Unit ${card.unit} · S.${card.page}</div>
+        <div class="nm-word">${card.en}</div>
+        ${card.ph?`<div class="nm-phonetic">[${card.ph}]</div>`:'<div class="nm-phonetic"></div>'}
+      </div>
+
+      <div class="nm-divider ${nmRevealed?'show':''}" id="nm-divider">
+        <div class="nm-divider-line"></div>
+        <div class="nm-divider-dot"></div>
+        <div class="nm-divider-line"></div>
+      </div>
+
+      <div class="nm-translation ${nmRevealed?'show':''}" id="nm-trans">
+        <div class="nm-translation-label">Bedeutung</div>
+        <div class="nm-translation-word">${card.de}</div>
+      </div>
+
+      ${hint?`<div class="nm-esels-box ${nmRevealed?'show':''}" id="nm-esels">
+        <span class="nm-esels-label">💡 Eselsbrücke</span>
+        <div class="nm-esels-text">${hint.txt}</div>
+        <div class="nm-esels-key">→ ${hint.key}</div>
+      </div>`:''}
+
+      ${!nmRevealed
+        ? `<button class="nm-act-reveal" onclick="nmReveal()">Aufdecken — Bedeutung & Eselsbrücke zeigen</button>
+           <div class="nm-hint" id="nm-hint">Klick auf die Karte oder den Knopf</div>`
+        : `<div class="nm-actions show" id="nm-acts">
+            <button class="nm-act nm-act-wrong" onclick="nmNext(false)">✗ Nochmal</button>
+            <button class="nm-act nm-act-ok" onclick="nmNext(true)">✓ Gewusst</button>
+            <button class="nm-act nm-act-easy" onclick="nmNext(true)">★ Leicht</button>
+           </div>`
+      }
+    </div>
+  `;
+}
+
+function nmReveal(){
+  if(nmRevealed) return;
+  nmRevealed=true;
+  // Animate in
+  const trans=document.getElementById('nm-trans');
+  const esels=document.getElementById('nm-esels');
+  const div=document.getElementById('nm-divider');
+  const fc=document.getElementById('nm-fc');
+  if(fc) fc.style.cursor='default';
+  requestAnimationFrame(()=>{
+    if(div) div.classList.add('show');
+    if(trans) trans.classList.add('show');
+    setTimeout(()=>{if(esels) esels.classList.add('show');},120);
+  });
+  // Swap buttons
+  const area=document.getElementById('nm-card-area');
+  const revealBtn=area.querySelector('.nm-act-reveal');
+  const hint=area.querySelector('.nm-hint');
+  if(revealBtn) revealBtn.remove();
+  if(hint) hint.remove();
+  const wrap=area.querySelector('.nm-card-wrap');
+  if(wrap){
+    const actDiv=document.createElement('div');
+    actDiv.className='nm-actions';
+    actDiv.id='nm-acts';
+    actDiv.innerHTML=`
+      <button class="nm-act nm-act-wrong" onclick="nmNext(false)">✗ Nochmal</button>
+      <button class="nm-act nm-act-ok" onclick="nmNext(true)">✓ Gewusst</button>
+      <button class="nm-act nm-act-easy" onclick="nmNext(true)">★ Leicht</button>
+    `;
+    wrap.appendChild(actDiv);
+    requestAnimationFrame(()=>{actDiv.classList.add('show');});
+  }
+}
+
+function nmNext(knew){
+  if(!knew){
+    // Put back later in deck
+    const pos=Math.min(nmIdx+4+Math.floor(Math.random()*4),nmDeck.length);
+    nmDeck.splice(pos,0,{...nmDeck[nmIdx]});
+  }
+  nmIdx++; nmRevealed=false; nmRender();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06030f;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;overflow:hidden}
+#hud{display:flex;gap:14px;align-items:center;padding:6px 14px;border-radius:8px;margin-bottom:5px;color:#fff;font-size:8px;flex-wrap:wrap;justify-content:center;border:2px solid var(--ac,#a050ff);box-shadow:0 0 16px var(--ac,#8020ff)44;background:rgba(0,0,0,.7)}
+#hud .v{color:#ffd700}#hud .r{color:#ff5555;animation:bl .4s infinite}
+@keyframes bl{50%{opacity:.3}}
+canvas{border:3px solid var(--ac,#6020aa);border-radius:6px;box-shadow:0 0 50px var(--ac,#5010aa)44;display:block}
+#ctrl{margin-top:5px;color:#8060cc;font-size:7px;opacity:.6}
+/* OVERLAY */
+#ov{position:fixed;inset:0;background:rgba(4,0,12,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:12px}
+.ot{font-family:'Press Start 2P',monospace;text-align:center;line-height:1.7}
+h1.ot{color:#c060ff;font-size:18px;text-shadow:2px 2px 0 #600080}
+p.ot{color:#ffd700;font-size:8px;line-height:2.6}
+.hs{font-family:'Press Start 2P',monospace;color:#44ffaa;font-size:9px;text-align:center;line-height:2;border:2px solid #44ffaa;padding:8px 16px;border-radius:8px;background:rgba(0,60,30,.4)}
+/* Level cards */
+#lvlPick{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.lvlCard{cursor:pointer;border:3px solid #555;border-radius:12px;padding:14px 12px;width:140px;text-align:center;transition:transform .15s,border-color .15s;background:rgba(255,255,255,.04)}
+.lvlCard:hover{transform:scale(1.07)}
+.lvlCard.sel{border-color:#ffd700;box-shadow:0 0 18px #ffd70077}
+.lvlCard .icon{font-size:28px;margin-bottom:6px}
+.lvlCard .nm{font-family:'Press Start 2P',monospace;font-size:8px;color:#fff}
+.lvlCard .desc{font-family:'Press Start 2P',monospace;font-size:6px;color:#aaa;margin-top:5px;line-height:1.8}
+/* Buttons */
+.btn{font-family:'Press Start 2P',monospace;color:#fff;border:none;padding:11px 24px;font-size:10px;cursor:pointer;border-radius:6px;transition:transform .1s}
+.btn:hover{transform:scale(1.06)}.btn:active{transform:scale(.97) translateY(2px)}
+#startBtn{background:linear-gradient(135deg,#6020cc,#a040ff);box-shadow:0 4px 0 #300066}

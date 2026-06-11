@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="comfort">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats & Highscores — F11 HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Sammlung/Klassiker/Klassiker.css">
+  <style>
+    body { padding: 0 16px 48px; max-width: 1000px; margin: 0 auto; }
+
+    .stats-header {
+      text-align: center;
+      padding: 20px 0 20px;
+    }
+    .stats-header h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(12px, 3vw, 18px);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      margin: 0 0 8px;
+      letter-spacing: 2px;
+    }
+    .stats-header p {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--dim);
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .stats-refresh {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 10px;
+      align-items: center;
+    }
+    .last-update {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .stat-card--wide { grid-column: 1 / -1; }
+
+    .card-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      gap: 8px;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      flex-shrink: 0;
+    }
+    .stat-value {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--yellow);
+      text-align: right;
+    }
+    .stat-value.cyan  { color: var(--cyan);  text-shadow: var(--glow-cyan);  }
+    .stat-value.pink  { color: var(--pink);  text-shadow: var(--glow-pink);  }
+    .stat-value.green { color: var(--green); text-shadow: 0 0 8px var(--green); }
+    .stat-value.muted { color: var(--dim);   font-size: 9px; }
+    .stat-value.hi    { color: var(--yellow); text-shadow: var(--glow-yellow); font-size: 11px; }
+
+    hr.sdiv { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+    /* Dorf layout */
+    .dorf-top {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    .dorf-res-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px 16px;
+    }
+    .dorf-res-item { display: flex; flex-direction: column; gap: 3px; }
+    .dorf-res-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--dim); }
+    .dorf-res-value { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text); }
+    .dorf-res-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .dorf-res-fill { height: 100%; border-radius: 2px; }
+
+    .moral-row { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; }
+    .moral-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--dim); flex-shrink: 0; }
+    .moral-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .moral-fill { height: 100%; border-radius: 3px; }
+    .moral-val { font-family: 'Press Start 2P', monospace; font-size: 9px; min-width: 36px; text-align: right; }
+
+    /* Score list */
+    .score-list { list-style: none; margin: 0; padding: 0; }
+    .score-list li {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--text);
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .score-list li:last-child { border-bottom: none; }
+    .score-list .rank { color: var(--dim); margin-right: 8px; min-width: 22px; }
+    .score-list .sval {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+    }
+    .score-list li:first-child .sval { color: var(--cyan); text-shadow: var(--glow-cyan); font-size: 10px; }
+
+    .no-data { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--dim); text-align: center; padding: 14px 0; }
+
+    @media (max-width: 640px) {
+      .dorf-top      { grid-template-columns: repeat(2, 1fr); }
+      .dorf-res-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hub-back-bar">
+    <a class="hub-back-btn" href="/"
+      onclick="if(window.history.length>1){history.back();return false;}">
+      <span class="hub-back-arrow">←</span> F11 HUB
+    </a>
+  </div>
+
+  <div class="stats-header">
+    <h1>◈ STATS &amp; HIGHSCORES ◈</h1>
+    <p>Alle gespeicherten Spielstände und Rekorde auf einen Blick</p>
+  </div>
+
+  <div class="stats-refresh">
+    <button class="btn btn-cyan" onclick="loadAll()" style="font-size:10px;padding:6px 16px;">↺ Aktualisieren</button>
+    <span class="last-update" id="last-update"></span>
+  </div>
+
+  <div class="stats-grid">
+
+    <!-- DORF -->
+    <section class="stat-card stat-card--wide">
+      <div class="card-title">🏘 DORF — CHRONIK</div>
+      <div id="dorf-content"><div class="no-data">Lade Spielstand…</div></div>
+    </section>
+
+    <!-- TETRIS -->
+    <section class="stat-card">
+      <div class="card-title">🧱 TETRIS — HIGHSCORES</div>
+      <div id="tetris-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+    <!-- SNAKE -->
+    <section class="stat-card">
+      <div class="card-title">🐍 SNAKE</div>
+      <div id="snake-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+    <!-- 2048 -->
+    <section class="stat-card">
+      <div class="card-title">🔢 2048</div>
+      <div id="g2048-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+    <!-- Asteroid -->
+    <section class="stat-card">
+      <div class="card-title">🚀 ASTEROID BLASTER</div>
+      <div id="asteroid-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+    <!-- Runner -->
+    <section class="stat-card">
+      <div class="card-title">🏃 RUNNER</div>
+      <div id="runner-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+    <!-- Flipautomat -->
+    <section class="stat-card">
+      <div class="card-title">🎰 FLIPAUTOMAT</div>
+      <div id="flipautomat-content"><div class="no-data">Lade…</div></div>
+    </section>
+
+  </div>
+
+  <script>
+    // ── Helpers ───────────────────────────────────────
+    function fmtMs(ms) {
+      if (!ms || ms <= 0) return '—';
+      const s = Math.floor(ms / 1000);
+      const m = Math.floor(s / 60);
+      const h = Math.floor(m / 60);
+      if (h > 0) return h + 'h ' + (m % 60) + 'm';
+      if (m > 0) return m + 'm ' + (s % 60) + 's';
+      return s + 's';
+    }
+
+    function fmtNum(n) {
+      if (n === null || n === undefined || isNaN(Number(n))) return '—';
+      return Number(n).toLocaleString('de-DE');
+    }
+
+    function ls(key) {
+      try { return localStorage.getItem(key); } catch { return null; }
+    }
+
+    function row(label, value, cls) {
+      return `<div class="stat-row"><span class="stat-label">${label}</span><span class="stat-value ${cls ?? ''}">${value}</span></div>`;
+    }
+
+    // ── DORF ─────────────────────────────────────────
+    async function loadDorf() {
+      const el = document.getElementById('dorf-content');
+      let data = null;
+      try {
+        const r = await fetch('/api/saves/dorf');
+        if (r.ok) data = await r.json();
+      } catch {}
+      if (!data) {
+        try { const raw = ls('dorfchronik_3d_v1'); if (raw) data = JSON.parse(raw); } catch {}
+      }
+      if (!data) {
+        el.innerHTML = '<div class="no-data">Kein Spielstand gefunden — starte das Dorf-Spiel zuerst.</div>';
+        return;
+      }
+
+      const TIERS = ['Weiler', 'Dorf', 'Stadt', 'Königreich'];
+      const tier = TIERS[data.tier ?? 0] ?? 'Weiler';
+      const playtime = fmtMs((data.tick ?? 0) * 100);
+      const moral = Math.max(0, Math.min(100, Math.round(data.moral ?? 60)));
+      const moralColor = moral >= 60 ? '#39ff14' : moral >= 30 ? '#ffe600' : '#ff006e';
+
+      const res   = data.res   ?? {};
+      const lager = data.lager ?? {};
+      const resConfig = [
+        { key: 'holz',    icon: '🪵', label: 'Holz',    color: '#c87941' },
+        { key: 'stein',   icon: '🪨', label: 'Stein',   color: '#9e9e9e' },
+        { key: 'nahrung', icon: '🌾', label: 'Nahrung', color: '#39ff14' },
+        { key: 'gold',    icon: '💰', label: 'Gold',    color: '#ffe600' },
+        { key: 'eisen',   icon: '⚙️', label: 'Eisen',   color: '#78909c' },
+        { key: 'kohle',   icon: '🪨', label: 'Kohle',   color: '#607d8b' },
+      ];
+
+      const resHTML = resConfig.map(r => {
+        const cur = Math.floor(res[r.key] ?? 0);
+        const cap = Math.floor(lager[r.key] ?? 0);
+        const pct = cap > 0 ? Math.min(100, cur / cap * 100) : 0;
+        return `<div class="dorf-res-item">
+          <span class="dorf-res-label">${r.icon} ${r.label}</span>
+          <span class="dorf-res-value">${fmtNum(cur)}<span style="color:var(--dim);font-size:9px;"> / ${fmtNum(cap)}</span></span>
+          <div class="dorf-res-bar"><div class="dorf-res-fill" style="width:${pct.toFixed(1)}%;background:${r.color};"></div></div>
+        </div>`;
+      }).join('');
+
+      // Count buildings
+      const buildings = data.buildings ?? {};
+      const buildingCount = Object.values(buildings).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : (typeof arr === 'number' ? arr : 0)), 0);
+      const researchCount = Object.values(data.research ?? {}).filter(v => v === true || (v && v.done)).length;
+
+      el.innerHTML = `
+        <div class="dorf-top">
+          ${row('Tag', `<b>${fmtNum(data.day)}</b>`, 'cyan')}
+          ${row('Spielzeit', playtime, '')}
+          ${row('Tier', tier, '')}
+          ${row('Prestige', fmtNum(data.prestige), 'pink')}
+          ${row('Bevölkerung', `${fmtNum(data.pop)} / ${fmtNum(data.popMax)}`, 'green')}
+          ${row('Gebäude', fmtNum(buildingCount), '')}
+          ${row('Forschungen', fmtNum(researchCount), '')}
+          ${row('Ticks gesamt', fmtNum(data.tick), 'muted')}
+        </div>
+        <div class="moral-row">
+          <span class="moral-label">Moral</span>
+          <div class="moral-track"><div class="moral-fill" style="width:${moral}%;background:${moralColor};box-shadow:0 0 6px ${moralColor};"></div></div>
+          <span class="moral-val" style="color:${moralColor};">${moral}%</span>
+        </div>
+        <hr class="sdiv">
+        <div class="side-label" style="margin-bottom:10px;font-size:9px;">RESSOURCEN</div>
+        <div class="dorf-res-grid">${resHTML}</div>
+      `;
+    }
+
+    // ── TETRIS ────────────────────────────────────────
+    function loadTetris() {
+      const el = document.getElementById('tetris-content');
+      const modes = [
+        { id: 'klassisch',  label: '🎮 Klassisch'  },
+        { id: 'blitz',      label: '⚡ Blitz'       },
+        { id: 'sprint',     label: '🏁 Sprint'      },
+        { id: 'ueberleben', label: '💀 Überleben'   },
+        { id: 'unsichtbar', label: '👻 Unsichtbar'  },
+      ];
+      let hasAny = false;
+      const rows = modes.map(m => {
+        const hi = parseInt(ls('tetris-hi-' + m.id) ?? '0') || 0;
+        if (hi > 0) hasAny = true;
+        return row(m.label, hi > 0 ? fmtNum(hi) : '—', hi > 0 ? 'hi' : 'muted');
+      }).join('');
+      el.innerHTML = hasAny ? rows : '<div class="no-data">Noch kein Score gespielt</div>';
+    }
+
+    // ── SNAKE ─────────────────────────────────────────
+    function loadSnake() {
+      const el = document.getElementById('snake-content');
+      const hi = parseInt(ls('snake-hi') ?? '0') || 0;
+      el.innerHTML = hi > 0
+        ? row('🐍 Highscore', fmtNum(hi), 'hi')
+        : '<div class="no-data">Noch kein Score gespielt</div>';
+    }
+
+    // ── 2048 ──────────────────────────────────────────
+    function load2048() {
+      const el = document.getElementById('g2048-content');
+      const hi = parseInt(ls('2048-hi') ?? '0') || 0;
+      el.innerHTML = hi > 0
+        ? row('🔢 Highscore', fmtNum(hi), 'hi')
+        : '<div class="no-data">Noch kein Score gespielt</div>';
+    }
+
+    // ── ASTEROID ──────────────────────────────────────
+    function loadAsteroid() {
+      const el = document.getElementById('asteroid-content');
+      let scores = [];
+      try { scores = JSON.parse(ls('ab_hs') ?? '[]'); } catch {}
+      if (!scores.length) { el.innerHTML = '<div class="no-data">Noch kein Score gespielt</div>'; return; }
+      el.innerHTML = `<ul class="score-list">${
+        scores.slice(0, 5).map((e, i) =>
+          `<li><span><span class="rank">#${i + 1}</span></span><span class="sval">${fmtNum(e.s)}</span></li>`
+        ).join('')
+      }</ul>`;
+    }
+
+    // ── RUNNER ────────────────────────────────────────
+    function loadRunner() {
+      const el = document.getElementById('runner-content');
+      let data = { school: 0, city: 0, office: 0 };
+      try { data = { ...data, ...JSON.parse(ls('rr_hs2') ?? '{}') }; } catch {}
+      const labels = { school: '🏫 Schule', city: '🏙 Stadt', office: '🏢 Büro' };
+      const hasAny = Object.values(data).some(v => v > 0);
+      if (!hasAny) { el.innerHTML = '<div class="no-data">Noch kein Score gespielt</div>'; return; }
+      el.innerHTML = Object.entries(labels).map(([k, l]) =>
+        row(l, data[k] > 0 ? fmtNum(data[k]) : '—', data[k] > 0 ? '' : 'muted')
+      ).join('');
+    }
+
+    // ── FLIPAUTOMAT ───────────────────────────────────
+    function loadFlipautomat() {
+      const el = document.getElementById('flipautomat-content');
+      const hi = parseInt(ls('sc_hi') ?? '0') || 0;
+      el.innerHTML = hi > 0
+        ? row('🎰 Highscore', fmtNum(hi), 'hi')
+        : '<div class="no-data">Noch kein Score gespielt</div>';
+    }
+
+    // ── ALLE LADEN ────────────────────────────────────
+    async function loadAll() {
+      loadTetris();
+      loadSnake();
+      load2048();
+      loadAsteroid();
+      loadRunner();
+      loadFlipautomat();
+      await loadDorf();
+      const now = new Date();
+      document.getElementById('last-update').textContent =
+        'Zuletzt: ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    loadAll();
+  </script>
+
+</body>
+</html>

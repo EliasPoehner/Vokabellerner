@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Space Cadet Pinball</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Orbitron',monospace;overflow:hidden;user-select:none;}
+#hud{display:flex;justify-content:space-between;align-items:center;width:420px;padding:5px 10px;color:#00ffff;font-size:10px;letter-spacing:1px;background:rgba(0,0,60,0.9);border:1px solid #00ffff55;border-bottom:none;}
+#hud>span{display:flex;flex-direction:column;align-items:center;gap:1px;}
+#hud label{font-size:7px;color:#ffffff55;letter-spacing:2px;}
+canvas{display:block;}
+#overlay{position:fixed;inset:0;background:rgba(0,0,20,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:10;}
+#overlay h1{font-family:'Orbitron',monospace;color:#00ffff;font-size:28px;text-shadow:0 0 20px #00ffff,0 0 50px #0050ff;letter-spacing:5px;}
+#overlay p{color:#aabbcc;font-size:11px;text-align:center;line-height:2.2;max-width:340px;}
+#overlay button{font-family:'Orbitron',monospace;background:transparent;border:2px solid #00ffff;color:#00ffff;padding:10px 32px;font-size:14px;cursor:pointer;letter-spacing:2px;transition:all .2s;}
+#overlay button:hover{background:#00ffff22;box-shadow:0 0 22px #00ffff99;}
+#controls{width:420px;padding:4px 10px;color:#ffffff33;font-size:8px;letter-spacing:1px;display:flex;justify-content:space-between;background:rgba(0,0,50,0.6);}
+</style>
+</head>
+<body>
+<div id="hud">
+  <span><label>SCORE</label><span id="scoreVal">0</span></span>
+  <span><label>MULTI</label><span id="multVal">×1</span></span>
+  <span><label>TARGETS</label><span id="targets" style="letter-spacing:3px;font-size:9px">○ ○ ○ ○ ○</span></span>
+  <span><label>LIVES</label><span id="livesVal">● ● ●</span></span>
+  <span><label>BEST</label><span id="bestVal">0</span></span>
+</div>
+<canvas id="c" width="420" height="750"></canvas>
+<div id="controls">
+  <span>Z / ← Links</span><span>SPACE Plunger</span><span>P Pause</span><span>X / → Rechts</span>
+</div>
+<div id="overlay">
+  <h1>SPACE CADET</h1>
+  <p><b>Z / ←</b> Linker Flipper &nbsp;·&nbsp; <b>X / →</b> Rechter Flipper<br>
+     <b>LEERTASTE</b> halten = Plunger laden, loslassen = Schuss<br><br>
+     Alle 5 Targets = Score ×Multiplikator (bis ×5)</p>
+  <button id="startBtn">▶ PLAY</button>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const W = 420, H = 750;
+
+// ── Konstanten ────────────────────────────────────────────────────────────────
+const TL      = 28;    // linke Wand
+const PLAY_R  = 360;   // rechte Wand Hauptfeld
+const PLG_R   = 394;   // rechte Außenwand Plunger-Lane
+const PLG_BX  = 378;   // Kugel-X in Plunger-Lane
+const DRAIN_Y = 726;
+
+// ── Sterne ────────────────────────────────────────────────────────────────────
+const stars = Array.from({length:170}, () => ({
+  x:Math.random()*W, y:Math.random()*H,
+  r:Math.random()*1.5+0.3, a:Math.random()*0.8+0.2,
+  tw:Math.random()*Math.PI*2
+}));
+
+// ── Spielzustand ──────────────────────────────────────────────────────────────
+let score=0, lives=3, hiScore=+localStorage.getItem('sc_hi')||0;
+let multiplier=1, gameRunning=false, gamePaused=false;
+let plungerCharge=0, plungerActive=false, ballInPlunger=true;
+let particles=[];
+const keys={};
+
+// ── Lane-Targets ──────────────────────────────────────────────────────────────
+const laneTargets=[
+  {x:92, y:85, lit:false},{x:146,y:72, lit:false},{x:205,y:67, lit:false},
+  {x:264,y:72, lit:false},{x:318,y:85, lit:false},
+];
+function updTHUD(){ document.getElementById('targets').textContent=laneTargets.map(t=>t.lit?'●':'○').join(' '); }
+function checkTargets(){
+  if(laneTargets.every(t=>t.lit)){
+    multiplier=Math.min(multiplier+1,5);
+    document.getElementById('multVal').textContent='×'+multiplier;
+    laneTargets.forEach(t=>t.lit=false); updTHUD();
+    burst(W/2,80,'#ffff00',28);
+  }
+}
+
+// ── Ball ──────────────────────────────────────────────────────────────────────
+const ball={x:0,y:0,vx:0,vy:0,r:9};
+function resetBall(){
+  ball.x=PLG_BX; ball.y=H-125;
+  ball.vx=0; ball.vy=0;
+  ballInPlunger=true; plungerCharge=0; plungerActive=false;
+}
+
+// ── Flipper ───────────────────────────────────────────────────────────────────
+const FL={px:122,py:666,len:73,restAngle:0.44,activeAngle:-0.44,angle:0.44,active:false};
+const FR={px:298,py:666,len:73,restAngle:Math.PI-0.44,activeAngle:Math.PI+0.44,angle:Math.PI-0.44,active:false};
+
+// ── Bumper ────────────────────────────────────────────────────────────────────
+// Angeordnet wie im Space-Cadet-Screenshot (oberes Cluster, Mitte, unten)
+const bumpers=[
+  // Oberes Cluster
+  {x:145,y:168,r:22,color:'#00ffff',flash:0},
+  {x:205,y:145,r:25,color:'#cc00ff',flash:0},
+  {x:265,y:168,r:22,color:'#ff6600',flash:0},
+  {x:110,y:222,r:20,color:'#ff0088',flash:0},
+  {x:205,y:214,r:21,color:'#00ff88',flash:0},
+  {x:300,y:222,r:20,color:'#ffcc00',flash:0},
+  // Mittlere Reihe
+  {x:78, y:305,r:17,color:'#0099ff',flash:0},
+  {x:160,y:298,r:19,color:'#ff44ff',flash:0},
+  {x:250,y:298,r:19,color:'#44ffcc',flash:0},
+  {x:332,y:305,r:17,color:'#ff8844',flash:0},
+  {x:205,y:352,r:22,color:'#ffffff',flash:0},
+  // Untere Bumper
+  {x:148,y:440,r:16,color:'#88ffff',flash:0},
+  {x:262,y:440,r:16,color:'#ff88cc',flash:0},
+  {x:205,y:482,r:17,color:'#ffff88',flash:0},
+];
+
+// ── Slingshots ────────────────────────────────────────────────────────────────
+// Rechter Slingshot bewusst auf x≤345 begrenzt — Plunger-Kugel kommt bei x≈360 runter
+const slings=[
+  {pts:[{x:TL,  y:545},{x:90, y:466},{x:90, y:568}],flash:0},
+  {pts:[{x:345, y:545},{x:288,y:466},{x:288,y:568}],flash:0},
+];
+
+// ── Rail-Segmente (Kugelbahnen) ───────────────────────────────────────────────
+const rails=[
+  // Linker Einlaufbogen (Plunger → Tischinneres)
+  [{x:TL+4,y:108},{x:58,y:86},{x:108,y:72}],
+  // Rechter Einlaufbogen
+  [{x:310,y:72},{x:345,y:86},{x:PLAY_R-4,y:108}],
+  // Linker Mitteltrenner (über linkem Slingshot)
+  [{x:70, y:385},{x:76, y:462}],
+  // Rechter Mitteltrenner
+  [{x:340,y:385},{x:334,y:462}],
+  // Linker Funneltrichter → Flipper
+  [{x:TL, y:615},{x:116,y:666}],
+  // Rechter Funneltrichter → Flipper
+  [{x:PLAY_R,y:615},{x:304,y:666}],
+  // Plunger-Trennwand (untere Hälfte)
+  [{x:PLAY_R,y:H-188},{x:PLAY_R,y:DRAIN_Y}],
+];
+
+// ── Partikel ──────────────────────────────────────────────────────────────────
+function burst(x,y,color,n=8){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,s=Math.random()*5+1.5;
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color});
+  }
+}
+
+// ── Physik-Helpers ────────────────────────────────────────────────────────────
+function dist(ax,ay,bx,by){return Math.hypot(bx-ax,by-ay);}
+
+function closestPt(px,py,ax,ay,bx,by){
+  const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;
+  if(!l)return{x:ax,y:ay};
+  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l));
+  return{x:ax+t*dx,y:ay+t*dy};
+}
+
+function reflectBall(ax,ay,bx,by,kick=1){
+  const dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy);
+  if(!L)return;
+  const nx=-dy/L,ny=dx/L,dot=ball.vx*nx+ball.vy*ny;
+  if(dot>=0)return; // bereits wegbewegend
+  ball.vx=(ball.vx-2*dot*nx)*kick;
+  ball.vy=(ball.vy-2*dot*ny)*kick;
+}
+
+function segHit(ax,ay,bx,by,kick=0.8){
+  const cp=closestPt(ball.x,ball.y,ax,ay,bx,by);
+  const d=dist(ball.x,ball.y,cp.x,cp.y);
+  if(d<ball.r+2){
+    const nx=(ball.x-cp.x)/(d||1),ny=(ball.y-cp.y)/(d||1);
+    ball.x=cp.x+nx*(ball.r+3); ball.y=cp.y+ny*(ball.r+3);
+    reflectBall(ax,ay,bx,by,kick);
+    return true;
+  }
+  return false;
+}
+
+function flipTip(f){return{x:f.px+Math.cos(f.angle)*f.len,y:f.py+Math.sin(f.angle)*f.len};}
+
+// ── Kollision ─────────────────────────────────────────────────────────────────
+function collide(){
+  // Linke Wand
+  if(ball.x-ball.r<TL){ball.x=TL+ball.r;if(ball.vx<0)ball.vx*=-0.76;}
+
+  // PLAY_R: nur blockieren wenn Kugel NACH RECHTS fliegt
+  // → Plunger-Kugel startet mit vx=-0.9 (links) und wird NICHT sofort gestoppt
+  if(!ballInPlunger && ball.vx>0 && ball.x+ball.r>PLAY_R){
+    ball.x=PLAY_R-ball.r; ball.vx*=-0.76;
+  }
+  // Äußere Plunger-Wand
+  if(ball.x+ball.r>PLG_R){ball.x=PLG_R-ball.r;if(ball.vx>0)ball.vx*=-0.76;}
+
+  // Obere Wand
+  if(ball.y-ball.r<62){ball.y=62+ball.r;if(ball.vy<0)ball.vy*=-0.72;}
+
+  // Lane-Targets (Sensor, kein Rückprall)
+  for(const t of laneTargets){
+    if(!t.lit&&dist(ball.x,ball.y,t.x,t.y)<ball.r+10){
+      t.lit=true; addScore(500); updTHUD(); checkTargets();
+      burst(t.x,t.y,'#ffff00',10);
+    }
+  }
+
+  // Bumper
+  for(const b of bumpers){
+    const d=dist(ball.x,ball.y,b.x,b.y);
+    if(d<ball.r+b.r){
+      const nx=(ball.x-b.x)/d,ny=(ball.y-b.y)/d;
+      const spd=Math.max(Math.hypot(ball.vx,ball.vy),6);
+      ball.vx=nx*spd*1.55; ball.vy=ny*spd*1.55;
+      ball.x=b.x+nx*(ball.r+b.r+1); ball.y=b.y+ny*(ball.r+b.r+1);
+      b.flash=12; addScore(100); burst(b.x,b.y,b.color,8);
+    }
+  }
+
+  // Rail-Segmente
+  for(const rail of rails)
+    for(let i=0;i<rail.length-1;i++)
+      segHit(rail[i].x,rail[i].y,rail[i+1].x,rail[i+1].y,0.78);
+
+  // Slingshots
+  for(const s of slings){
+    const p=s.pts;
+    for(const [a,b] of [[p[0],p[1]],[p[1],p[2]],[p[2],p[0]]]){
+      const cp=closestPt(ball.x,ball.y,a.x,a.y,b.x,b.y);
+      const d=dist(ball.x,ball.y,cp.x,cp.y);
+      if(d<ball.r+3){
+        const nx=(ball.x-cp.x)/(d||1),ny=(ball.y-cp.y)/(d||1);
+        ball.x=cp.x+nx*(ball.r+5); ball.y=cp.y+ny*(ball.r+5);
+        reflectBall(a.x,a.y,b.x,b.y,1.22);
+        s.flash=9; addScore(50); burst(cp.x,cp.y,'#ff8800',6); break;
+      }
+    }
+  }
+
+  // Flipper
+  for(const f of [FL,FR]){
+    const tip=flipTip(f);
+    const cp=closestPt(ball.x,ball.y,f.px,f.py,tip.x,tip.y);
+    const d=dist(ball.x,ball.y,cp.x,cp.y);
+    if(d<ball.r+5){
+      const nx=(ball.x-cp.x)/(d||1),ny=(ball.y-cp.y)/(d||1);
+      ball.x=cp.x+nx*(ball.r+6); ball.y=cp.y+ny*(ball.r+6);
+      const dot=ball.vx*nx+ball.vy*ny;
+      ball.vx=ball.vx-2*dot*nx;
+      ball.vy=ball.vy-2*dot*ny+(f.active?-9.5:0);
+      const sp=Math.hypot(ball.vx,ball.vy);
+      if(sp>28){ball.vx*=28/sp;ball.vy*=28/sp;}
+    }
+  }
+}
+
+// ── Score / HUD ───────────────────────────────────────────────────────────────
+function addScore(n){
+  score+=n*multiplier;
+  document.getElementById('scoreVal').textContent=score.toLocaleString();
+  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);
+    document.getElementById('bestVal').textContent=hiScore.toLocaleString();}
+}
+function updLives(){ document.getElementById('livesVal').textContent=lives>0?'● '.repeat(lives).trim():'–'; }
+
+// ── Update ────────────────────────────────────────────────────────────────────
+function update(dt){
+  FL.active=!!(keys['z']||keys['arrowleft']);
+  FR.active=!!(keys['x']||keys['arrowright']);
+  for(const f of [FL,FR]){
+    const t=f.active?f.activeAngle:f.restAngle;
+    f.angle+=(t-f.angle)*0.24*dt*4;
+  }
+
+  if(ballInPlunger){
+    if(keys[' ']){plungerActive=true;plungerCharge=Math.min(plungerCharge+0.04*dt,1);}
+    else if(plungerActive){
+      ballInPlunger=false;
+      ball.vy=-(plungerCharge*27+6); // min 6, max 33
+      ball.vx=-0.9;
+      plungerActive=false; plungerCharge=0;
+    }
+    return;
+  }
+
+  ball.vy+=0.38*dt;
+  ball.x+=ball.vx*dt;
+  ball.y+=ball.vy*dt;
+  const sp=Math.hypot(ball.vx,ball.vy);
+  if(sp>28){ball.vx*=28/sp;ball.vy*=28/sp;}
+
+  collide();
+
+  for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=0.13;p.life-=0.055;}
+  particles=particles.filter(p=>p.life>0);
+
+  if(ball.y>DRAIN_Y+ball.r){
+    lives--; updLives();
+    if(lives<=0){endGame();return;}
+    resetBall();
+  }
+}
+
+// ── Draw ──────────────────────────────────────────────────────────────────────
+function drawScene(){
+  // Hintergrund
+  ctx.fillStyle='#020010'; ctx.fillRect(0,0,W,H);
+  // Sterne
+  for(const s of stars){
+    s.tw+=0.018;
+    ctx.fillStyle=`rgba(255,255,255,${s.a*(0.5+0.5*Math.sin(s.tw))})`;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+  }
+  // Tischfläche
+  ctx.beginPath();
+  ctx.moveTo(TL,108); ctx.lineTo(TL,DRAIN_Y);
+  ctx.lineTo(PLAY_R,DRAIN_Y); ctx.lineTo(PLAY_R,108);
+  ctx.quadraticCurveTo(205,32,TL,108);
+  const tg=ctx.createLinearGradient(TL,0,PLAY_R,0);
+  tg.addColorStop(0,'rgba(6,3,24,0.93)');
+  tg.addColorStop(0.5,'rgba(12,6,44,0.93)');
+  tg.addColorStop(1,'rgba(6,3,24,0.93)');
+  ctx.fillStyle=tg; ctx.fill();
+  // Tischrand
+  ctx.save(); ctx.shadowColor='#00ccff'; ctx.shadowBlur=8;
+  ctx.strokeStyle='rgba(0,200,255,0.55)'; ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(TL,108); ctx.lineTo(TL,DRAIN_Y);
+  ctx.lineTo(PLAY_R,DRAIN_Y); ctx.lineTo(PLAY_R,108);
+  ctx.quadraticCurveTo(205,32,TL,108);
+  ctx.stroke(); ctx.restore();
+  // Plunger-Lane
+  ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(PLAY_R,H-188);ctx.lineTo(PLAY_R,DRAIN_Y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(PLG_R,142);ctx.lineTo(PLG_R,DRAIN_Y);ctx.stroke();
+  // Tischname
+  ctx.font='bold 10px Orbitron'; ctx.fillStyle='rgba(0,200,255,0.1)';
+  ctx.textAlign='center'; ctx.fillText('SPACE  CADET',205,115);
+}
+
+function drawRails(){
+  ctx.save();
+  ctx.shadowColor='#00ccff'; ctx.shadowBlur=7;
+  ctx.strokeStyle='rgba(0,188,255,0.58)'; ctx.lineWidth=2.5;
+  ctx.lineJoin='round'; ctx.lineCap='round';
+  for(const rail of rails){
+    ctx.beginPath(); ctx.moveTo(rail[0].x,rail[0].y);
+    for(let i=1;i<rail.length;i++)ctx.lineTo(rail[i].x,rail[i].y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawTargets(){
+  for(const t of laneTargets){
+    ctx.save();
+    ctx.shadowColor=t.lit?'#ffff00':'#8888ff'; ctx.shadowBlur=t.lit?22:5;
+    ctx.fillStyle=t.lit?'#ffff00':'rgba(150,150,255,0.4)';
+    ctx.fillRect(t.x-5,t.y-14,10,20);
+    ctx.strokeStyle=t.lit?'#ffaa00':'rgba(150,150,255,0.7)'; ctx.lineWidth=1.5;
+    ctx.strokeRect(t.x-5,t.y-14,10,20);
+    ctx.restore();
+  }
+}
+
+function drawBumpers(){
+  for(const b of bumpers){
+    const fl=b.flash>0; if(b.flash>0)b.flash--;
+    const c=fl?'#ffffff':b.color;
+    ctx.save();
+    ctx.shadowColor=c; ctx.shadowBlur=fl?44:18;
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    ctx.fillStyle=fl?c+'bb':c+'28'; ctx.fill();
+    ctx.strokeStyle=c; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.r*0.42,0,Math.PI*2);
+    ctx.fillStyle=fl?'#fff':c+'cc'; ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawSlings(){
+  for(const s of slings){
+    const fl=s.flash>0; if(s.flash>0)s.flash--;
+    ctx.save();
+    ctx.shadowColor=fl?'#ffff00':'#ff8800'; ctx.shadowBlur=fl?26:8;
+    ctx.strokeStyle=fl?'#ffff00':'rgba(255,140,0,0.75)'; ctx.lineWidth=3;
+    const p=s.pts;
+    ctx.beginPath(); ctx.moveTo(p[0].x,p[0].y);
+    ctx.lineTo(p[1].x,p[1].y); ctx.lineTo(p[2].x,p[2].y); ctx.closePath();
+    ctx.fillStyle=fl?'rgba(255,255,0,0.2)':'rgba(255,140,0,0.08)';
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+}
+
+function drawFlipper(f){
+  const tip=flipTip(f);
+  ctx.save();
+  ctx.shadowColor='#9999ff'; ctx.shadowBlur=12; ctx.lineCap='round';
+  ctx.strokeStyle=f.active?'#ffffff':'#ccccee'; ctx.lineWidth=12;
+  ctx.beginPath(); ctx.moveTo(f.px,f.py); ctx.lineTo(tip.x,tip.y); ctx.stroke();
+  ctx.strokeStyle='#111133'; ctx.lineWidth=7;
+  ctx.beginPath(); ctx.moveTo(f.px,f.py); ctx.lineTo(tip.x,tip.y); ctx.stroke();
+  ctx.fillStyle='#9999ff'; ctx.beginPath(); ctx.arc(f.px,f.py,5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawBallAt(x,y){
+  ctx.save();
+  const g=ctx.createRadialGradient(x-3,y-3,1,x,y,ball.r);
+  g.addColorStop(0,'#ffffff'); g.addColorStop(0.5,'#ddddff'); g.addColorStop(1,'#445588');
+  ctx.shadowColor='#aaaaff'; ctx.shadowBlur=20;
+  ctx.beginPath(); ctx.arc(x,y,ball.r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+  ctx.restore();
+}
+
+function drawPlunger(){
+  const px=PLG_BX, py=DRAIN_Y-4, ch=plungerCharge*105;
+  ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fillRect(px-8,py-105,16,105);
+  ctx.fillStyle=`hsl(${120-plungerCharge*120},100%,55%)`; ctx.fillRect(px-7,py-ch,14,Math.max(ch,0));
+  ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=1.5; ctx.strokeRect(px-8,py-105,16,105);
+  if(plungerActive){
+    ctx.fillStyle=`hsl(${120-plungerCharge*120},100%,62%)`;
+    ctx.font='bold 8px Orbitron'; ctx.textAlign='center';
+    ctx.fillText(Math.round(plungerCharge*100)+'%',px,py-112);
+  }
+}
+
+function drawParticles(){
+  for(const p of particles){
+    ctx.save(); ctx.globalAlpha=Math.max(0,p.life);
+    ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.arc(p.x,p.y,3.5*p.life,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  drawScene();
+  drawRails();
+  drawTargets();
+  drawBumpers();
+  drawSlings();
+  drawFlipper(FL); drawFlipper(FR);
+  if(ballInPlunger){drawPlunger(); drawBallAt(PLG_BX, ball.y-plungerCharge*14);}
+  else drawBallAt(ball.x,ball.y);
+  drawParticles();
+  if(gamePaused){
+    ctx.fillStyle='rgba(0,0,20,0.72)'; ctx.fillRect(0,0,W,H);
+    ctx.save(); ctx.textAlign='center'; ctx.shadowColor='#00ffff'; ctx.shadowBlur=22;
+    ctx.fillStyle='#00ffff'; ctx.font='bold 28px Orbitron'; ctx.fillText('PAUSE',W/2,H/2);
+    ctx.shadowBlur=0; ctx.fillStyle='#aabbcc'; ctx.font='11px Orbitron';
+    ctx.fillText('P zum Fortfahren',W/2,H/2+40); ctx.restore();
+  }
+}
+
+// ── Game Loop ─────────────────────────────────────────────────────────────────
+let last=0;
+function loop(ts){
+  if(!gameRunning)return;
+  const dt=Math.min((ts-last)/16.67,3); last=ts;
+  if(!gamePaused)update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function startGame(){
+  score=0; lives=3; multiplier=1; gameRunning=true; gamePaused=false; particles=[];
+  laneTargets.forEach(t=>t.lit=false); bumpers.forEach(b=>b.flash=0);
+  document.getElementById('scoreVal').textContent='0';
+  document.getElementById('multVal').textContent='×1';
+  document.getElementById('bestVal').textContent=hiScore.toLocaleString();
+  updLives(); updTHUD(); resetBall();
+  document.getElementById('overlay').style.display='none';
+  last=performance.now(); requestAnimationFrame(loop);
+}
+
+function endGame(){
+  gameRunning=false;
+  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);}
+  const ol=document.getElementById('overlay');
+  ol.innerHTML=`
+    <h1 style="color:#ff4444;text-shadow:0 0 20px #ff0000,0 0 50px #800000">GAME OVER</h1>
+    <p>Score: <b style="color:#00ffff;font-size:22px">${score.toLocaleString()}</b><br>
+       Highscore: <b style="color:#ffcc00">${hiScore.toLocaleString()}</b></p>
+    <button id="startBtn">▶ NOCHMAL</button>`;
+  ol.style.display='flex';
+  document.getElementById('startBtn').addEventListener('click',startGame);
+}
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  keys[e.key.toLowerCase()]=true;
+  if(e.key==='p'||e.key==='Escape')gamePaused=!gamePaused;
+  if(e.key===' ')e.preventDefault();
+});
+document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
+document.getElementById('startBtn').addEventListener('click',startGame);
+draw();
+</script>
+</body>
+</html>

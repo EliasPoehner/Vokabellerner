@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudoku · F11 HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../Style/hub.css">
+  <link rel="stylesheet" href="../Style/hub-index.css">
+  <link rel="stylesheet" href="./sudoku.css">
+  <script>
+    // Theme aus Hub übernehmen (localStorage['hub-theme'] → html.light / html.dark)
+    (function () {
+      const m = localStorage.getItem('hub-theme') || 'system';
+      const html = document.documentElement;
+      if (m === 'light') html.classList.add('light');
+      else if (m === 'dark') html.classList.add('dark');
+      else html.classList.add(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+  </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+
+  <!-- Back bar -->
+  <div class="flex items-center gap-md px-md py-sm border-b border-outline-variant/20 bg-surface-container shrink-0">
+    <a href="/"
+       onclick="if(window.history.length>1){history.back();return false;}"
+       class="inline-flex items-center gap-2 text-label-md text-primary hover:text-on-background transition-colors">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+      F11 HUB · Arcade
+    </a>
+  </div>
+
+  <!-- Page -->
+  <main class="flex-1 flex flex-col items-center px-md pb-xl gap-lg" style="padding-top:1.5rem">
+
+    <h1 class="text-h2 text-on-surface tracking-tight">Sudoku</h1>
+
+    <!-- Status -->
+    <div class="flex gap-md flex-wrap justify-center">
+      <div class="glass-card rounded-xl px-md py-sm flex flex-col items-center gap-xs min-w-[96px]">
+        <span class="text-label-md text-on-surface-variant">Schwierigkeit</span>
+        <span class="font-bold text-on-surface text-sm" id="diff-display">Leicht</span>
+      </div>
+      <div class="glass-card rounded-xl px-md py-sm flex flex-col items-center gap-xs min-w-[72px]">
+        <span class="text-label-md text-on-surface-variant">Zeit</span>
+        <span class="font-bold text-on-surface text-sm font-mono" id="timer">0:00</span>
+      </div>
+      <div class="glass-card rounded-xl px-md py-sm flex flex-col items-center gap-xs min-w-[72px]">
+        <span class="text-label-md text-on-surface-variant">Fehler</span>
+        <span class="font-bold text-sm sudoku-errors" id="error-count">0 / 3</span>
+      </div>
+    </div>
+
+    <!-- Difficulty + actions -->
+    <div class="flex gap-sm flex-wrap justify-center">
+      <button class="sudoku-btn sudoku-btn-active" id="diff-easy"   onclick="setDifficulty('easy')">Leicht</button>
+      <button class="sudoku-btn"                  id="diff-medium" onclick="setDifficulty('medium')">Mittel</button>
+      <button class="sudoku-btn"                  id="diff-hard"   onclick="setDifficulty('hard')">Schwer</button>
+      <button class="sudoku-btn sudoku-btn-danger" onclick="newGame()">
+        <span class="material-symbols-outlined" style="font-size:15px">restart_alt</span> Neu
+      </button>
+      <button class="sudoku-btn sudoku-btn-danger" onclick="resetBoard()">
+        <span class="material-symbols-outlined" style="font-size:15px">undo</span> Reset
+      </button>
+    </div>
+
+    <!-- Grid -->
+    <div class="sudoku-grid" id="grid"></div>
+
+    <!-- Number pad -->
+    <div class="sudoku-numpad">
+      <button class="sudoku-num" onclick="inputNum(1)">1</button>
+      <button class="sudoku-num" onclick="inputNum(2)">2</button>
+      <button class="sudoku-num" onclick="inputNum(3)">3</button>
+      <button class="sudoku-num" onclick="inputNum(4)">4</button>
+      <button class="sudoku-num" onclick="inputNum(5)">5</button>
+      <button class="sudoku-num" onclick="inputNum(6)">6</button>
+      <button class="sudoku-num" onclick="inputNum(7)">7</button>
+      <button class="sudoku-num" onclick="inputNum(8)">8</button>
+      <button class="sudoku-num" onclick="inputNum(9)">9</button>
+      <button class="sudoku-num sudoku-num-erase" onclick="inputNum(0)">
+        <span class="material-symbols-outlined" style="font-size:18px">backspace</span>
+      </button>
+      <button class="sudoku-num sudoku-num-notes" id="notes-toggle-btn" onclick="toggleNotes()">
+        <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Win / Game-over overlay -->
+  <div class="sudoku-overlay" id="win-overlay">
+    <div class="glass-card rounded-2xl p-lg flex flex-col items-center gap-md text-center max-w-xs w-11/12">
+      <span class="material-symbols-outlined text-primary" style="font-size:48px;font-variation-settings:'FILL' 1">emoji_events</span>
+      <p class="text-h3 text-on-surface font-bold" id="win-title">Gelöst!</p>
+      <p class="text-body-sm text-on-surface-variant" id="win-time"></p>
+      <p class="text-body-sm text-on-surface-variant" id="win-errors"></p>
+      <button class="sudoku-btn sudoku-btn-active" onclick="newGame()" style="margin-top:.25rem">
+        <span class="material-symbols-outlined" style="font-size:15px">restart_alt</span> Neues Spiel
+      </button>
+    </div>
+  </div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+let solution = Array(81).fill(0);
+let given    = Array(81).fill(false);
+let board    = Array(81).fill(0);
+let notes    = Array.from({length:81}, ()=>new Set());
+let selected = -1, notesMode = false, errors = 0;
+let startTime = 0, timerInterval = null, gameOver = false;
+let difficulty = 'easy';
+// minFilled = mindestens so viele Zellen gefüllt
+// minEmpty  = mindestens so viele Zellen leer
+const DIFF = {
+  easy:   { minFilled: 38, minEmpty: 30 },
+  medium: { minFilled: 27, minEmpty: 42 },
+  hard:   { minFilled: 22, minEmpty: 52 },
+};
+
+// ─── Puzzle generation ────────────────────────────────────────────────────────
+const rnd = n => Math.floor(Math.random()*n);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function makeSolvedGrid(){const g=Array(81).fill(0);if(!fillGrid(g,0))return makeSolvedGrid();return g;}
+function fillGrid(g,idx){
+  if(idx===81)return true;
+  for(const n of shuffle([1,2,3,4,5,6,7,8,9])){
+    if(canPlace(g,idx,n)){g[idx]=n;if(fillGrid(g,idx+1))return true;g[idx]=0;}
+  }
+  return false;
+}
+function canPlace(g,idx,n){
+  const r=Math.floor(idx/9),c=idx%9;
+  for(let i=0;i<9;i++){if(g[r*9+i]===n||g[i*9+c]===n)return false;}
+  const br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let dr=0;dr<3;dr++)for(let dc=0;dc<3;dc++)if(g[(br+dr)*9+(bc+dc)]===n)return false;
+  return true;
+}
+// Bugfix: arbeitet auf einer Kopie, damit das Original-Array sauber bleibt
+// wenn die Suche vorzeitig abbricht (count >= limit).
+function countSolutions(g, limit=2){
+  const copy=[...g];
+  const empty=[];for(let i=0;i<81;i++)if(!copy[i])empty.push(i);
+  let count=0;
+  function solve(ei){
+    if(ei===empty.length){count++;return count>=limit;}
+    const idx=empty[ei];
+    for(let n=1;n<=9;n++){if(canPlace(copy,idx,n)){copy[idx]=n;if(solve(ei+1))return true;copy[idx]=0;}}
+    return false;
+  }
+  solve(0);return count;
+}
+function generatePuzzle(d){
+  const {minFilled, minEmpty} = DIFF[d];
+  const maxEmpty = 81 - minFilled;  // darf nicht mehr entfernt werden als das
+  const sol=makeSolvedGrid(), puzzle=[...sol];
+  const indices=shuffle([...Array(81).keys()]);
+  let removed=0;
+  for(const idx of indices){
+    if(removed>=maxEmpty) break;
+    const b=puzzle[idx]; puzzle[idx]=0;
+    if(countSolutions(puzzle)===1) removed++;
+    else puzzle[idx]=b;
+  }
+  // Falls nicht genug leer: nochmal versuchen (selten nötig, aber absichern)
+  if(removed < minEmpty) return generatePuzzle(d);
+  return{sol,puzzle};
+}
+
+// ─── Timer ────────────────────────────────────────────────────────────────────
+function startTimer(){clearInterval(timerInterval);startTime=Date.now();timerInterval=setInterval(updateTimer,1000);}
+function stopTimer(){clearInterval(timerInterval);}
+function updateTimer(){if(gameOver)return;const s=Math.floor((Date.now()-startTime)/1000);document.getElementById('timer').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+function elapsedStr(){const s=Math.floor((Date.now()-startTime)/1000);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function buildGrid(){
+  const g=document.getElementById('grid');g.innerHTML='';
+  for(let i=0;i<81;i++){
+    const el=document.createElement('div');
+    el.className='sudoku-cell';el.dataset.idx=i;
+    el.dataset.row=Math.floor(i/9);el.dataset.col=i%9;
+    el.addEventListener('click',()=>selectCell(i));
+    g.appendChild(el);
+  }
+}
+function renderBoard(){
+  for(let i=0;i<81;i++){
+    const el=cellEl(i);el.innerHTML='';
+    el.className='sudoku-cell';
+    el.dataset.row=Math.floor(i/9);el.dataset.col=i%9;
+    if(given[i]){el.textContent=solution[i];el.classList.add('given');}
+    else if(board[i]){
+      el.textContent=board[i];el.classList.add('user');
+      if(board[i]!==solution[i])el.classList.add('error');
+    }else if(notes[i].size){
+      el.classList.add('user');
+      const ng=document.createElement('div');ng.className='notes-grid';
+      for(let n=1;n<=9;n++){const nd=document.createElement('div');nd.className='note'+(notes[i].has(n)?' active':'');nd.textContent=notes[i].has(n)?n:'';ng.appendChild(nd);}
+      el.appendChild(ng);
+    }
+  }
+  highlightRelated();
+}
+function cellEl(i){return document.querySelector(`.sudoku-cell[data-idx="${i}"]`);}
+function highlightRelated(){
+  document.querySelectorAll('.sudoku-cell').forEach(c=>c.classList.remove('selected','highlight'));
+  if(selected<0)return;
+  const r=Math.floor(selected/9),c=selected%9,br=Math.floor(r/3)*3,bc=Math.floor(c/3)*3;
+  for(let i=0;i<81;i++){
+    const ri=Math.floor(i/9),ci=i%9;
+    if(ri===r||ci===c||(Math.floor(ri/3)*3===br&&Math.floor(ci/3)*3===bc))cellEl(i).classList.add('highlight');
+  }
+  cellEl(selected).classList.remove('highlight');cellEl(selected).classList.add('selected');
+  const val=given[selected]?solution[selected]:board[selected];
+  if(val)for(let i=0;i<81;i++){const v=given[i]?solution[i]:board[i];if(v===val&&i!==selected)cellEl(i).classList.add('highlight');}
+}
+
+// ─── Input ────────────────────────────────────────────────────────────────────
+function selectCell(i){if(gameOver)return;selected=i;highlightRelated();}
+function inputNum(n){
+  if(selected<0||given[selected]||gameOver)return;
+  if(n===0){board[selected]=0;notes[selected].clear();renderBoard();return;}
+  if(notesMode){board[selected]=0;notes[selected].has(n)?notes[selected].delete(n):notes[selected].add(n);renderBoard();return;}
+  notes[selected].clear();board[selected]=n;renderBoard();
+  if(n!==solution[selected]){
+    errors++;document.getElementById('error-count').textContent=`${errors} / 3`;
+    if(errors>=3){gameOver=true;stopTimer();showGameOver();}
+  }else{
+    const el=cellEl(selected);el.classList.add('correct-flash');setTimeout(()=>el.classList.remove('correct-flash'),400);
+  }
+  checkWin();
+}
+function toggleNotes(){notesMode=!notesMode;document.getElementById('notes-toggle-btn').classList.toggle('active',notesMode);}
+
+document.addEventListener('keydown',e=>{
+  if(gameOver)return;
+  const k=e.key;
+  if(k>='1'&&k<='9'){inputNum(+k);return;}
+  if(k==='Backspace'||k==='Delete'||k==='0'){inputNum(0);return;}
+  if(selected<0)return;
+  const r=Math.floor(selected/9),c=selected%9;
+  if(k==='ArrowRight'&&c<8)selectCell(selected+1);
+  else if(k==='ArrowLeft'&&c>0)selectCell(selected-1);
+  else if(k==='ArrowDown'&&r<8)selectCell(selected+9);
+  else if(k==='ArrowUp'&&r>0)selectCell(selected-9);
+});
+
+// ─── Win / Game-over ──────────────────────────────────────────────────────────
+function checkWin(){
+  for(let i=0;i<81;i++){const v=given[i]?solution[i]:board[i];if(v!==solution[i])return;}
+  gameOver=true;stopTimer();
+  document.getElementById('win-title').textContent='Gelöst! 🎉';
+  document.getElementById('win-time').textContent=`Zeit: ${elapsedStr()}`;
+  document.getElementById('win-errors').textContent=`Fehler: ${errors}`;
+  document.getElementById('win-overlay').classList.add('show');
+  document.querySelector('#win-overlay .material-symbols-outlined').textContent='emoji_events';
+}
+function showGameOver(){
+  document.getElementById('win-title').textContent='Spiel vorbei';
+  document.getElementById('win-time').textContent=`Zeit: ${elapsedStr()}`;
+  document.getElementById('win-errors').textContent='3 Fehler erreicht';
+  document.querySelector('#win-overlay .material-symbols-outlined').textContent='sentiment_dissatisfied';
+  document.getElementById('win-overlay').classList.add('show');
+}
+
+// ─── Game lifecycle ───────────────────────────────────────────────────────────
+function setDifficulty(d){
+  difficulty=d;
+  const labels={easy:'Leicht',medium:'Mittel',hard:'Schwer'};
+  document.getElementById('diff-display').textContent=labels[d];
+  ['easy','medium','hard'].forEach(x=>document.getElementById('diff-'+x).classList.toggle('sudoku-btn-active',x===d));
+  newGame();
+}
+function newGame(){
+  document.getElementById('win-overlay').classList.remove('show');
+  gameOver=false;errors=0;selected=-1;notesMode=false;
+  document.getElementById('error-count').textContent='0 / 3';
+  document.getElementById('notes-toggle-btn').classList.remove('active');
+  const{sol,puzzle}=generatePuzzle(difficulty);
+  solution=sol;given=puzzle.map(v=>v!==0);board=[...puzzle];notes=Array.from({length:81},()=>new Set());
+  buildGrid();renderBoard();startTimer();
+}
+function resetBoard(){
+  if(gameOver)return;
+  for(let i=0;i<81;i++)if(!given[i]){board[i]=0;notes[i].clear();}
+  errors=0;document.getElementById('error-count').textContent='0 / 3';
+  renderBoard();
+}
+
+newGame();
+</script>
+</body>
+</html>

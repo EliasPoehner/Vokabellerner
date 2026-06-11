@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>F11 HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./Hub/Style/hub.css" />
+  <link rel="stylesheet" href="./Hub/Style/hub-index.css" />
+</head>
+
+<body class="bg-background text-on-background selection:bg-primary/30 min-h-screen flex">
+
+  <!-- ══════════════════════════════════
+     SIDEBAR  (structure = code.html)
+     ══════════════════════════════════ -->
+  <aside id="main-sidebar"
+    class="hidden md:flex flex-col h-screen border-r border-slate-800 dark:border-slate-800/50 bg-slate-900 dark:bg-slate-950 py-6 gap-8 sticky top-0 z-40 flex-shrink-0 transition-all duration-300"
+    style="width:16rem">
+
+    <div class="px-6 flex flex-col gap-1">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-on-primary"
+            style="font-size:18px;font-variation-settings:'FILL' 1,'wght' 600">hub</span>
+        </div>
+        <span class="text-lg font-black text-purple-500 sidebar-label whitespace-nowrap">F11 HUB</span>
+        <button onclick="toggleSidebar()"
+          class="ml-auto p-1 text-slate-500 hover:text-slate-300 rounded-lg transition-colors flex-shrink-0"
+          title="Sidebar einklappen">
+          <span class="material-symbols-outlined" id="sidebar-toggle-icon" style="font-size:18px">chevron_left</span>
+        </button>
+      </div>
+      <span
+        class="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-1 sidebar-label">Deep
+        Work
+        Mode</span>
+    </div>
+
+    <div class="px-4 flex flex-col gap-2 flex-grow">
+      <a id="nav-landing"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('landing')">
+        <span class="material-symbols-outlined flex-shrink-0">dashboard</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Dashboard</span>
+      </a>
+      <a id="nav-school"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('school')">
+        <span class="material-symbols-outlined flex-shrink-0">school</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Schule</span>
+      </a>
+      <a id="nav-schulstoff"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('schulstoff')">
+        <span class="material-symbols-outlined flex-shrink-0">menu_book</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Schulstoff</span>
+      </a>
+      <a id="nav-gaming"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('gaming')">
+        <span class="material-symbols-outlined flex-shrink-0">sports_esports</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Arcade-Hall</span>
+      </a>
+      <a id="nav-early-access"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('early-access')">
+        <span class="material-symbols-outlined flex-shrink-0">new_releases</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Early Access</span>
+      </a>
+
+      <div class="mt-8 sidebar-label flex flex-col gap-3">
+        <button onclick="openFactPopup()"
+          class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          Neuer Fun Fact ✦
+        </button>
+        <button onclick="openAtemPause()"
+          class="w-full py-3 bg-secondary/20 text-secondary border border-secondary/30 font-bold rounded-xl hover:bg-secondary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          🌬️ Atempause
+        </button>
+        <button onclick="openPomodoro()"
+          class="w-full py-3 bg-tertiary/20 text-tertiary border border-tertiary/30 font-bold rounded-xl hover:bg-tertiary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+          ⏱️ Pomodoro
+        </button>
+        <button onclick="openFokusMusik()"
+          class="w-full py-3 border font-bold rounded-xl hover:scale-[1.02] active:scale-95 transition-all text-sm"
+          style="background:rgba(221,183,255,0.12);color:#ddb7ff;border-color:rgba(221,183,255,0.2);">
+          🎵 Fokus-Musik
+        </button>
+      </div>
+    </div>
+
+    <div class="px-4 border-t border-slate-800 pt-6 flex flex-col gap-2">
+      <button onclick="cycleTheme()"
+        class="flex items-center gap-3 px-4 py-2 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg transition-all duration-200 w-full text-left">
+        <span class="material-symbols-outlined flex-shrink-0" id="theme-icon">brightness_auto</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label" id="theme-label">System</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════
+     MAIN COLUMN
+     ══════════════════════════════════ -->
+  <div class="flex-grow flex flex-col min-w-0 relative z-10 overflow-y-auto h-screen">
+
+    <!-- TOP BAR — identical to code.html -->
+    <header
+      class="flex items-center justify-between px-8 h-16 w-full bg-slate-900/80 backdrop-blur-md dark:bg-slate-950/80 border-b border-slate-800 dark:border-slate-800/50 sticky top-0 z-50 shadow-sm">
+      <div class="flex items-center gap-4">
+        <!-- Sidebar expand button (shown when sidebar is collapsed) -->
+        <button id="sidebar-open-btn" onclick="toggleSidebar()"
+          class="hidden p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-colors"
+          title="Sidebar öffnen">
+          <span class="material-symbols-outlined" style="font-size:20px">menu</span>
+        </button>
+        <span class="text-xl font-bold tracking-tighter text-white dark:text-slate-50 md:hidden">F11 HUB</span>
+        <nav class="hidden lg:flex items-center gap-6 h-16">
+          <a id="topnav-landing"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-purple-500 dark:text-purple-400 border-b-2 border-purple-500 cursor-pointer"
+            onclick="goPage('landing')">Dashboard</a>
+          <a id="topnav-school"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('school')">Schule</a>
+          <a id="topnav-schulstoff"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('schulstoff')">Schulstoff</a>
+          <a id="topnav-gaming"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('gaming')">Arcade-Hall</a>
+          <a id="topnav-early-access"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent gap-1.5"
+            onclick="goPage('early-access')">Early Access <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400">BETA</span></a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative hidden sm:block">
+          <input
+            class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 text-sm w-48 focus:w-64 transition-all focus:border-primary focus:ring-0 outline-none"
+            placeholder="Suchen…" type="text" />
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <div
+            class="h-8 w-8 rounded-full bg-primary-container border border-slate-700 ml-2 flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-primary-container"
+              style="font-size:18px;font-variation-settings:'FILL' 1">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!--#include file="src/partials/page-landing.html" -->
+
+    <!--#include file="src/partials/page-school.html" -->
+
+    <!--#include file="src/partials/page-schulstoff.html" -->
+
+    <!--#include file="src/partials/page-gaming.html" -->
+
+    <!--#include file="src/partials/page-early-access.html" -->
+
+  </div><!-- /main column -->
+
+  <!-- ══════════════════════════════════
+     MOBILE BOTTOM NAV — identical to code.html
+     ══════════════════════════════════ -->
+  <nav
+    class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-900 border-t border-slate-800 flex items-center justify-around px-6 z-50">
+    <a class="flex flex-col items-center gap-1 text-purple-500 cursor-pointer" onclick="goPage('landing')">
+      <span class="material-symbols-outlined" style="font-size:22px">dashboard</span>
+      <span class="text-[10px] font-bold">DASHBOARD</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('school')">
+      <span class="material-symbols-outlined" style="font-size:22px">school</span>
+      <span class="text-[10px] font-bold">SCHULE</span>
+    </a>
+    <div class="relative -top-4">
+      <button onclick="nextFact()"
+        class="w-12 h-12 bg-primary rounded-full shadow-lg shadow-primary/40 flex items-center justify-center text-on-primary">
+        <span class="material-symbols-outlined" style="font-size:22px">casino</span>
+      </button>
+    </div>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('schulstoff')">
+      <span class="material-symbols-outlined" style="font-size:22px">menu_book</span>
+      <span class="text-[10px] font-bold">STOFF</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('gaming')">
+      <span class="material-symbols-outlined" style="font-size:22px">sports_esports</span>
+      <span class="text-[10px] font-bold">ARCADE</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-slate-500 cursor-pointer" onclick="goPage('early-access')">
+      <span class="material-symbols-outlined" style="font-size:22px">new_releases</span>
+      <span class="text-[10px] font-bold">BETA</span>
+    </a>
+  </nav>
+
+  <script type="module" src="/src/hub.ts"></script>
+
+  <!--#include file="src/partials/overlays.html" -->
+
+</body>
+
+</html>

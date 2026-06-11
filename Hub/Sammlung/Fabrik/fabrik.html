@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fabrik — F11 HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fabrik.css">
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header id="header">
+    <div class="logo">
+      <span class="material-symbols-outlined logo-icon">precision_manufacturing</span>
+      <span class="logo-text">BIO-KERNEL</span>
+    </div>
+    <nav class="top-nav">
+      <a class="nav-link active" href="#" onclick="filterCat('extraction');return false">Abbau</a>
+      <a class="nav-link" href="#" onclick="filterCat('assembly');return false">Produktion</a>
+      <a class="nav-link" href="#" onclick="filterCat('power');return false">Energie</a>
+      <a class="nav-link" href="#" onclick="filterCat('transport');return false">Transport</a>
+      <a class="nav-link" href="#" onclick="openResearchPanel();return false">Forschung</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="newGame()" title="Neu starten">
+        <span class="material-symbols-outlined">restart_alt</span>
+      </button>
+      <a href="../../.." class="icon-btn" title="Zurück zum Hub">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN: Resource Panel | Canvas | Inspector -->
+  <div id="main">
+
+    <!-- LEFT: Kern-Ressourcen -->
+    <aside id="resource-panel">
+      <div class="rp-section-title">KERN-RESSOURCEN</div>
+      <div id="resource-list">
+        <div class="rp-empty">Noch keine Ressourcen produziert</div>
+      </div>
+      <div class="rp-divider"></div>
+      <div class="rp-energy-row" id="hud-energy">
+        <span class="material-symbols-outlined" style="color:var(--accent-dim);font-size:16px">bolt</span>
+        <span id="hud-energy-text" style="font-family:'JetBrains Mono',monospace;font-size:11px">0/0 kW</span>
+      </div>
+      <div class="rp-energy-row" id="hud-research-wrap">
+        <span class="material-symbols-outlined" style="color:var(--accent-dim);font-size:16px">biotech</span>
+        <span id="hud-research-text" style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+      </div>
+      <button class="tech-btn" onclick="openResearchPanel()">
+        <span class="material-symbols-outlined">account_tree</span>
+        TECH-BAUM
+      </button>
+    </aside>
+
+    <!-- CENTER: Canvas -->
+    <div id="canvas-wrap">
+      <canvas id="fabrik-canvas"></canvas>
+    </div>
+
+    <!-- RIGHT: Build + Inspector -->
+    <aside id="right-panel">
+      <div class="rp-tabs">
+        <button class="rp-tab active" id="tab-build"    onclick="switchRightTab('build')">BAUEN</button>
+        <button class="rp-tab"        id="tab-inspect"  onclick="switchRightTab('inspect')">INSPECTOR</button>
+      </div>
+      <!-- Build sidebar (filled by renderSidebar) -->
+      <div id="sidebar" class="rp-content"></div>
+      <!-- Inspector (filled by renderInfoPanel) -->
+      <div id="info-panel" class="rp-content" style="display:none">
+        <div class="info-hint">Klicke ein Gebäude für Details.<br>Rechtsklick = Abbauen.</div>
+      </div>
+      <!-- Rocket goal -->
+      <div class="goal-chip">
+        <span class="material-symbols-outlined">rocket_launch</span>
+        <span id="hud-goal-text">0/20 Teile</span>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- RESEARCH MODAL -->
+  <div id="research-modal" style="display:none">
+    <!-- filled by openResearchPanel() -->
+  </div>
+
+  <!-- VICTORY OVERLAY -->
+  <div id="victory-overlay" style="display:none">
+    <div id="victory-box">
+      <div class="victory-icon">
+        <span class="material-symbols-outlined" style="font-size:60px">rocket_launch</span>
+      </div>
+      <h2>Rakete gestartet!</h2>
+      <p>Du hast die Fabrik zur Perfektion gebracht<br>und eine Rakete gebaut. Gut gemacht!</p>
+      <button onclick="location.reload()">Nochmal spielen</button>
+    </div>
+  </div>
+
+  <!-- NOTIFY TOAST -->
+  <div id="notify"></div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottom-bar">
+    <!-- Status/warning -->
+    <div class="bottom-status" id="bottom-status" style="visibility:hidden">
+      <span class="material-symbols-outlined" style="color:var(--danger);font-size:18px">warning</span>
+      <span id="bottom-status-text" style="font-size:11px;color:var(--danger)"></span>
+    </div>
+    <!-- Goal progress -->
+    <div class="biom-wrap">
+      <span class="biom-label">RAKETE</span>
+      <div class="biom-track">
+        <div class="biom-fill" id="biom-fill" style="width:0%">
+          <div class="biom-sheen"></div>
+        </div>
+      </div>
+      <span class="biom-pct" id="biom-pct">0%</span>
+    </div>
+    <!-- Speed controls -->
+    <div class="speed-controls">
+      <button class="speed-btn"       onclick="setSpeed(0)"  title="Pause">  <span class="material-symbols-outlined">pause</span></button>
+      <button class="speed-btn active" id="speed-btn-1" onclick="setSpeed(1)"><span class="material-symbols-outlined">play_arrow</span></button>
+      <button class="speed-btn"        id="speed-btn-2" onclick="setSpeed(2)"><span class="material-symbols-outlined">fast_forward</span></button>
+      <button class="speed-btn"        id="speed-btn-4" onclick="setSpeed(4)"><span class="material-symbols-outlined">double_arrow</span></button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/renderer.js"></script>
+  <script>
+    MACHINES.forEach(m => {
+      if (m.unlocked === undefined) m.unlocked = !m.requires;
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initGame();
+      initRenderer();
+      setInterval(updatePanels, 400);
+    });
+
+    // ── Tab switching ─────────────────────────────
+    function switchRightTab(tab) {
+      const build   = document.getElementById('sidebar');
+      const inspect = document.getElementById('info-panel');
+      const tBuild  = document.getElementById('tab-build');
+      const tInsp   = document.getElementById('tab-inspect');
+      if (tab === 'build') {
+        build.style.display = ''; inspect.style.display = 'none';
+        tBuild.classList.add('active'); tInsp.classList.remove('active');
+      } else {
+        build.style.display = 'none'; inspect.style.display = '';
+        tBuild.classList.remove('active'); tInsp.classList.add('active');
+      }
+    }
+
+    // ── Nav filter ───────────────────────────────
+    let _activeCat = null;
+    function filterCat(cat) {
+      _activeCat = _activeCat === cat ? null : cat;
+      document.querySelectorAll('.nav-link').forEach((a, i) => {
+        a.classList.toggle('active', [
+          'extraction','assembly','power','transport'
+        ][i] === _activeCat);
+      });
+      if (typeof renderSidebar === 'function') renderSidebar(_activeCat);
+      switchRightTab('build');
+    }
+
+    // ── Speed controls ───────────────────────────
+    const SPEED_MS = { 0: null, 1: 100, 2: 50, 4: 25 };
+    function setSpeed(mult) {
+      if (window._tickInterval) clearInterval(window._tickInterval);
+      window._tickInterval = mult > 0 ? setInterval(tick, SPEED_MS[mult]) : null;
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      const ids = { 1:'speed-btn-1', 2:'speed-btn-2', 4:'speed-btn-4' };
+      if (ids[mult]) document.getElementById(ids[mult])?.classList.add('active');
+    }
+
+    // ── Panel updates ────────────────────────────
+    function updatePanels() {
+      if (!S) return;
+      _updateResourcePanel();
+      _updateBottomBar();
+      _updateHUDChips();
+    }
+
+    function _updateResourcePanel() {
+      const list = document.getElementById('resource-list');
+      if (!list) return;
+      const entries = Object.entries(S.items).filter(([, v]) => v >= 0.05);
+      if (!entries.length) {
+        list.innerHTML = '<div class="rp-empty">Noch keine Ressourcen produziert</div>';
+        return;
+      }
+      const maxVal = Math.max(...entries.map(([, v]) => v), 1);
+      list.innerHTML = entries.slice(0, 9).map(([item, amt]) => {
+        const def  = ITEMS[item];
+        const pct  = Math.min(100, (amt / maxVal) * 100);
+        const disp = amt >= 10000 ? (amt/1000).toFixed(1)+'k'
+          : amt >= 100 ? Math.floor(amt)
+          : amt.toFixed(1);
+        return `<div class="rp-resource">
+          <div class="rp-res-row">
+            <span class="rp-res-icon">${def?.icon || '?'}</span>
+            <span class="rp-res-name">${def?.name || item}</span>
+            <span class="rp-res-val">${disp}</span>
+          </div>
+          <div class="rp-bar-track"><div class="rp-bar-fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('');
+    }
+
+    function _updateBottomBar() {
+      const pct  = Math.round((S.goal.rocketParts / 20) * 100);
+      const fill = document.getElementById('biom-fill');
+      const pctEl = document.getElementById('biom-pct');
+      const goalText = document.getElementById('hud-goal-text');
+      if (fill)   fill.style.width = pct + '%';
+      if (pctEl)  pctEl.textContent = pct + '%';
+      if (goalText) goalText.textContent = `${S.goal.rocketParts}/20 Teile`;
+
+      const status = document.getElementById('bottom-status');
+      const stText = document.getElementById('bottom-status-text');
+      const deficit = S.energy.consumed > S.energy.generated;
+      if (status) status.style.visibility = deficit ? 'visible' : 'hidden';
+      if (stText) stText.textContent = 'Energiemangel — Produktion verlangsamt';
+    }
+
+    function _updateHUDChips() {
+      const g = Math.round(S.energy.generated);
+      const c = Math.round(S.energy.consumed);
+      const eText = document.getElementById('hud-energy-text');
+      if (eText) {
+        eText.textContent = `${g}/${c} kW`;
+        eText.style.color = c > g ? 'var(--danger)' : '';
+      }
+      const rText = document.getElementById('hud-research-text');
+      if (rText) {
+        if (S.activeResearch) {
+          const tech = TECH_TREE.find(t => t.id === S.activeResearch.id);
+          const pct = Math.floor(S.activeResearch.progress / tech.duration * 100);
+          rText.textContent = `${tech.name} ${pct}%`;
+        } else {
+          rText.textContent = '—';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

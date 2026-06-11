@@ -1,0 +1,213 @@
+    <!-- ══════════════════════════════════
+       DASHBOARD
+       ══════════════════════════════════ -->
+    <main class="hub-page active p-xl max-w-container-max mx-auto w-full pb-24 lg:pb-4 lg:h-[calc(100vh-4rem)] lg:overflow-hidden" id="page-landing">
+      <div class="grid grid-cols-12 gap-gutter lg:h-full lg:[grid-template-rows:8rem_1fr_1fr]">
+
+        <!-- HERO: Uhrzeit & Begrüßung -->
+        <section
+          class="col-span-12 lg:col-span-8 relative rounded-xl overflow-hidden glass-card px-lg py-md flex flex-col justify-center group">
+          <div class="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#2d0055 0%,#0b1326 50%,#002918 100%);">
+            </div>
+          </div>
+          <div class="absolute top-4 right-10 w-28 h-28 rounded-full z-0"
+            style="background:radial-gradient(circle,rgba(183,109,255,.3) 0%,transparent 70%);"></div>
+          <div class="relative z-10 flex items-center gap-lg">
+            <h1 class="text-on-surface shrink-0" id="dash-time"
+              style="font-size:36px;font-weight:700;letter-spacing:-0.02em;line-height:1;">--:--</h1>
+            <div>
+              <span class="block text-secondary" style="font-size:10px;font-weight:600;letter-spacing:.08em;" id="dash-status">AKTUELLER STATUS: FOKUS</span>
+              <p class="text-on-surface-variant" style="font-size:14px;line-height:1.4;" id="dash-greeting">Guten Morgen!</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- WETTER -->
+        <section
+          class="col-span-12 sm:col-span-6 lg:col-span-4 glass-card rounded-xl px-lg py-md flex items-center justify-center gap-md">
+          <div class="text-secondary shrink-0" id="dash-wx-icon-wrap">
+            <span class="material-symbols-outlined"
+              style="font-size:38px;font-variation-settings:'FILL' 1,'wght' 300">cloud_queue</span>
+          </div>
+          <div class="text-center">
+            <div class="text-on-surface font-bold" id="dash-wx-temp" style="font-size:24px;letter-spacing:-0.01em;">--°C</div>
+            <div class="text-xs text-on-surface-variant">Plattling · <span id="dash-wx-desc">Lädt…</span></div>
+            <div class="text-xs text-slate-600 mt-xs" id="dash-date-chip">—</div>
+          </div>
+        </section>
+
+        <!-- QUICK ACCESS — vertical, row-span-2, identical structure to code.html -->
+        <section class="col-span-12 lg:col-span-4 lg:row-span-2 glass-card rounded-xl p-lg flex flex-col min-h-0">
+          <h3 class="text-on-surface mb-md flex items-center gap-2 shrink-0"
+            style="font-size:20px;font-weight:600;letter-spacing:-0.01em;">
+            <span class="material-symbols-outlined text-primary">bolt</span>
+            Schnellzugriff
+          </h3>
+          <div class="flex flex-col gap-xs flex-1 min-h-0">
+            <button onclick="goPage('school')"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+                style="font-size:22px">school</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Schule</p>
+                <p class="text-[10px] text-slate-500">Stundenplan & Tools</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </button>
+            <button onclick="goPage('schulstoff')"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+                style="font-size:22px">menu_book</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Schulstoff</p>
+                <p class="text-[10px] text-slate-500">PDFs & Skripte</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </button>
+            <a href=".\Hub\Sammlung\Klassiker\Klassiker.html" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:22px">sports_esports</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">Arcade-Hall</p>
+                <p class="text-[10px] text-slate-500">Tetris, Snake und vieles mehr</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+
+            <div class="border-t border-slate-800 my-1"></div>
+            <a href="https://klatab.edvschule-plattling.de/dashboard" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+                style="font-size:22px">calendar_view_week</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">KlaTab</p>
+                <p class="text-[10px] text-slate-500">Online-Stundenplan</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+            <a href="https://i.edvschulen-plattling.de/" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:20px">school</span>
+              <div class="flex-1 min-w-0">
+                <p class="font-label-md text-on-surface">Intranet</p>
+                <p class="text-[10px] text-slate-500 mt-xs">Intranet der EDV-Schule Plattling</p>
+              </div>
+              <span
+                class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+            </a>
+            <a href="https://sqliteonline.com/" target="_blank"
+              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+                style="font-size:22px">database</span>
+              <div class="text-left">
+                <p class="font-label-md text-on-surface">SQLite Online</p>
+                <p class="text-[10px] text-slate-500">Datenbank im Browser</p>
+              </div>
+              <span
+                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- SCHULSTUNDEN — compact -->
+        <section class="col-span-12 lg:col-span-8 glass-card rounded-xl p-md flex flex-col min-h-0">
+          <div class="flex items-center justify-between mb-md shrink-0">
+            <h3 class="text-on-surface font-semibold text-base">Schulstunden heute</h3>
+            <span class="text-xs font-medium text-secondary" id="dash-stunden-day">—</span>
+          </div>
+          <div id="dash-stunden-grid" class="grid grid-cols-1 gap-sm flex-1 min-h-0 overflow-y-auto pr-1">
+            <!-- Filled by JS -->
+          </div>
+        </section>
+
+        <!-- FERIEN + SCHULJAHR + FAKT — combined card -->
+        <section class="col-span-12 sm:col-span-6 lg:col-span-4 glass-card rounded-xl p-lg flex flex-col gap-md min-h-0">
+          <div>
+            <h4 class="font-label-md text-slate-500 mb-sm">NÄCHSTE FERIEN BAYERN</h4>
+            <div class="text-xl font-bold text-on-surface" id="dash-ferien-tage">-- <span
+                class="text-sm font-normal text-primary">Tage noch</span></div>
+            <div class="text-sm text-on-surface-variant font-semibold mt-xs" id="dash-ferien-name">—</div>
+            <div class="text-xs text-slate-600 mt-xs mb-md" id="dash-ferien-datum">—</div>
+            <div class="prog-track">
+              <div class="prog-fill" id="dash-ferien-bar" style="width:0%;background:#4edea3;"></div>
+            </div>
+          </div>
+          <div class="border-t border-slate-800"></div>
+          <div>
+            <div class="flex justify-between text-xs mb-xs">
+              <span class="text-slate-400 font-semibold uppercase tracking-widest" style="font-size:11px;">Fortschritt
+                Schuljahr</span>
+              <span class="text-primary font-bold" id="dash-kw-val">KW --</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="dash-kw-bar" style="background:#ddb7ff; width:0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- NEUIGKEITEN / CHANGELOG -->
+        <section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-lg flex flex-col min-h-0" id="widget-neuigkeiten">
+          <div class="flex items-center gap-2 mb-md shrink-0">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px">newspaper</span>
+            <h3 class="text-on-surface font-semibold text-base">Neuigkeiten</h3>
+          </div>
+          <div class="flex flex-col gap-xs flex-1 min-h-0 overflow-y-auto pr-1" id="neuigkeiten-list">
+            <!-- CHANGELOG: Claude fügt hier neue Einträge oben ein — Format: datum | kategorie | beschreibung -->
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">11.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary whitespace-nowrap">Spiel</span>
+              <span class="text-sm text-on-surface-variant">Sudoku hinzugefügt — 3 Schwierigkeitsstufen, Notizmodus, Fehler-Tracker &amp; Timer</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">11.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Schule</span>
+              <span class="text-sm text-on-surface-variant">Schule-Reiter nach Fach gegliedert: KOM, WiPuG, Englisch, BW-Logistik, Werkzeuge (Notenrechner &amp; Lebenslauf)</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">10.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 whitespace-nowrap">Fix</span>
+              <span class="text-sm text-on-surface-variant">Lebenslauf-Generator: Formular-Panel scrollt zuverlässig, Felder werden bei schmalem Panel nicht mehr abgeschnitten</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">10.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Schule</span>
+              <span class="text-sm text-on-surface-variant">Lebenslauf-Generator: Live-Vorschau, PDF- &amp; Word-Export, Foto-Upload, Drag-to-reorder, LocalStorage</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Infra</span>
+              <span class="text-sm text-on-surface-variant">TypeScript-Migration: index.html vollständig in ESM-Module gekapselt (hub.ts, landing.ts, school.ts, schulstoff.ts + Feature-Module)</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
+              <span class="text-sm text-on-surface-variant">Unterseiten-Redesign: kompakter Hero, Schule-Links als Zeilen, Arcade-Spiele horizontal mit Lokal/Online-Trennung</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 whitespace-nowrap">Fix</span>
+              <span class="text-sm text-on-surface-variant">Arcade-Hall & alle Seiten scrollen jetzt korrekt (fehlender overflow-y-auto am Haupt-Container)</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
+              <span class="text-sm text-on-surface-variant">CSS-Extraktion: Alle inline &lt;style&gt;-Blöcke aus 10 HTML-Dateien in externe .css-Dateien ausgelagert (Vite-Migration)</span>
+            </div>
+            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
+              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
+              <span class="text-sm text-on-surface-variant">Dashboard-Layout verbessert: Schnellzugriff mit Ferien-Info, responsives Grid, scrollbare Listen</span>
+            </div>
+          </div>
+        </section>
+
+
+      </div><!-- /grid -->
+    </main>

@@ -1,0 +1,512 @@
+    <!-- ══════════════════════════════════
+       SCHULE
+       ══════════════════════════════════ -->
+    <main class="hub-page p-xl max-w-container-max mx-auto w-full pb-24 md:pb-xl" id="page-school">
+
+      <!-- Hero -->
+      <div class="flex items-center justify-between mb-lg gap-4 flex-wrap">
+        <div>
+          <h2 class="text-on-surface font-bold text-2xl" id="school-greeting">Guten Tag</h2>
+          <p class="text-slate-500 text-sm mt-0.5">Alles, was du heute für die Schule brauchst.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="glass-card rounded-lg px-3 py-1.5 text-xs font-mono text-on-surface font-medium" id="school-weekday">—</span>
+          <span class="glass-card rounded-lg px-3 py-1.5 text-xs font-mono text-on-surface font-medium" id="school-time">—</span>
+          <span class="glass-card rounded-lg px-3 py-1.5 text-xs text-slate-400 font-mono" id="school-kw">—</span>
+        </div>
+      </div>
+
+      <!-- 1 · SCHULALLTAG -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-alltag')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+            style="font-size:20px">calendar_today</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Schulalltag</p>
+            <p class="text-[10px] text-slate-500">Stundenplan, Intranet, Essen &amp; tägliche Basics</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">4</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-alltag-chevron">expand_more</span>
+        </button>
+        <div id="scat-alltag" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+          <a href="https://klatab.edvschule-plattling.de/dashboard" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">calendar_view_week</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">KlaTab Stundenplan</p>
+              <p class="text-[10px] text-slate-500 truncate">Aktueller Stundenplan</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://i.edvschulen-plattling.de/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">school</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Intranet</p>
+              <p class="text-[10px] text-slate-500 truncate">EDV-Schule Plattling</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://app.vinow.de/login" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">restaurant</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">ViNOW</p>
+              <p class="text-[10px] text-slate-500 truncate">Essen für den nächsten Schultag</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.globus.de/plattling/unser-restaurant.php" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">store</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Globus</p>
+              <p class="text-[10px] text-slate-500 truncate">Wochengericht &amp; aktuelle Angebote</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2 · PRÜFUNGSVORBEREITUNG (Eltern-Accordion) -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-pruefung')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+            style="font-size:20px">edit_note</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Prüfungsvorbereitung</p>
+            <p class="text-[10px] text-slate-500">KOM · WiPuG · Englisch · BW-Logistik</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">4 Fächer</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-pruefung-chevron">expand_more</span>
+        </button>
+        <div id="scat-pruefung" class="hidden mt-sm flex flex-col gap-xs pl-3 border-l-2 border-border ml-1">
+
+          <!-- KOM -->
+          <div>
+            <button onclick="toggleSchCat('scat-kom')"
+              class="w-full rounded-xl px-md py-sm flex items-center gap-md text-left hover:bg-surface-container-high transition-colors bg-surface-container-low">
+              <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+                style="font-size:18px">router</span>
+              <div class="flex-1">
+                <p class="text-on-surface font-medium text-sm">KOM</p>
+                <p class="text-[10px] text-slate-500">Kommunikation, Linux &amp; Netzwerke</p>
+              </div>
+              <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">2</span>
+              <span class="material-symbols-outlined text-slate-500 transition-transform"
+                id="scat-kom-chevron">expand_more</span>
+            </button>
+            <div id="scat-kom" class="hidden mt-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+              <a href=".\Hub\Schule\linux.html" target="_blank"
+                class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+                <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+                  style="font-size:16px">terminal</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-on-surface font-medium text-sm">Linux Prüfungsvorbereitung</p>
+                  <p class="text-[10px] text-slate-500 truncate">Interaktive Linux-Karteikarten</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+              </a>
+              <a href=".\Hub\Schule\sa3-pruefungsvorbereitung.html"
+                class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+                <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+                  style="font-size:16px">wifi</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-on-surface font-medium text-sm">KOM: Mailing, IPTables, Squid</p>
+                  <p class="text-[10px] text-slate-500 truncate">Postfix, Dovecot, Firewall &amp; Proxy</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- WIPUG -->
+          <div>
+            <button onclick="toggleSchCat('scat-wipug')"
+              class="w-full rounded-xl px-md py-sm flex items-center gap-md text-left hover:bg-surface-container-high transition-colors bg-surface-container-low">
+              <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+                style="font-size:18px">gavel</span>
+              <div class="flex-1">
+                <p class="text-on-surface font-medium text-sm">Wirtschaft, Politik &amp; Gesellschaft</p>
+                <p class="text-[10px] text-slate-500">WiPuG – Wirtschafts- &amp; Rechtskunde</p>
+              </div>
+              <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-tertiary/10 text-tertiary">1</span>
+              <span class="material-symbols-outlined text-slate-500 transition-transform"
+                id="scat-wipug-chevron">expand_more</span>
+            </button>
+            <div id="scat-wipug" class="hidden mt-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+              <a href=".\Hub\Schule\wiso_recht_zusammenfassung.html" target="_blank"
+                class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+                <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+                  style="font-size:16px">menu_book</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-on-surface font-medium text-sm">WiPuG</p>
+                  <p class="text-[10px] text-slate-500 truncate">SA2 Prüfungsvorbereitung</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ENGLISCH -->
+          <div>
+            <button onclick="toggleSchCat('scat-englisch')"
+              class="w-full rounded-xl px-md py-sm flex items-center gap-md text-left hover:bg-surface-container-high transition-colors bg-surface-container-low">
+              <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+                style="font-size:18px">translate</span>
+              <div class="flex-1">
+                <p class="text-on-surface font-medium text-sm">Englisch</p>
+                <p class="text-[10px] text-slate-500">Vokabeln &amp; Fremdsprachen</p>
+              </div>
+              <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">1</span>
+              <span class="material-symbols-outlined text-slate-500 transition-transform"
+                id="scat-englisch-chevron">expand_more</span>
+            </button>
+            <div id="scat-englisch" class="hidden mt-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+              <a href="https://eliaspoehner.github.io/Vokabellerner/" target="_blank"
+                class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+                <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+                  style="font-size:16px">spellcheck</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-on-surface font-medium text-sm">Vokabeltrainer</p>
+                  <p class="text-[10px] text-slate-500 truncate">Vokabular interaktiv lernen</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- BW-LOGISTIK -->
+          <div>
+            <button onclick="toggleSchCat('scat-bwlog')"
+              class="w-full rounded-xl px-md py-sm flex items-center gap-md text-left hover:bg-surface-container-high transition-colors bg-surface-container-low">
+              <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+                style="font-size:18px">inventory_2</span>
+              <div class="flex-1">
+                <p class="text-on-surface font-medium text-sm">BW-Logistik</p>
+                <p class="text-[10px] text-slate-500">Betriebswirtschaft &amp; Logistik</p>
+              </div>
+              <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">1</span>
+              <span class="material-symbols-outlined text-slate-500 transition-transform"
+                id="scat-bwlog-chevron">expand_more</span>
+            </button>
+            <div id="scat-bwlog" class="hidden mt-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+              <a href=".\Hub\Schule\BWLogSchux3.html" target="_blank"
+                class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+                <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+                  style="font-size:16px">factory</span>
+                <div class="flex-1 min-w-0">
+                  <p class="text-on-surface font-medium text-sm">BW: Produktion &amp; VC</p>
+                  <p class="text-[10px] text-slate-500 truncate">Produktion &amp; Variantenkonfiguration</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3 · WERKZEUGE -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-werkzeuge')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+            style="font-size:20px">handyman</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Werkzeuge &amp; Hilfsmittel</p>
+            <p class="text-[10px] text-slate-500">Notenrechner, Lebenslauf &amp; Utilities</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">2</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-werkzeuge-chevron">expand_more</span>
+        </button>
+        <div id="scat-werkzeuge" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+          <a href=".\Hub\Schule\Notenkalkulator.html" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">calculate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Notenrechner</p>
+              <p class="text-[10px] text-slate-500 truncate">Notendurchschnitt berechnen</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href=".\Hub\Schule\lebenslauf.html"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">badge</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Lebenslauf-Generator</p>
+              <p class="text-[10px] text-slate-500 truncate">PDF &amp; Word-Export, Live-Vorschau</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3 · IT & PROGRAMMIEREN -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-it')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
+            style="font-size:20px">computer</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">IT &amp; Programmieren</p>
+            <p class="text-[10px] text-slate-500">IDEs, Docs, Datenbanken, Design &amp; Versionierung</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-tertiary/10 text-tertiary">11</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-it-chevron">expand_more</span>
+        </button>
+        <div id="scat-it" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+          <a href="file:\\\Desktop\lxcConnect.cmd" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">dns</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Linux Maschine</p>
+              <p class="text-[10px] text-slate-500 truncate">Verbinde dich mit der Linux-VM</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://replit.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">code</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Replit</p>
+              <p class="text-[10px] text-slate-500 truncate">Online-IDE für Python, Java, HTML/CSS/JS</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://app.diagrams.net/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">account_tree</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">draw.io</p>
+              <p class="text-[10px] text-slate-500 truncate">Flussdiagramme, UML, Netzwerkpläne</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://academic.signavio.com/p/explorer?t=5231105ea9114383a2e0b13de5d973f1#/directory/0e8ce3dceb3345fdbd30e43bf4a9474e"
+            target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">schema</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Signavio</p>
+              <p class="text-[10px] text-slate-500 truncate">EPKs, BPMN &amp; Prozessmodellierung</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://s41lp1.ucc.cit.tum.de:8100/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=301&sap-language=DE#Launchpad-openFLPPage?pageId=Z_PP_PAGE&spaceId=Z_SP_06PP"
+            target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">business_center</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">SAP Fiori</p>
+              <p class="text-[10px] text-slate-500 truncate">SAP-System der Schule</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://sqliteonline.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">database</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">SQLite Online</p>
+              <p class="text-[10px] text-slate-500 truncate">SQL direkt im Browser testen</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://drawsql.app/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">table_chart</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">DrawSQL</p>
+              <p class="text-[10px] text-slate-500 truncate">ER-Diagramme visuell gestalten</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://github.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">source_environment</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">GitHub</p>
+              <p class="text-[10px] text-slate-500 truncate">Code versionieren &amp; Projekte verwalten</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.figma.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">palette</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Figma</p>
+              <p class="text-[10px] text-slate-500 truncate">UI/UX Design &amp; Mockups</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://regex101.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">search</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">regex101</p>
+              <p class="text-[10px] text-slate-500 truncate">Reguläre Ausdrücke live testen</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://roadmap.sh/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">map</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">roadmap.sh</p>
+              <p class="text-[10px] text-slate-500 truncate">Lernpfade für Web, Backend, DevOps</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 · DOCS & REFERENZEN -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-docs')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
+            style="font-size:20px">menu_book</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Docs &amp; Referenzen</p>
+            <p class="text-[10px] text-slate-500">Offizielle Dokumentationen für schnelles Nachschlagen</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-primary/10 text-primary">4</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-docs-chevron">expand_more</span>
+        </button>
+        <div id="scat-docs" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+          <a href="https://code.visualstudio.com/docs" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">developer_guide</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">VS Code Docs</p>
+              <p class="text-[10px] text-slate-500 truncate">Shortcuts, Extensions &amp; Tipps</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.w3schools.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">html</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">W3Schools</p>
+              <p class="text-[10px] text-slate-500 truncate">HTML, CSS, JS, SQL, Python &amp; mehr</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://developer.mozilla.org/de/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">public</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">MDN Web Docs</p>
+              <p class="text-[10px] text-slate-500 truncate">HTML, CSS, JS &amp; Web-APIs</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.python.org/doc/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">integration_instructions</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Python Docs</p>
+              <p class="text-[10px] text-slate-500 truncate">Sprachreferenz &amp; Standardbibliothek</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 5 · ALLGEMEINE LERNTOOLS -->
+      <div class="mb-sm">
+        <button onclick="toggleSchCat('scat-tools')"
+          class="w-full glass-card rounded-xl px-lg py-md flex items-center gap-md text-left hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
+            style="font-size:20px">school</span>
+          <div class="flex-1">
+            <p class="text-on-surface font-semibold text-sm">Allgemeine Lerntools</p>
+            <p class="text-[10px] text-slate-500">Sprache, Mathe, Recherche &amp; freies Lernen</p>
+          </div>
+          <span class="text-[10px] font-bold px-sm py-xs rounded-full bg-secondary/10 text-secondary">5</span>
+          <span class="material-symbols-outlined text-slate-500 transition-transform"
+            id="scat-tools-chevron">expand_more</span>
+        </button>
+        <div id="scat-tools" class="hidden mt-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-sm">
+          <a href="https://www.leo.org/german-english/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">g_translate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">LEO Wörterbuch</p>
+              <p class="text-[10px] text-slate-500 truncate">Deutsch-Englisch &amp; Grammatik</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.duden.de/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">spellcheck</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Duden</p>
+              <p class="text-[10px] text-slate-500 truncate">Rechtschreibung &amp; Grammatik</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.wolframalpha.com/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-secondary/10 text-secondary rounded-md flex-shrink-0"
+              style="font-size:16px">calculate</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Wolfram Alpha</p>
+              <p class="text-[10px] text-slate-500 truncate">Mathe, Physik, Chemie lösen</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-primary/10 text-primary rounded-md flex-shrink-0"
+              style="font-size:16px">show_chart</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Desmos Rechner</p>
+              <p class="text-[10px] text-slate-500 truncate">Interaktiver Grafikrechner</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+          <a href="https://de.wikipedia.org/" target="_blank"
+            class="glass-card rounded-xl px-md py-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors group">
+            <span class="material-symbols-outlined p-xs bg-tertiary/10 text-tertiary rounded-md flex-shrink-0"
+              style="font-size:16px">language</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-on-surface font-medium text-sm">Wikipedia DE</p>
+              <p class="text-[10px] text-slate-500 truncate">Freie Enzyklopädie</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-700 group-hover:text-slate-400 transition-colors flex-shrink-0" style="font-size:16px">chevron_right</span>
+          </a>
+        </div>
+      </div>
+
+    </main>
