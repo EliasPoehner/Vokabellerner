@@ -60,6 +60,12 @@
         <span class="material-symbols-outlined flex-shrink-0">menu_book</span>
         <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Schulstoff</span>
       </a>
+      <a id="nav-stundenplan"
+        class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
+        onclick="goPage('stundenplan')">
+        <span class="material-symbols-outlined flex-shrink-0">calendar_view_week</span>
+        <span class="text-xs font-semibold uppercase tracking-widest sidebar-label">Stundenplan</span>
+      </a>
       <a id="nav-gaming"
         class="nav-item flex items-center gap-3 px-4 py-3 text-slate-400 dark:text-slate-500 hover:bg-slate-800/40 hover:text-slate-200 rounded-lg cursor-pointer transition-all duration-200 active:translate-x-1"
         onclick="goPage('gaming')">
@@ -74,10 +80,17 @@
       </a>
 
       <div class="mt-8 sidebar-label flex flex-col gap-3">
-        <button onclick="openFactPopup()"
-          class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm">
-          Neuer Fun Fact ✦
-        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="nextTipp()"
+            class="py-3 font-bold rounded-xl hover:scale-[1.02] active:scale-95 transition-all text-sm"
+            style="background:rgba(221,183,255,0.12);color:#ddb7ff;border:1px solid rgba(221,183,255,0.2);">
+            💡 Neuer Tipp
+          </button>
+          <button onclick="openFactPopup()"
+            class="py-3 bg-primary text-on-primary font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm">
+            Fun Fact ✦
+          </button>
+        </div>
         <button onclick="openAtemPause()"
           class="w-full py-3 bg-secondary/20 text-secondary border border-secondary/30 font-bold rounded-xl hover:bg-secondary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm">
           🌬️ Atempause
@@ -129,6 +142,9 @@
           <a id="topnav-schulstoff"
             class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
             onclick="goPage('schulstoff')">Schulstoff</a>
+          <a id="topnav-stundenplan"
+            class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
+            onclick="goPage('stundenplan')">Stundenplan</a>
           <a id="topnav-gaming"
             class="topnav-item text-sm font-medium tracking-tight h-full flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-200 transition-colors cursor-pointer border-b-2 border-transparent"
             onclick="goPage('gaming')">Arcade-Hall</a>
@@ -162,6 +178,8 @@
     <!--#include file="src/partials/page-landing.html" -->
 
     <!--#include file="src/partials/page-school.html" -->
+
+    <!--#include file="src/partials/page-stundenplan.html" -->
 
     <!--#include file="src/partials/page-schulstoff.html" -->
 

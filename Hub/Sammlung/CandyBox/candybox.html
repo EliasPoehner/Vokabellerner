@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candy Box</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="candybox.css">
+  <script>
+    (function () {
+      const m = localStorage.getItem('hub-theme') || 'system';
+      const h = document.documentElement;
+      if (m === 'light') h.classList.add('light');
+      else if (m === 'dark') h.classList.add('dark');
+      else h.classList.add(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Back to Hub -->
+  <a href="/" class="back-link">← Hub</a>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <!-- Dungeon Battle Backdrop (Dimmer hinter dem Popup) -->
+  <div class="dungeon-battle-backdrop cb-hidden" id="dungeon-battle-backdrop"></div>
+
+  <!-- Shop Floating Button (fixed bottom-right) -->
+  <button id="btn-shop-open" class="shop-open-btn cb-hidden" onclick="window.cbToggleShop()">🛒 Shop</button>
+
+  <!-- Shop Modal -->
+  <div class="shop-modal cb-hidden" id="shop-modal">
+    <div class="shop-modal-inner">
+      <div class="shop-modal-header">
+        <h2 class="section-title" style="margin:0">🛒 Laden</h2>
+        <button class="cb-btn cb-btn-secondary shop-modal-close" onclick="window.cbToggleShop()">✕ Schließen</button>
+      </div>
+      <div class="inventory-strip cb-hidden" id="inventory-strip">
+        <div class="inventory-strip-label">🎒 Ausrüstung</div>
+        <div class="inventory-badges" id="inventory-badges"></div>
+      </div>
+      <div class="shop-grid" id="shop-grid"></div>
+    </div>
+  </div>
+
+  <!-- Event Overlay (fixed modal) -->
+  <div class="event-overlay cb-hidden" id="event-overlay">
+    <div class="event-modal">
+      <span class="event-emoji" id="event-emoji">❓</span>
+      <div class="event-title" id="event-title">Ereignis</div>
+      <div class="event-text" id="event-text"></div>
+      <div class="event-choices" id="event-choices"></div>
+    </div>
+  </div>
+
+  <main class="game-container">
+
+    <!-- ══ TITLE ══════════════════════════════════════════════════ -->
+    <header class="game-header">
+      <h1 class="game-title">🍬 Candy Box</h1>
+      <span class="prestige-badge cb-hidden" id="prestige-badge">★ P1</span>
+      <button class="reset-btn" onclick="window.cbReset()" title="Spielstand löschen">↺</button>
+    </header>
+
+    <!-- ══ DISCOVERY PROGRESS ══════════════════════════════════ -->
+    <div class="discovery-bar" id="discovery-bar">
+      <div class="discovery-bar-header">
+        <span class="discovery-label">🔍 Entdeckt</span>
+        <span class="discovery-pct" id="discovery-pct">0%</span>
+      </div>
+      <div class="discovery-track">
+        <div class="discovery-fill" id="discovery-fill" style="width:0%"></div>
+      </div>
+      <div class="discovery-hint" id="discovery-hint">Noch viel zu entdecken…</div>
+    </div>
+
+    <!-- ══ DIFFICULTY LABEL (visible at Prestige > 0) ══════════ -->
+    <div class="difficulty-label cb-hidden" id="difficulty-label"></div>
+
+    <!-- ══ RESOURCES BAR (always visible once unlocked) ══════════ -->
+    <div class="resource-bar" id="resource-bar">
+      <span class="res-item">
+        ❤️ <span id="player-hp-label">20 / 20 HP</span>
+        <span class="hp-track"><span class="hp-fill" id="player-hp-fill" style="width:100%"></span></span>
+      </span>
+      <span class="res-item" id="res-gold" style="display:none">
+        🪙 <span id="gold-val">0</span> Gold
+      </span>
+      <span class="res-item cb-hidden" id="res-materials">
+        💎 <span id="materials-val"></span>
+      </span>
+    </div>
+
+    <!-- ══ CANDIES (always visible) ════════════════════════════════ -->
+    <section class="cb-section" id="sec-candies">
+      <div class="candy-display">
+        <div class="candy-icon">🍬</div>
+        <div class="candy-number" id="candy-count">0</div>
+        <div class="candy-label">Bonbons</div>
+        <div class="candy-subtext" id="candy-rate">+1 pro Sekunde</div>
+      </div>
+      <div class="btn-row" id="action-btns">
+        <button class="cb-btn cb-btn-disabled" id="btn-eat" onclick="window.cbEat()">
+          🍬 Essen (−10) <span class="btn-hint">+5 HP</span>
+        </button>
+        <button class="cb-btn cb-btn-secondary cb-hidden" id="btn-autoheal" onclick="window.cbToggleAutoHeal()"
+                title="Automatisch essen wenn HP unter 50% fällt [Shortcut: E]">
+          💊 Auto-Heal: Aus
+        </button>
+      </div>
+      <div class="shortcut-hint">Tastaturkürzel: <kbd>E</kbd> Essen · <kbd>T</kbd> Werfen · <kbd>F</kbd> Kampfspeed</div>
+    </section>
+
+    <!-- ══ PRESTIGE SHOP (visible once prestigeCount > 0) ══════ -->
+    <section class="cb-section cb-hidden" id="sec-prestige-shop">
+      <h2 class="section-title">⭐ Prestige-Shop</h2>
+      <div class="prestige-shop-points" id="prestige-points-display">0 Prestige-Punkte</div>
+      <div class="prestige-shop-grid" id="prestige-shop-grid"></div>
+    </section>
+
+    <!-- ══ THROW (unlocked at 10 candies) ═══════════════════════ -->
+    <section class="cb-section cb-hidden" id="sec-throw">
+      <div class="btn-row">
+        <button class="cb-btn cb-btn-purple" id="btn-throw" onclick="window.cbThrow()">
+          🍭 Werfen (−10)
+        </button>
+        <button class="cb-btn cb-btn-purple cb-hidden" id="btn-throw5" onclick="window.cbThrow5()">
+          🍭×5 (−50)
+        </button>
+      </div>
+      <p class="section-hint">Vielleicht wächst etwas…</p>
+    </section>
+
+    <!-- ══ LOLLIPOP FIELD (unlocked after first lollipop) ═══════ -->
+    <section class="cb-section cb-hidden" id="sec-lollipops">
+      <h2 class="section-title">🍭 Lutscherfeld</h2>
+      <div class="lollipop-stats">
+        <span><strong id="lollipop-val">0</strong> Lutscher</span>
+        <span class="lollipop-queue" id="lollipop-queue"></span>
+      </div>
+      <div class="lollipop-field" id="lollipop-field"></div>
+      <div class="lollipop-overflow" id="lollipop-overflow"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="cb-btn cb-btn-secondary cb-btn-disabled cb-hidden" id="btn-sell-lollipops"
+                onclick="window.cbSellLollipops()">
+          🍭×5 → 🪙 15 Gold
+        </button>
+        <button class="cb-btn cb-btn-secondary cb-btn-disabled cb-hidden" id="btn-sell-all-lollipops"
+                onclick="window.cbSellAllLollipops()">
+          🍭 Alle verkaufen
+        </button>
+      </div>
+    </section>
+
+    <!-- ══ UPGRADES (unlocked with shop) ════════════════════════ -->
+    <section class="cb-section cb-hidden" id="sec-upgrades">
+      <h2 class="section-title">⚗️ Produktions-Upgrades</h2>
+      <div class="upgrade-grid" id="upgrade-grid"></div>
+    </section>
+
+    <!-- ══ DUNGEON (aktiver Dungeon-Run) ══════════════════════════ -->
+    <section class="cb-section cb-hidden" id="sec-dungeon">
+      <div class="dungeon-header">
+        <div class="dungeon-header-info">
+          <span class="dungeon-title" id="dungeon-title">Dungeon</span>
+          <span class="dungeon-floor" id="dungeon-floor">Etage 1</span>
+          <button class="cb-btn cb-btn-secondary dungeon-autopilot-btn cb-hidden" id="btn-dungeon-autopilot"
+                  onclick="window.cbToggleDungeonAutopilot()">🧭 Autopilot: AUS</button>
+        </div>
+        <div class="dungeon-hp-wrap">
+          <div class="hp-track" style="width:120px">
+            <div class="hp-fill" id="dungeon-player-hp-fill" style="width:100%"></div>
+          </div>
+          <span class="dungeon-hp-label" id="dungeon-hp-label">-- / -- HP</span>
+        </div>
+      </div>
+      <div class="dungeon-run-items" id="dungeon-run-items"></div>
+      <div class="dungeon-run-gold" id="dungeon-run-gold"></div>
+      <div class="dungeon-canvas-wrap cb-hidden" id="dungeon-canvas-wrap">
+        <canvas id="dungeon-canvas" width="480" height="352"></canvas>
+        <div class="dungeon-controls-hint">WASD / Pfeiltasten bewegen · Auf Gegner laufen = Kampf · Auf Truhe laufen = Beute</div>
+      </div>
+      <div class="dungeon-actions cb-hidden" id="dungeon-actions"></div>
+      <div class="dungeon-footer-btns">
+        <button class="cb-btn cb-btn-secondary" id="btn-dungeon-close"
+                onclick="window.cbCloseDungeon()">🚪 Dungeon verlassen</button>
+      </div>
+    </section>
+
+    <!-- ══ QUESTS (unlocked after buying sword) ═════════════════ -->
+    <section class="cb-section cb-hidden" id="sec-quests">
+      <h2 class="section-title">🗺️ Quests</h2>
+      <div class="quest-tree" id="quest-list">
+        <!-- quest cards filled by JS -->
+      </div>
+    </section>
+
+    <!-- ══ SCHMIEDE (unlocked after buying forge_blueprint) ════════ -->
+    <section class="cb-section cb-hidden" id="sec-forge">
+      <h2 class="section-title">⚒️ Schmiede</h2>
+      <div class="forge-materials" id="forge-materials"></div>
+      <div class="forge-inventory cb-hidden" id="forge-inventory">
+        <div class="forge-inv-label">Hergestellte Items</div>
+        <div class="forge-inv-badges" id="forge-inv-badges"></div>
+      </div>
+      <div class="forge-recipes" id="forge-recipes"></div>
+      <div class="forge-combos" id="forge-combos"></div>
+    </section>
+
+    <!-- ══ ACTIVE BATTLE ═════════════════════════════════════════ -->
+    <section class="cb-section cb-hidden" id="sec-battle">
+      <h2 class="section-title">⚔️ Kampf</h2>
+
+      <div class="battle-arena">
+        <!-- Enemy side -->
+        <div class="battle-side battle-enemy">
+          <div class="battle-emoji" id="battle-enemy-emoji">👺</div>
+          <div class="battle-name" id="battle-enemy-name">Gegner</div>
+          <div class="hp-track">
+            <div class="hp-fill" id="enemy-hp-fill" style="width:100%;background:#ff6b9d"></div>
+          </div>
+          <div class="hp-label" id="enemy-hp-label">-- / -- HP</div>
+        </div>
+
+        <!-- VS + phase + progress -->
+        <div class="battle-vs">
+          <div class="phase-label" id="battle-phase">⚔️ Kampf läuft…</div>
+          <div class="enemy-progress" id="battle-progress"></div>
+          <div class="battle-special-warn cb-hidden" id="battle-special-warn"></div>
+        </div>
+
+        <!-- Player side -->
+        <div class="battle-side battle-player">
+          <div class="battle-emoji">🧑‍🎤</div>
+          <div class="battle-name">Du</div>
+          <div class="hp-track">
+            <div class="hp-fill" id="player-hp-fill-2" style="width:100%;background:var(--c-mint)"></div>
+          </div>
+          <div class="hp-label" id="player-hp-label-2">-- / --</div>
+        </div>
+      </div>
+
+      <!-- Status-Bar: Betäubung / Kraftstoß aufgeladen -->
+      <div class="battle-status" id="battle-status"></div>
+
+      <div class="battle-log" id="battle-log"></div>
+
+      <!-- Primäre Kampfaktionen -->
+      <div class="battle-primary-actions">
+        <button class="battle-action-card battle-action-power" id="btn-power-strike"
+                onclick="window.cbPowerStrike()">
+          <span class="battle-action-icon">⚡</span>
+          <span class="battle-action-title">Kraftstoß</span>
+          <span class="battle-action-sub">×2 Schaden · −20 🍬</span>
+        </button>
+        <button class="battle-action-card battle-action-block" id="btn-parry"
+                onclick="window.cbParry()">
+          <span class="battle-action-icon">🛡️</span>
+          <span class="battle-action-title">Parieren</span>
+          <span class="battle-action-sub" id="parry-sub">nächster Treffer: 0</span>
+        </button>
+        <button class="battle-action-card battle-action-heal" id="btn-eat-battle"
+                onclick="window.cbEat()">
+          <span class="battle-action-icon">🍬</span>
+          <span class="battle-action-title">Heilen</span>
+          <span class="battle-action-sub" id="battle-heal-sub">+5 HP · −10 🍬</span>
+          <span class="battle-hotkey">E</span>
+        </button>
+      </div>
+
+      <!-- Kampftränke (nur sichtbar wenn im Inventar) -->
+      <div class="battle-trank-row cb-hidden" id="battle-trank-row">
+        <button class="battle-trank-btn battle-trank-attack" id="btn-strength-trank"
+                onclick="window.cbUseTrank('strength')">
+          <span class="trank-icon">💪</span>
+          <div class="trank-info">
+            <span class="trank-name">Krafttrank</span>
+            <span class="trank-sub" id="strength-trank-sub">+8 ATK · 3 Runden · −20 🍬</span>
+          </div>
+        </button>
+        <button class="battle-trank-btn battle-trank-defense" id="btn-iron-trank"
+                onclick="window.cbUseTrank('iron')">
+          <span class="trank-icon">⚙️</span>
+          <div class="trank-info">
+            <span class="trank-name">Eisentrank</span>
+            <span class="trank-sub" id="iron-trank-sub">+4 DEF · 3 Runden · −15 🍬</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Dungeon Run-Items (nur im Dungeon sichtbar) -->
+      <div class="battle-trank-row cb-hidden" id="battle-run-item-row"></div>
+
+      <!-- Sekundäre Steuerung -->
+      <div class="battle-meta-actions">
+        <span class="battle-candy-count">🍬 <span id="battle-candy-count">0</span></span>
+        <button class="cb-btn cb-btn-secondary cb-hidden" id="btn-fight-speed"
+                onclick="window.cbToggleFightSpeed()" title="Kampfgeschwindigkeit [Shortcut: F]">
+          ⚡ ×1
+        </button>
+        <button class="cb-btn cb-btn-secondary" id="btn-close-quest"
+                onclick="window.cbCloseQuest()" disabled title="Schließen [Shortcut: Enter]">
+          Schließen <span class="battle-hotkey battle-hotkey-inline">⏎</span>
+        </button>
+      </div>
+
+      <!-- Dungeon: Nächster Raum / Zur Dungeon-Karte (nur im Dungeon-Modus sichtbar) -->
+      <div class="battle-dungeon-next cb-hidden" id="battle-dungeon-next"></div>
+    </section>
+
+    <!-- ══ PRESTIGE (unlocked after candy_realm) ═══════════════ -->
+    <section class="cb-section cb-hidden prestige-section" id="sec-prestige">
+      <h2 class="section-title">💫 Prestige — Neues Spiel+</h2>
+      <div class="prestige-card">
+        <div class="prestige-warn-row">
+          <span class="prestige-warn-icon">⚠️</span>
+          <div>
+            <div class="prestige-warn-title">Alles wird zurückgesetzt</div>
+            <div class="prestige-warn-text">Items, Gold, Bonbons, Quests, Upgrades — alles weg. Nur dein Prestige-Level bleibt.</div>
+          </div>
+        </div>
+        <div class="prestige-diff-row" id="prestige-next-diff">
+          Nächste Runde: +30% Gegner-HP · +20% Gegner-Angriff
+        </div>
+        <button class="cb-btn cb-btn-prestige" onclick="window.cbPrestige()">
+          💫 Prestige — in den nächsten Zyklus
+        </button>
+      </div>
+    </section>
+
+    <!-- ══ LEADERBOARD ══════════════════════════════════════════ -->
+    <section class="cb-section" id="sec-leaderboard">
+      <h2 class="section-title">🏆 Bestenliste</h2>
+      <div id="leaderboard-content">
+        <div class="leaderboard-empty">Noch keine Einträge — starte ein Prestige um deinen Score einzureichen!</div>
+      </div>
+    </section>
+
+    <!-- ══ STATS (always at bottom) ════════════════════════════ -->
+    <section class="cb-section stats-section" id="sec-stats">
+      <div class="stats-row">
+        <span>🍬 Gesamt: <strong id="stat-total">0</strong></span>
+        <span>🍬 Gegessen: <strong id="stat-eaten">0</strong></span>
+        <span>🍭 Geworfen: <strong id="stat-thrown">0</strong></span>
+        <span>🍭 Verkauft: <strong id="stat-sold">0</strong></span>
+        <span>🪙 Verdient: <strong id="stat-gold">0</strong></span>
+        <span>⚔️ Quests: <strong id="stat-quests">0</strong></span>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="./js/main.ts"></script>
+</body>
+</html>

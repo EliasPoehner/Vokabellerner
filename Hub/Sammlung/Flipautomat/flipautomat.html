@@ -257,7 +257,7 @@ function collide(){
 function addScore(n){
   score+=n*multiplier;
   document.getElementById('scoreVal').textContent=score.toLocaleString();
-  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);
+  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);fetch('/api/saves/flipautomat-hi',{method:'POST',headers:{'Content-Type':'application/json'},body:String(hiScore)}).catch(()=>{});fetch('/api/highscores/flipautomat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score:hiScore})}).catch(()=>{});
     document.getElementById('bestVal').textContent=hiScore.toLocaleString();}
 }
 function updLives(){ document.getElementById('livesVal').textContent=lives>0?'● '.repeat(lives).trim():'–'; }
@@ -476,7 +476,7 @@ function startGame(){
 
 function endGame(){
   gameRunning=false;
-  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);}
+  if(score>hiScore){hiScore=score;localStorage.setItem('sc_hi',hiScore);fetch('/api/saves/flipautomat-hi',{method:'POST',headers:{'Content-Type':'application/json'},body:String(hiScore)}).catch(()=>{});fetch('/api/highscores/flipautomat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score:hiScore})}).catch(()=>{});}
   const ol=document.getElementById('overlay');
   ol.innerHTML=`
     <h1 style="color:#ff4444;text-shadow:0 0 20px #ff0000,0 0 50px #800000">GAME OVER</h1>
@@ -495,6 +495,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
 document.getElementById('startBtn').addEventListener('click',startGame);
+(async()=>{try{const r=await fetch('/api/saves/flipautomat-hi');if(r.ok){const d=await r.json();if(typeof d==='number'&&d>hiScore){hiScore=d;localStorage.setItem('sc_hi',d);const el=document.getElementById('bestVal');if(el)el.textContent=hiScore.toLocaleString();}}}catch{}})();
 draw();
 </script>
 </body>

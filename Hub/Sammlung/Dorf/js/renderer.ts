@@ -52,7 +52,7 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
     const TIME_NAMES = ['Nacht','Morgengrauen','Morgen','Tag','Nachmittag','Abenddämmerung'];
     let _dayStartMs = parseInt(localStorage.getItem('dorf_dayStartMs') || '0') || Date.now();
     localStorage.setItem('dorf_dayStartMs', String(_dayStartMs));
-    let _prevIsNight = false;
+    let _prevNightFactor = -1;
 
     // Smoke particles
     // _smokeParticles initialized at module level
@@ -645,11 +645,11 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
         createSmokeEmitter(group, 0, h + 0.35, 0);
       }
 
-      // Window point light — off at day, on at night (see day/night cycle code)
-      const winLight = new THREE.PointLight(0xffa050, 0, 5.0);
+      // Window point light — fades in smoothly at dusk (see day/night cycle code)
+      const winLight = new THREE.PointLight(0xffa050, 0, 7.0);
       winLight.position.set(0, Math.max(h * 0.5, 0.6), 0);
       winLight.userData._isWindowLight = true;
-      winLight.userData._nightInt = b.shape === 'forge' || b.shape === 'smelter' || b.shape === 'armory' || b.shape === 'kiln' ? 0.5 : 0.7;
+      winLight.userData._nightInt = b.shape === 'forge' || b.shape === 'smelter' || b.shape === 'armory' || b.shape === 'kiln' ? 1.2 : 1.8;
       group.add(winLight);
 
       // Index label (small sphere on top for identification)
@@ -677,12 +677,29 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
       return group;
     }
 
+    // Frees GPU resources (geometry/material/textures) of a mesh tree before
+    // it's dropped — scene.remove() alone leaks WebGL buffers, which adds up
+    // fast across repeated rebuild3D() calls (every upgrade, raid, prestige).
+    function disposeObject3D(root) {
+      root.traverse(child => {
+        if (!child.isMesh && !child.isSprite) return;
+        child.geometry?.dispose();
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(m => {
+          if (!m) return;
+          m.map?.dispose();
+          m.emissiveMap?.dispose();
+          m.dispose();
+        });
+      });
+    }
+
     function rebuild3D() {
       _forceNightUpdate = true;
       buildingGroups.length = 0;
       _smokeParticles = [];
       for (const key in buildingMeshes) {
-        buildingMeshes[key].forEach(g => scene.remove(g));
+        buildingMeshes[key].forEach(g => { disposeObject3D(g); scene.remove(g); });
         delete buildingMeshes[key];
       }
       for (const key in gridOccupied) delete gridOccupied[key];
@@ -866,10 +883,10 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
         const lant = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.1), lantMat);
         lant.position.set(W / 2 + 0.16 - 0.28, 1.06, 0);
         group.add(lant);
-        const lLight = new THREE.PointLight(0xffb040, 0, 5.5);
+        const lLight = new THREE.PointLight(0xffb040, 0, 8.0);
         lLight.position.set(W / 2 + 0.16 - 0.28, 1.1, 0);
         lLight.userData._isWindowLight = true;
-        lLight.userData._nightInt = 1.0;
+        lLight.userData._nightInt = 2.2;
         group.add(lLight);
       }
       group.position.set(x * CELL, 0, z * CELL);
@@ -889,7 +906,7 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
     }
 
     function rebuildRoads() {
-      for (const key in roadMeshes) { scene.remove(roadMeshes[key]); delete roadMeshes[key]; }
+      for (const key in roadMeshes) { disposeObject3D(roadMeshes[key]); scene.remove(roadMeshes[key]); delete roadMeshes[key]; }
       (S.roads || []).forEach(key => {
         const [x, z] = key.split(',').map(Number);
         roadMeshes[key] = makeRoadMesh(x, z);
@@ -1436,7 +1453,7 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
     }
 
     function clearObstacles() {
-      _obstacleGroups.forEach(g => scene.remove(g));
+      _obstacleGroups.forEach(g => { disposeObject3D(g); scene.remove(g); });
       _obstacleGroups = [];
       _obstacleRaycastTargets = [];
       _obstacleMeshes = {};
@@ -1597,10 +1614,10 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
           const lant = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.28, 0.22), lMat);
           lant.position.set(ox, 4.55, southZ + 0.5);
           g.add(lant);
-          const lLight = new THREE.PointLight(0xffb040, 0, 5.5);
+          const lLight = new THREE.PointLight(0xffb040, 0, 9.0);
           lLight.position.set(ox, 4.6, southZ + 0.5);
           lLight.userData._isWindowLight = true;
-          lLight.userData._nightInt = 1.5;
+          lLight.userData._nightInt = 3.0;
           g.add(lLight);
         });
       }
@@ -1817,6 +1834,7 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
     function updateGroundTexture() {
       const tmap = buildTerrainMap();
       const newTex = buildGroundCanvas(tmap);
+      groundMat.map?.dispose();
       groundMat.map = newTex;
       groundMat.map.needsUpdate = true;
       groundMat.needsUpdate = true;
@@ -2288,11 +2306,12 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
       const sunAngle = dayT * Math.PI * 2 + Math.PI;
       sun.position.set(Math.sin(sunAngle) * 18, Math.cos(sunAngle) * 24 + 4, 10);
       sun.shadow.camera.updateProjectionMatrix();
-      // Window/torch/lantern glow at night
-      const isNight = dayT < 0.22 || dayT > 0.88;
-      if (isNight !== _prevIsNight || _forceNightUpdate) {
+      // Window/torch/lantern glow — smooth fade based on ambient darkness
+      // nightFactor: 0 = full day, 1 = full night
+      const nightFactor = Math.max(0, Math.min(1, 1 - (ambient.intensity - 0.06) / (0.55 - 0.06)));
+      if (_forceNightUpdate || Math.abs(nightFactor - _prevNightFactor) > 0.004) {
+        _prevNightFactor = nightFactor;
         _forceNightUpdate = false;
-        _prevIsNight = isNight;
         scene.traverse(obj => {
           if (obj.isMesh && obj.material && obj.material.emissive) {
             const e = obj.material.emissive;
@@ -2301,12 +2320,14 @@ export function setGameCallbacks(cbs: GameCallbacks) { _gameCbs = cbs; }
               if (obj.material._origEI === undefined) {
                 obj.material._origEI = obj.material.emissiveIntensity;
               }
-              obj.material.emissiveIntensity = isNight ? obj.material._origEI * 4.0 : obj.material._origEI;
+              obj.material.emissiveIntensity = obj.material._origEI * (1 + nightFactor * 3.5);
             }
           } else if (obj.isPointLight && obj.userData._isWindowLight) {
-            obj.intensity = isNight ? obj.userData._nightInt : 0;
+            obj.intensity = nightFactor * obj.userData._nightInt;
           }
         });
+        // Dynamic bloom: subtler at day, more glow at night
+        bloomPass.strength = 0.22 + nightFactor * 0.70;
       }
       // Update time badge
       const hourEq = Math.round(dayT * 24);

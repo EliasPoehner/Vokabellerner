@@ -37,81 +37,64 @@
           </div>
         </section>
 
-        <!-- QUICK ACCESS — vertical, row-span-2, identical structure to code.html -->
-        <section class="col-span-12 lg:col-span-4 lg:row-span-2 glass-card rounded-xl p-lg flex flex-col min-h-0">
-          <h3 class="text-on-surface mb-md flex items-center gap-2 shrink-0"
-            style="font-size:20px;font-weight:600;letter-spacing:-0.01em;">
-            <span class="material-symbols-outlined text-primary">bolt</span>
+        <!-- QUICK ACCESS — kompakt, gleiche Höhe wie Schulstunden -->
+        <section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-md flex flex-col min-h-0">
+          <h3 class="text-on-surface mb-sm flex items-center gap-2 shrink-0"
+            style="font-size:14px;font-weight:600;letter-spacing:-0.01em;">
+            <span class="material-symbols-outlined text-primary" style="font-size:18px;">bolt</span>
             Schnellzugriff
           </h3>
           <div class="flex flex-col gap-xs flex-1 min-h-0">
             <button onclick="goPage('school')"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
-                style="font-size:22px">school</span>
-              <div class="text-left">
-                <p class="font-label-md text-on-surface">Schule</p>
-                <p class="text-[10px] text-slate-500">Stundenplan & Tools</p>
-              </div>
-              <span
-                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-primary/10 text-primary rounded-md"
+                style="font-size:16px;padding:5px;">school</span>
+              <p class="text-sm font-medium text-on-surface">Schule</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </button>
             <button onclick="goPage('schulstoff')"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-secondary/10 text-secondary rounded-lg"
-                style="font-size:22px">menu_book</span>
-              <div class="text-left">
-                <p class="font-label-md text-on-surface">Schulstoff</p>
-                <p class="text-[10px] text-slate-500">PDFs & Skripte</p>
-              </div>
-              <span
-                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-secondary/10 text-secondary rounded-md"
+                style="font-size:16px;padding:5px;">menu_book</span>
+              <p class="text-sm font-medium text-on-surface">Schulstoff</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </button>
             <a href=".\Hub\Sammlung\Klassiker\Klassiker.html" target="_blank"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
-                style="font-size:22px">sports_esports</span>
-              <div class="text-left">
-                <p class="font-label-md text-on-surface">Arcade-Hall</p>
-                <p class="text-[10px] text-slate-500">Tetris, Snake und vieles mehr</p>
-              </div>
-              <span
-                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-tertiary/10 text-tertiary rounded-md"
+                style="font-size:16px;padding:5px;">sports_esports</span>
+              <p class="text-sm font-medium text-on-surface">Arcade-Hall</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
+            </a>
+            <a href=".\Hub\Sammlung\CandyBox\candybox.html" target="_blank"
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined rounded-md"
+                style="font-size:16px;padding:5px;background:rgba(255,107,157,.12);color:#ff6b9d;">favorite</span>
+              <p class="text-sm font-medium text-on-surface">Candy Box</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </a>
 
             <div class="border-t border-slate-800 my-1"></div>
             <a href="https://klatab.edvschule-plattling.de/dashboard" target="_blank"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-primary/10 text-primary rounded-lg"
-                style="font-size:22px">calendar_view_week</span>
-              <div class="text-left">
-                <p class="font-label-md text-on-surface">KlaTab</p>
-                <p class="text-[10px] text-slate-500">Online-Stundenplan</p>
-              </div>
-              <span
-                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-primary/10 text-primary rounded-md"
+                style="font-size:16px;padding:5px;">calendar_view_week</span>
+              <p class="text-sm font-medium text-on-surface">KlaTab</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </a>
             <a href="https://i.edvschulen-plattling.de/" target="_blank"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
-                style="font-size:20px">school</span>
-              <div class="flex-1 min-w-0">
-                <p class="font-label-md text-on-surface">Intranet</p>
-                <p class="text-[10px] text-slate-500 mt-xs">Intranet der EDV-Schule Plattling</p>
-              </div>
-              <span
-                class="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity self-center">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-tertiary/10 text-tertiary rounded-md"
+                style="font-size:16px;padding:5px;">school</span>
+              <p class="text-sm font-medium text-on-surface">Intranet</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </a>
             <a href="https://sqliteonline.com/" target="_blank"
-              class="flex items-center gap-md p-md rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
-              <span class="material-symbols-outlined p-sm bg-tertiary/10 text-tertiary rounded-lg"
-                style="font-size:22px">database</span>
-              <div class="text-left">
-                <p class="font-label-md text-on-surface">SQLite Online</p>
-                <p class="text-[10px] text-slate-500">Datenbank im Browser</p>
-              </div>
-              <span
-                class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+              class="flex items-center gap-sm px-sm py-xs rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer">
+              <span class="material-symbols-outlined bg-tertiary/10 text-tertiary rounded-md"
+                style="font-size:16px;padding:5px;">database</span>
+              <p class="text-sm font-medium text-on-surface">SQLite Online</p>
+              <span class="material-symbols-outlined ml-auto text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" style="font-size:16px;">chevron_right</span>
             </a>
           </div>
         </section>
@@ -127,7 +110,7 @@
           </div>
         </section>
 
-        <!-- FERIEN + SCHULJAHR + FAKT — combined card -->
+        <!-- FERIEN + SCHULJAHR -->
         <section class="col-span-12 sm:col-span-6 lg:col-span-4 glass-card rounded-xl p-lg flex flex-col gap-md min-h-0">
           <div>
             <h4 class="font-label-md text-slate-500 mb-sm">NÄCHSTE FERIEN BAYERN</h4>
@@ -152,60 +135,83 @@
           </div>
         </section>
 
-        <!-- NEUIGKEITEN / CHANGELOG -->
-        <section class="col-span-12 lg:col-span-4 glass-card rounded-xl p-lg flex flex-col min-h-0" id="widget-neuigkeiten">
-          <div class="flex items-center gap-2 mb-md shrink-0">
-            <span class="material-symbols-outlined text-primary" style="font-size:20px">newspaper</span>
-            <h3 class="text-on-surface font-semibold text-base">Neuigkeiten</h3>
+        <!-- INFO-WIDGET: Neuigkeiten | Tipp des Tages | Fun Facts -->
+        <section class="col-span-12 sm:col-span-6 lg:col-span-8 glass-card rounded-xl p-lg flex flex-col min-h-0" id="widget-neuigkeiten">
+
+          <!-- Tab-Leiste -->
+          <div class="flex gap-1 mb-md shrink-0 rounded-lg p-1" style="background:rgba(255,255,255,0.04);">
+            <button id="info-tab-neuigkeiten" onclick="switchInfoTab('neuigkeiten')"
+              class="flex-1 text-xs py-1.5 px-1 rounded-md transition-colors font-semibold"
+              style="background:rgba(221,183,255,0.12);color:#ddb7ff;">
+              Neuigkeiten
+            </button>
+            <button id="info-tab-tipp" onclick="switchInfoTab('tipp')"
+              class="flex-1 text-xs py-1.5 px-1 rounded-md transition-colors"
+              style="color:#988d9f;">
+              Tipp
+            </button>
+            <button id="info-tab-funfact" onclick="switchInfoTab('funfact')"
+              class="flex-1 text-xs py-1.5 px-1 rounded-md transition-colors"
+              style="color:#988d9f;">
+              Fun Facts
+            </button>
           </div>
-          <div class="flex flex-col gap-xs flex-1 min-h-0 overflow-y-auto pr-1" id="neuigkeiten-list">
-            <!-- CHANGELOG: Claude fügt hier neue Einträge oben ein — Format: datum | kategorie | beschreibung -->
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">11.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary whitespace-nowrap">Spiel</span>
-              <span class="text-sm text-on-surface-variant">Sudoku hinzugefügt — 3 Schwierigkeitsstufen, Notizmodus, Fehler-Tracker &amp; Timer</span>
+
+          <!-- Panel: Neuigkeiten -->
+          <div id="info-panel-neuigkeiten" class="flex-col flex-1 min-h-0" style="display:flex;">
+            <div class="flex flex-col gap-xs flex-1 min-h-0 overflow-y-auto pr-1" id="neuigkeiten-list">
+              <!-- wird per JS aus /data/changelog.json befüllt -->
             </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">11.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Schule</span>
-              <span class="text-sm text-on-surface-variant">Schule-Reiter nach Fach gegliedert: KOM, WiPuG, Englisch, BW-Logistik, Werkzeuge (Notenrechner &amp; Lebenslauf)</span>
+            <button id="neuigkeiten-alle-btn"
+              class="mt-md items-center justify-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors shrink-0"
+              style="display:none">
+              <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+              Alle anzeigen
+            </button>
+          </div>
+
+          <!-- Panel: Tipp des Tages -->
+          <div id="info-panel-tipp" class="flex-col flex-1 min-h-0" style="display:none;">
+            <div class="flex items-center justify-between mb-sm shrink-0">
+              <span id="tipp-daily-badge"
+                class="text-xs font-semibold px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary">
+                Heutiger Tipp ✦
+              </span>
+              <span id="tipp-counter" class="text-xs" style="color:#4b5563;">-- / --</span>
             </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">10.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 whitespace-nowrap">Fix</span>
-              <span class="text-sm text-on-surface-variant">Lebenslauf-Generator: Formular-Panel scrollt zuverlässig, Felder werden bei schmalem Panel nicht mehr abgeschnitten</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">10.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Schule</span>
-              <span class="text-sm text-on-surface-variant">Lebenslauf-Generator: Live-Vorschau, PDF- &amp; Word-Export, Foto-Upload, Drag-to-reorder, LocalStorage</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary/10 text-secondary whitespace-nowrap">Infra</span>
-              <span class="text-sm text-on-surface-variant">TypeScript-Migration: index.html vollständig in ESM-Module gekapselt (hub.ts, landing.ts, school.ts, schulstoff.ts + Feature-Module)</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
-              <span class="text-sm text-on-surface-variant">Unterseiten-Redesign: kompakter Hero, Schule-Links als Zeilen, Arcade-Spiele horizontal mit Lokal/Online-Trennung</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 whitespace-nowrap">Fix</span>
-              <span class="text-sm text-on-surface-variant">Arcade-Hall & alle Seiten scrollen jetzt korrekt (fehlender overflow-y-auto am Haupt-Container)</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
-              <span class="text-sm text-on-surface-variant">CSS-Extraktion: Alle inline &lt;style&gt;-Blöcke aus 10 HTML-Dateien in externe .css-Dateien ausgelagert (Vite-Migration)</span>
-            </div>
-            <div class="flex items-start gap-md p-sm rounded-lg bg-surface-container-low">
-              <span class="text-xs text-slate-500 font-mono whitespace-nowrap mt-0.5">09.06.2026</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary whitespace-nowrap">Hub</span>
-              <span class="text-sm text-on-surface-variant">Dashboard-Layout verbessert: Schnellzugriff mit Ferien-Info, responsives Grid, scrollbare Listen</span>
+            <div id="tipp-body" class="flex-1 min-h-0 overflow-y-auto pr-1"></div>
+            <div class="flex gap-sm mt-md shrink-0">
+              <button onclick="prevTipp()"
+                class="flex-1 py-sm text-xs font-semibold rounded-lg transition-colors"
+                style="border:1px solid rgba(255,255,255,0.06);color:#988d9f;"
+                onmouseover="this.style.color='#dae2fd'" onmouseout="this.style.color='#988d9f'">
+                ← Vorheriger
+              </button>
+              <button onclick="nextTipp()"
+                class="flex-1 py-sm text-xs font-semibold rounded-lg transition-colors"
+                style="background:rgba(221,183,255,0.1);color:#ddb7ff;"
+                onmouseover="this.style.background='rgba(221,183,255,0.18)'" onmouseout="this.style.background='rgba(221,183,255,0.1)'">
+                Nächster →
+              </button>
             </div>
           </div>
+
+          <!-- Panel: Fun Facts -->
+          <div id="info-panel-funfact" class="flex-col flex-1 min-h-0" style="display:none;">
+            <div class="flex-1 flex flex-col justify-center items-center text-center gap-md px-sm py-md overflow-y-auto">
+              <div id="inline-fact-emoji" style="font-size:40px;line-height:1;">🍯</div>
+              <p id="inline-fact-text"
+                class="text-sm leading-relaxed"
+                style="color:#dae2fd;"></p>
+            </div>
+            <button onclick="nextInlineFact()"
+              class="shrink-0 py-sm text-xs font-semibold rounded-lg w-full transition-colors mt-sm"
+              style="background:rgba(221,183,255,0.1);color:#ddb7ff;"
+              onmouseover="this.style.background='rgba(221,183,255,0.18)'" onmouseout="this.style.background='rgba(221,183,255,0.1)'">
+              Nächster Fakt →
+            </button>
+          </div>
+
         </section>
 
 

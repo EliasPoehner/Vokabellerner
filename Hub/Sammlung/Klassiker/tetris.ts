@@ -1,13 +1,13 @@
-'use strict';
-
 // ════════════════════════════════════════════════
 // TETRIS  — requestAnimationFrame + delta-time
 // ════════════════════════════════════════════════
 
 // Globals defined in Klassiker.html inline script
-declare let activeGame: string;
-declare function getCanvasBg(): string;
-declare function popHud(id: string): void;
+declare global {
+  let activeGame: string;
+  function getCanvasBg(): string;
+  function popHud(id: string): void;
+}
 
 interface Piece {
   shape: number[][];
@@ -23,7 +23,7 @@ interface PieceDef {
 
 type Board = (string | 0)[][];
 
-const TW = 10, TH = 20, BS = 20;
+const TW = 10, TH = 20, BS = 24;
 const PIECES: PieceDef[] = [
   { shape: [[1, 1, 1, 1]], color: '#00f5ff' },
   { shape: [[1, 1], [1, 1]], color: '#ffe600' },
@@ -65,19 +65,56 @@ let tEventColors: string | null = null, tCanvasWrap: HTMLElement | null = null;
 let tNextEventIn = Infinity;
 const EVENT_MIN = 15000, EVENT_MAX = 30000;
 let tHiScore = 0;
+let tClearRows: number[] = [];
+let tClearAnimEnd = 0;
+let tCombo = -1;
+
+function tFormatTime(ms: number): string {
+  if (!isFinite(ms)) return '–';
+  return (ms / 1000).toFixed(2) + 's';
+}
 
 function tLoadHiScore(): void {
-  try { tHiScore = parseInt(localStorage.getItem('tetris-hi-' + tMode) ?? '0') || 0; } catch { tHiScore = 0; }
+  const isSprint = tMode === 'sprint';
+  try {
+    const stored = localStorage.getItem('tetris-hi-' + tMode);
+    tHiScore = stored ? (parseFloat(stored) || (isSprint ? Infinity : 0)) : (isSprint ? Infinity : 0);
+  } catch { tHiScore = isSprint ? Infinity : 0; }
+  const labelEl = document.getElementById('tetris-hiscore-label');
+  if (labelEl) labelEl.textContent = isSprint ? 'Bestzeit' : 'Highscore';
   const el = document.getElementById('tetris-hiscore');
-  if (el) el.textContent = String(tHiScore);
+  if (el) el.textContent = isSprint ? tFormatTime(tHiScore) : String(tHiScore);
+  fetch('/api/saves/tetris-hi-' + tMode)
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (typeof d === 'number') {
+        const isBetter = isSprint ? d < tHiScore : d > tHiScore;
+        if (isBetter) {
+          tHiScore = d;
+          try { localStorage.setItem('tetris-hi-' + tMode, String(d)); } catch {}
+          const el2 = document.getElementById('tetris-hiscore');
+          if (el2) el2.textContent = isSprint ? tFormatTime(d) : String(d);
+        }
+      }
+    }).catch(() => {});
 }
 
 function tSaveHiScore(): boolean {
-  if (tScore <= tHiScore) return false;
-  tHiScore = tScore;
-  try { localStorage.setItem('tetris-hi-' + tMode, String(tHiScore)); } catch {}
+  const isSprint = tMode === 'sprint';
+  const value = isSprint ? tSprintTime : tScore;
+  if (isSprint && tSprintTime > 0) {
+    fetch('/api/highscores/tetris-' + tMode, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ score: tSprintTime, lowerIsBetter: true }) }).catch(() => {});
+  } else if (!isSprint && tScore > 0) {
+    fetch('/api/highscores/tetris-' + tMode, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ score: tScore }) }).catch(() => {});
+  }
+  const isNewHi = isSprint ? (tSprintTime > 0 && tSprintTime < tHiScore) : (tScore > tHiScore);
+  if (!isNewHi) return false;
+  tHiScore = value;
+  try { localStorage.setItem('tetris-hi-' + tMode, String(value)); } catch {}
+  const saveUrl = '/api/saves/tetris-hi-' + tMode + (isSprint ? '?lower=true' : '');
+  fetch(saveUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: String(value) }).catch(() => {});
   const el = document.getElementById('tetris-hiscore');
-  if (el) el.textContent = String(tHiScore);
+  if (el) el.textContent = isSprint ? tFormatTime(value) : String(value);
   return true;
 }
 
@@ -140,6 +177,7 @@ function initTetris(): void {
   tBlitzTimeLeft = 120000;
   tSprintStart = 0; tSprintTime = 0;
 
+  tClearRows = []; tClearAnimEnd = 0; tCombo = -1;
   tEventShakeEnd = 0; tEventZeitlupeEnd = 0; tEventFarbchaosEnd = 0; tEventDunkelheitEnd = 0;
   tEventColors = null;
   tNextEventIn = tEventsEnabled ? (EVENT_MIN + Math.random() * (EVENT_MAX - EVENT_MIN)) : Infinity;
@@ -189,6 +227,19 @@ function tryRotate(piece: Piece): boolean {
   return false;
 }
 
+function tRotShapeCCW(s: number[][]): number[][] {
+  return s[0].map((_, i) => s.map(r => r[s[0].length - 1 - i]));
+}
+
+function tryRotateCCW(piece: Piece): boolean {
+  const rot = tRotShapeCCW(piece.shape);
+  const isI = rot.length === 1 || rot[0].length === 4;
+  for (const [kx, ky] of (isI ? KICKS_I : KICKS_NORM)) {
+    if (!tCollides(piece, kx, ky, rot)) { piece.shape = rot; piece.x += kx; piece.y += ky; return true; }
+  }
+  return false;
+}
+
 // ── Lock ──────────────────────────────────────
 
 function tLock(): void {
@@ -202,17 +253,47 @@ function tLock(): void {
     }
   }));
 
-  let cleared = 0;
+  const fullRows: number[] = [];
   for (let r = TH - 1; r >= 0; r--) {
-    if ((tBoard[r] as (string | 0)[]).every(v => v)) {
-      tBoard.splice(r, 1);
-      tBoard.unshift(Array(TW).fill(0) as (string | 0)[]);
-      cleared++; r++;
-    }
+    if ((tBoard[r] as (string | 0)[]).every(v => v)) fullRows.push(r);
   }
 
-  const gain = (PTS[cleared] ?? 0) * (tMode === 'blitz' ? 1 : tLevel);
+  tPiece = null; tLockTimer = 0;
+
+  if (fullRows.length > 0) {
+    tClearRows = fullRows;
+    tFinishClear();
+    return;
+  }
+
+  tCombo = -1;
+  tAccum = 0;
+  tSpawn();
+}
+
+function tFinishClear(): void {
+  const cleared = tClearRows.length;
+
+  for (const r of [...tClearRows].sort((a, b) => b - a)) {
+    tBoard.splice(r, 1);
+  }
+  for (let i = 0; i < cleared; i++) {
+    tBoard.unshift(Array(TW).fill(0) as (string | 0)[]);
+  }
+  tClearRows = []; tClearAnimEnd = 0;
+
+  tCombo++;
+  const comboBonus = tCombo >= 2 ? tCombo * 50 * tLevel : 0;
+  const gain = (PTS[cleared] ?? 0) * (tMode === 'blitz' ? 1 : tLevel) + comboBonus;
   if (gain) { tScore += gain; popHud('tetris-score'); }
+
+  if (tCombo >= 2) {
+    const cf = document.createElement('div');
+    cf.className = 'level-flash';
+    cf.innerHTML = `<span style="color:var(--pink);text-shadow:var(--glow-pink)">COMBO ×${tCombo}!</span>`;
+    document.getElementById('screen-tetris')!.appendChild(cf);
+    setTimeout(() => cf.remove(), 1100);
+  }
 
   tLines += cleared;
 
@@ -236,7 +317,7 @@ function tLock(): void {
   }
 
   updateTetrisHUD();
-  tPiece = null; tAccum = 0; tLockTimer = 0;
+  tAccum = 0;
   tSpawn();
 }
 
@@ -268,10 +349,7 @@ function tetrisLoop(now: number): void {
     if (tBlitzTimeLeft <= 0) { tShowGameOver(false); return; }
   }
 
-  if (tMode === 'sprint') {
-    tUpdateSprintHUD();
-  }
-
+  if (tMode === 'sprint') tUpdateSprintHUD();
   if (tEventsEnabled) tickEvents(dt, now);
 
   const zeitlupeActive = tEventZeitlupeEnd > now;
@@ -286,6 +364,7 @@ function tetrisLoop(now: number): void {
     if (!tCollides(tPiece, 0, 1)) {
       tPiece.y++;
       tLockTimer = 0;
+      if (tSoftDrop) tScore += 1;
     } else {
       tLockTimer += speed;
       if (tLockTimer >= lockLimit) tLock();
@@ -445,6 +524,9 @@ function tShowGameOver(sprintWin: boolean): void {
   const finalScore = document.getElementById('tetris-final-score');
   const overTime = document.getElementById('tetris-over-time');
   const newHi = document.getElementById('tetris-new-hi');
+  const eventsHint = document.getElementById('tetris-events-hint');
+  const h2 = overlay?.querySelector('h2');
+  if (h2) h2.textContent = sprintWin ? 'SPRINT FERTIG!' : 'GAME OVER';
   if (finalScore) finalScore.textContent = String(tScore);
   if (overTime) {
     if (sprintWin) {
@@ -454,8 +536,17 @@ function tShowGameOver(sprintWin: boolean): void {
       overTime.style.display = 'none';
     }
   }
-  const isNewHi = tSaveHiScore();
-  if (newHi) newHi.style.display = isNewHi ? 'block' : 'none';
+  if (tEventsEnabled) {
+    if (newHi) newHi.style.display = 'none';
+    if (eventsHint) eventsHint.style.display = 'block';
+  } else {
+    if (eventsHint) eventsHint.style.display = 'none';
+    const isNewHi = tSaveHiScore();
+    if (newHi) {
+      newHi.textContent = tMode === 'sprint' ? '🏆 NEUE BESTZEIT!' : '🏆 NEUER HIGHSCORE!';
+      newHi.style.display = isNewHi ? 'block' : 'none';
+    }
+  }
   if (overlay) overlay.style.display = 'flex';
   drawTetris();
 }
@@ -614,6 +705,7 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'ArrowRight' || e.key === 'd') { if (!tCollides(tPiece, 1, 0)) { tPiece.x++; tLockTimer = 0; dasRight = 0; } e.preventDefault(); }
   if (e.key === 'ArrowDown' || e.key === 's') { if (!tSoftDrop) { tSoftDrop = true; tAccum = 0; } e.preventDefault(); }
   if (e.key === 'ArrowUp' || e.key === 'z' || e.key === 'Z') { tryRotate(tPiece); e.preventDefault(); }
+  if (e.key === 'x' || e.key === 'X') { tryRotateCCW(tPiece); e.preventDefault(); }
   if (e.key === 'c' || e.key === 'C' || e.key === 'Shift') { tDoHold(); e.preventDefault(); }
   if (e.key === ' ') {
     e.preventDefault();
@@ -639,3 +731,5 @@ window.tSelectMode = tSelectMode;
 window.drawTetris = drawTetris;
 window.drawNextPiece = drawNextPiece;
 Object.defineProperty(window, 'tNext', { get: () => tNext });
+
+export {};

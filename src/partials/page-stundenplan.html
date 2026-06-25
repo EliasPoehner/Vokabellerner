@@ -1,0 +1,189 @@
+    <!-- ══════════════════════════════════
+       STUNDENPLAN & PRÜFUNGEN
+       ══════════════════════════════════ -->
+    <main class="hub-page p-xl max-w-container-max mx-auto w-full pb-24 md:pb-xl" id="page-stundenplan">
+
+      <!-- Hero -->
+      <div class="flex items-center justify-between mb-lg gap-4 flex-wrap">
+        <div>
+          <h2 class="text-on-surface font-bold text-2xl">Stundenplan &amp; Prüfungen</h2>
+          <p class="text-slate-500 text-sm mt-0.5">Dein Wochenplan und alle Klausuren auf einen Blick.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="sp-class-display"
+            class="glass-card rounded-lg px-3 py-1.5 text-xs font-mono text-on-surface-variant">
+            Nicht konfiguriert
+          </span>
+          <button onclick="spToggleSettings()"
+            class="glass-card rounded-lg px-3 py-1.5 text-xs text-primary flex items-center gap-1 hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined" style="font-size:14px;">settings</span>
+            Einstellungen
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div id="sp-settings-panel" style="display:none;"
+        class="glass-card rounded-xl p-md mb-md border border-primary/20">
+        <h3 class="text-on-surface font-semibold text-sm mb-md flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary" style="font-size:16px;">manage_accounts</span>
+          Schulplan-API Einstellungen
+        </h3>
+        <div class="flex gap-2 flex-wrap items-end">
+          <div class="flex flex-col gap-xs flex-1 min-w-48">
+            <label class="text-xs text-slate-500">Benutzername</label>
+            <input id="sp-user-input" type="text" placeholder="z. B. max.mustermann"
+              class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary outline-none" />
+          </div>
+          <button onclick="spSaveSettings()"
+            class="px-4 py-2 bg-primary text-on-primary text-sm font-semibold rounded-lg hover:bg-primary/90 active:scale-95 transition-all">
+            Speichern &amp; laden
+          </button>
+        </div>
+        <p class="text-xs text-slate-600 mt-sm">
+          Der Benutzername wird genutzt, um deine Klasse automatisch über die KlaTab-API zu ermitteln.
+          Daten werden 30 Minuten gecacht.
+        </p>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="flex gap-1 mb-md rounded-xl p-1 glass-card">
+        <button id="sp-tab-stundenplan" onclick="switchSpTab('stundenplan')"
+          class="flex-1 text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1"
+          style="background:rgba(221,183,255,0.12);color:#ddb7ff;font-weight:600;">
+          <span class="material-symbols-outlined" style="font-size:14px;">calendar_view_week</span>
+          Stundenplan
+        </button>
+        <button id="sp-tab-pruefungen" onclick="switchSpTab('pruefungen')"
+          class="flex-1 text-xs py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1"
+          style="color:#988d9f;">
+          <span class="material-symbols-outlined" style="font-size:14px;">edit_note</span>
+          Prüfungen
+        </button>
+      </div>
+
+      <!-- ── STUNDENPLAN PANEL ── -->
+      <div id="sp-panel-stundenplan">
+
+        <!-- Week navigation -->
+        <div class="flex items-center justify-between mb-md glass-card rounded-xl px-md py-sm">
+          <div class="flex items-center gap-1">
+            <button onclick="spPrevWeek()"
+              class="p-1.5 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors text-on-surface-variant">
+              <span class="material-symbols-outlined" style="font-size:16px;">chevron_left</span>
+            </button>
+            <span id="sp-week-label"
+              class="text-sm font-medium text-on-surface px-2 text-center"
+              style="min-width:128px;">KW --</span>
+            <button onclick="spNextWeek()"
+              class="p-1.5 rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors text-on-surface-variant">
+              <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
+            </button>
+            <button id="sp-today-btn" onclick="spToday()" style="display:none;"
+              class="text-xs text-primary px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors">
+              Heute
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="sp-loading" style="display:none;"
+              class="material-symbols-outlined text-primary"
+              style="font-size:16px;animation:sp-spin 1s linear infinite;">sync</span>
+            <button id="sp-refresh-btn" onclick="spRefresh()" title="Aktualisieren"
+              class="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant">
+              <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Fallback banner: shown when API is unreachable, SP data is used instead -->
+        <div id="sp-fallback-banner" style="display:none;"
+          class="flex items-start gap-2 px-md py-sm rounded-xl mb-md flex-wrap"
+          style="background:rgba(255,214,100,.08);border:1px solid rgba(255,214,100,.2);">
+          <span class="material-symbols-outlined flex-shrink-0" style="font-size:16px;color:#ffd664;margin-top:1px;">info</span>
+          <div>
+            <span style="font-size:13px;color:#ffd664;font-weight:600;">API nicht erreichbar — zeige lokalen Stundenplan</span>
+            <div class="sp-fallback-detail" style="font-size:11px;color:rgba(255,214,100,.6);margin-top:2px;"></div>
+          </div>
+        </div>
+
+        <!-- Timetable grid -->
+        <div class="glass-card rounded-xl p-md">
+          <div id="sp-grid-container">
+            <!-- filled by JS -->
+          </div>
+          <!-- Legend -->
+          <div class="mt-md flex gap-md flex-wrap" style="font-size:11px;color:var(--on-surface-variant);">
+            <span class="flex items-center gap-xs">
+              <span style="width:18px;height:10px;border-radius:3px;background:rgba(255,214,100,.09);border:1px solid rgba(255,214,100,.25);display:inline-block;"></span>
+              Vertretung
+            </span>
+            <span class="flex items-center gap-xs">
+              <span style="width:18px;height:10px;border-radius:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);opacity:.4;display:inline-block;"></span>
+              Ausfall
+            </span>
+          </div>
+        </div>
+
+      </div><!-- /sp-panel-stundenplan -->
+
+      <!-- ── PRÜFUNGEN PANEL ── -->
+      <div id="sp-panel-pruefungen" style="display:none;">
+
+        <!-- Add form -->
+        <div class="glass-card rounded-xl p-md mb-md">
+          <h3 class="text-on-surface font-semibold text-sm mb-md flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:16px;">add_circle</span>
+            Prüfung manuell eintragen
+          </h3>
+          <form onsubmit="spAddKlausur(event)" class="flex gap-2 flex-wrap">
+            <input id="sp-kl-fach" type="text" placeholder="Fach *" required
+              class="flex-1 bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary outline-none"
+              style="min-width:96px;" />
+            <input id="sp-kl-thema" type="text" placeholder="Thema"
+              class="flex-1 bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary outline-none"
+              style="min-width:128px;" />
+            <input id="sp-kl-dauer" type="number" placeholder="Min." value="60" min="1"
+              class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary outline-none"
+              style="width:76px;" />
+            <input id="sp-kl-datum" type="date" required
+              class="bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:border-primary outline-none" />
+            <button type="submit"
+              class="px-4 py-2 bg-primary text-on-primary text-sm font-semibold rounded-lg hover:bg-primary/90 active:scale-95 transition-all">
+              Eintragen
+            </button>
+          </form>
+        </div>
+
+        <!-- API status line -->
+        <div id="sp-kl-status" style="display:none;align-items:center;gap:6px;margin-bottom:12px;"></div>
+
+        <!-- Upcoming -->
+        <div class="glass-card rounded-xl p-md mb-md">
+          <h3 class="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-md">
+            Bevorstehend
+          </h3>
+          <div id="sp-kl-upcoming" class="flex flex-col gap-sm">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <!-- Past manual entries -->
+        <div id="sp-kl-past" style="display:none;">
+          <div class="glass-card rounded-xl p-md">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-md">
+              Vergangen (manuell)
+            </h3>
+            <div class="sp-kl-past-list flex flex-col gap-xs">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sp-panel-pruefungen -->
+
+    </main>
+
+    <style>
+      @keyframes sp-spin { to { transform: rotate(360deg); } }
+      #sp-loading { display: inline-block; animation: sp-spin 1s linear infinite; }
+    </style>

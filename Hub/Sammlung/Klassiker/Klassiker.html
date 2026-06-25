@@ -18,27 +18,27 @@
       onclick="if(window.history.length>1){history.back();return false;}">
       <span class="hub-back-arrow">←</span> F11 HUB · Arcade
     </a>
+    <div class="theme-bar">
+      <span class="theme-bar-label">Theme</span>
+      <button class="theme-pill active" data-t="comfort" onclick="setTheme('comfort',this)"><span class="pip"
+          style="background:#5ecfdf"></span>Komfort</button>
+      <button class="theme-pill" data-t="neon" onclick="setTheme('neon',this)"><span class="pip"
+          style="background:#00f5ff"></span>Neon</button>
+      <button class="theme-pill" data-t="light" onclick="setTheme('light',this)"><span class="pip"
+          style="background:#f0ede8;border:1px solid #888"></span>Hell</button>
+      <button class="theme-pill" data-t="forest" onclick="setTheme('forest',this)"><span class="pip"
+          style="background:#52c882"></span>Forest</button>
+      <button class="theme-pill" data-t="sunset" onclick="setTheme('sunset',this)"><span class="pip"
+          style="background:#e0904a"></span>Sunset</button>
+    </div>
   </div>
 
   <header>
     <div class="logo">◈ ARCADE <span>ZONE</span> ◈</div>
-    <p>— Insert Coin to Continue —</p>
+    <p>— Minesweeper · Tetris · Snake · 2048 · Pong · Tron —</p>
   </header>
 
-
-  <div class="theme-bar">
-    <span class="theme-bar-label">Theme</span>
-    <button class="theme-pill active" data-t="comfort" onclick="setTheme('comfort',this)"><span class="pip"
-        style="background:#5ecfdf"></span>Komfort</button>
-    <button class="theme-pill" data-t="neon" onclick="setTheme('neon',this)"><span class="pip"
-        style="background:#00f5ff"></span>Neon</button>
-    <button class="theme-pill" data-t="light" onclick="setTheme('light',this)"><span class="pip"
-        style="background:#f0ede8;border:1px solid #888"></span>Hell</button>
-    <button class="theme-pill" data-t="forest" onclick="setTheme('forest',this)"><span class="pip"
-        style="background:#52c882"></span>Forest</button>
-    <button class="theme-pill" data-t="sunset" onclick="setTheme('sunset',this)"><span class="pip"
-        style="background:#e0904a"></span>Sunset</button>
-  </div>
+  <div class="arcade-cabinet">
   <div class="game-nav">
     <button class="game-btn active" onclick="showGame('minesweeper',this)">💣 Minesweeper</button>
     <button class="game-btn" onclick="showGame('tetris',this)">🧱 Tetris</button>
@@ -215,7 +215,7 @@
 
         <!-- Canvas-Wrapper (für Erdbeben / Zeitlupe) -->
         <div id="tetris-canvas-wrap">
-          <canvas id="tetris-canvas" width="200" height="400"></canvas>
+          <canvas id="tetris-canvas" width="240" height="480"></canvas>
         </div>
 
         <div id="tetris-side">
@@ -230,14 +230,15 @@
               id="tetris-lines">0</div>
           </div>
           <div style="margin-top:16px;">
-            <div class="side-label">Highscore</div>
+            <div class="side-label" id="tetris-hiscore-label">Highscore</div>
             <div
               style="font-family:'Press Start 2P',monospace;font-size:11px;color:var(--yellow);text-shadow:var(--glow-yellow);margin-top:4px;"
               id="tetris-hiscore">0</div>
           </div>
           <div class="tetris-tips">
             <div class="tip"><kbd>← →</kbd><span>Bewegen</span></div>
-            <div class="tip"><kbd>↑ / Z</kbd><span>Drehen</span></div>
+            <div class="tip"><kbd>↑ / Z</kbd><span>Drehen ↻</span></div>
+            <div class="tip"><kbd>X</kbd><span>Drehen ↺</span></div>
             <div class="tip"><kbd>↓</kbd><span>Soft Drop</span></div>
             <div class="tip"><kbd>Space</kbd><span>Hard Drop</span></div>
             <div class="tip"><kbd>C</kbd><span>Halten</span></div>
@@ -251,6 +252,7 @@
         <div class="sub">Punkte: <b id="tetris-final-score"></b></div>
         <div id="tetris-over-time" style="display:none;font-size:11px;color:var(--cyan);margin-top:4px;"></div>
         <div id="tetris-new-hi" style="display:none;font-size:10px;color:var(--yellow);text-shadow:var(--glow-yellow);margin-top:6px;letter-spacing:1px;">🏆 NEUER HIGHSCORE!</div>
+        <div id="tetris-events-hint" style="display:none;font-size:9px;color:var(--dim);margin-top:6px;letter-spacing:1px;">⚡ Highscore wird nicht gewertet (Events aktiv)</div>
         <button class="btn btn-cyan" onclick="tetrisShowSetup()">Nochmal</button>
       </div>
     </div>
@@ -403,11 +405,19 @@
         <div class="pong-player-label">
           <div class="hud-label p1-color">◄ Spieler 1</div>
           <div class="hud-value p1-color" id="tron-score-p1">0</div>
+          <div class="tron-meter-row">
+            <div class="tron-boost-meter p1-meter"><div class="tron-boost-fill" id="tron-boost-p1"></div></div>
+            <span class="tron-badges" id="tron-badges-p1"></span>
+          </div>
         </div>
         <div id="tron-vs">VS</div>
         <div class="pong-player-label">
           <div class="hud-label p2-color">Spieler 2 ►</div>
           <div class="hud-value p2-color" id="tron-score-p2">0</div>
+          <div class="tron-meter-row">
+            <div class="tron-boost-meter p2-meter"><div class="tron-boost-fill" id="tron-boost-p2"></div></div>
+            <span class="tron-badges" id="tron-badges-p2"></span>
+          </div>
         </div>
       </div>
       <div id="tron-arena">
@@ -420,22 +430,25 @@
             <span class="pk">W</span> Hoch &nbsp;·&nbsp;
             <span class="pk">S</span> Runter &nbsp;·&nbsp;
             <span class="pk">A</span> Links &nbsp;·&nbsp;
-            <span class="pk">D</span> Rechts
+            <span class="pk">D</span> Rechts &nbsp;·&nbsp;
+            <span class="pk">Q</span> Boost
           </div>
           <div class="pong-hint-block p2-hint">
             <span class="pk">↑</span> Hoch &nbsp;·&nbsp;
             <span class="pk">↓</span> Runter &nbsp;·&nbsp;
             <span class="pk">←</span> Links &nbsp;·&nbsp;
-            <span class="pk">→</span> Rechts
+            <span class="pk">→</span> Rechts &nbsp;·&nbsp;
+            <span class="pk">/</span> Boost
           </div>
         </div>
       </div>
     </div>
 
   </div>
+  </div><!-- .arcade-cabinet -->
   <footer>◈ ARCADE ZONE ◈ &nbsp;·&nbsp; Alle Spiele laufen direkt im Browser</footer>
 
-  <script type="module" src="./tetris.ts"></script>
+  <script type="module" src="./tetris.ts" id="tetris-module"></script>
   <script>
     'use strict';
 
@@ -574,9 +587,11 @@
     const SC = 20, SR = 20, SB = 20;
     let snake, sDir, sNextDir, sDirQueue, sFood, sRunning = false, sRafId, sLastTime, sAccum;
     let sScore, sHi = 0, sCanvas, sCtx, foodAnim = 0;
+    let snakePrev = [], sInterpolationT = 0;
     try { sHi = parseInt(localStorage.getItem('snake-hi') || '0') || 0; } catch {}
+    (async()=>{try{const r=await fetch('/api/saves/snake-hi');if(r.ok){const d=await r.json();if(typeof d==='number'&&d>sHi){sHi=d;localStorage.setItem('snake-hi',String(d));document.getElementById('snake-hi').textContent=sHi;}}}catch{}})();
 
-    function snakeInterval() { return Math.max(75, 160 - Math.floor(snake.length / 4) * 8); }
+    function snakeInterval() { return Math.max(95, 160 - Math.floor(snake.length / 6) * 6); }
 
     function initSnake() {
       sCanvas = document.getElementById('snake-canvas');
@@ -587,9 +602,10 @@
       document.getElementById('snake-overlay').style.display = 'none';
       snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
       sDir = { x: 1, y: 0 }; sNextDir = { x: 1, y: 0 }; sDirQueue = [];
-      sScore = 0; sAccum = 0; foodAnim = 0;
+      sScore = 0; sAccum = 0; foodAnim = 0; sInterpolationT = 0;
+      snakePrev = snake.map(s => ({ ...s }));
       document.getElementById('snake-score').textContent = 0;
-      placeFood(); drawSnake(0);
+      placeFood(); drawSnake();
     }
 
     function placeFood() {
@@ -604,6 +620,7 @@
       sAccum += dt;
       foodAnim = (foodAnim + dt * 0.005) % (Math.PI * 2);
       if (sAccum >= snakeInterval()) {
+        snakePrev = snake.map(s => ({ ...s }));
         sAccum -= snakeInterval();
         while (sDirQueue.length) {
           const nd = sDirQueue.shift();
@@ -620,15 +637,16 @@
           popHud('snake-score'); placeFood();
         } else snake.pop();
       }
-      drawSnake(now);
+      sInterpolationT = Math.min(1, sAccum / snakeInterval());
+      drawSnake();
       sRafId = requestAnimationFrame(snakeLoop);
     }
 
     function snakeEnd() {
       sRunning = false; cancelAnimationFrame(sRafId);
-      if (sScore > sHi) { sHi = sScore; document.getElementById('snake-hi').textContent = sHi; try { localStorage.setItem('snake-hi', String(sHi)); } catch {} }
+      if (sScore > sHi) { sHi = sScore; document.getElementById('snake-hi').textContent = sHi; try { localStorage.setItem('snake-hi', String(sHi)); } catch {} fetch('/api/saves/snake-hi',{method:'POST',headers:{'Content-Type':'application/json'},body:String(sHi)}).catch(()=>{}); fetch('/api/highscores/snake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score:sHi})}).catch(()=>{}); }
       document.getElementById('snake-final').textContent = sScore;
-      drawSnake(0);
+      drawSnake();
       document.getElementById('snake-overlay').style.display = 'flex';
     }
 
@@ -644,7 +662,7 @@
       }
     }
 
-    function drawSnake(now) {
+    function drawSnake() {
       const ctx = sCtx;
       ctx.fillStyle = getCanvasBg(); ctx.fillRect(0, 0, sCanvas.width, sCanvas.height);
       ctx.strokeStyle = 'rgba(255,255,255,0.025)'; ctx.lineWidth = 1;
@@ -656,19 +674,42 @@
       ctx.fillStyle = `rgba(255,0,110,${0.7 + 0.3 * pulse})`;
       ctx.beginPath(); ctx.arc(sFood.x * SB + SB / 2, sFood.y * SB + SB / 2, 5 + 2 * pulse, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
-      // Snake
-      snake.forEach((seg, i) => {
-        const t = i / snake.length;
+      // Snake — von Schwanz zu Kopf zeichnen, damit Kopf oben liegt
+      for (let i = snake.length - 1; i >= 0; i--) {
+        const seg = snake[i];
+        const prev = snakePrev[i];
+        const t = snake.length > 1 ? i / (snake.length - 1) : 0;
+        const isHead = i === 0;
+        // Sub-pixel-Position durch Interpolation zwischen letztem und aktuellem Grid-Schritt
+        const vx = prev ? (prev.x + (seg.x - prev.x) * sInterpolationT) * SB : seg.x * SB;
+        const vy = prev ? (prev.y + (seg.y - prev.y) * sInterpolationT) * SB : seg.y * SB;
+        // Verjüngung: Kopf groß, Schwanz kleiner
+        const pad = isHead ? 1 : 1 + t * 2.5;
+        const sz = SB - pad * 2;
         ctx.save();
-        if (i === 0) { ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 10; }
-        ctx.fillStyle = i === 0 ? '#39ff14' : `hsl(${118 - t * 40},90%,${54 - t * 18}%)`;
-        ctx.fillRect(seg.x * SB + 1, seg.y * SB + 1, SB - 2, SB - 2);
-        if (i === 0) {
-          ctx.fillStyle = 'rgba(255,255,255,0.3)';
-          ctx.fillRect(seg.x * SB + 2, seg.y * SB + 2, SB - 4, 3);
+        if (isHead) { ctx.shadowColor = '#39ff14'; ctx.shadowBlur = 16; }
+        ctx.fillStyle = isHead ? '#39ff14' : `hsl(${118 - t * 40},88%,${52 - t * 20}%)`;
+        ctx.beginPath();
+        ctx.roundRect(vx + pad, vy + pad, sz, sz, 3);
+        ctx.fill();
+        // Augen am Kopf — zeigen eindeutig die Bewegungsrichtung
+        if (isHead) {
+          const cx = vx + SB / 2, cy = vy + SB / 2;
+          // Zwei Augen, senkrecht zur Fahrtrichtung versetzt
+          const ex1 = cx + sDir.x * 3 - sDir.y * 3.5;
+          const ey1 = cy + sDir.y * 3 + sDir.x * 3.5;
+          const ex2 = cx + sDir.x * 3 + sDir.y * 3.5;
+          const ey2 = cy + sDir.y * 3 - sDir.x * 3.5;
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#001a00';
+          ctx.beginPath(); ctx.arc(ex1, ey1, 2.3, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(ex2, ey2, 2.3, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.92)';
+          ctx.beginPath(); ctx.arc(ex1, ey1, 1, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(ex2, ey2, 1, 0, Math.PI * 2); ctx.fill();
         }
         ctx.restore();
-      });
+      }
     }
 
     document.addEventListener('keydown', e => {
@@ -694,6 +735,7 @@
     // ════════════════════════════════════════════════
     let g2048Grid, g2048Score = 0, g2048Hi = 0, g2048Won = false, g2048KeepPlaying = false;
     try { g2048Hi = parseInt(localStorage.getItem('2048-hi') || '0') || 0; } catch {}
+    (async()=>{try{const r=await fetch('/api/saves/2048-hi');if(r.ok){const d=await r.json();if(typeof d==='number'&&d>g2048Hi){g2048Hi=d;localStorage.setItem('2048-hi',String(d));document.getElementById('g2048-hi').textContent=g2048Hi;}}}catch{}})();
     let g2048Animating = false;
 
     // Read actual CSS variable at runtime (handles responsive breakpoint)
@@ -839,7 +881,7 @@
         if (g2048Score > g2048Hi) {
           g2048Hi = g2048Score;
           document.getElementById('g2048-hi').textContent = g2048Hi;
-          try { localStorage.setItem('2048-hi', String(g2048Hi)); } catch {}
+          try { localStorage.setItem('2048-hi', String(g2048Hi)); } catch {} fetch('/api/saves/2048-hi',{method:'POST',headers:{'Content-Type':'application/json'},body:String(g2048Hi)}).catch(()=>{}); fetch('/api/highscores/2048',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score:g2048Hi})}).catch(()=>{});
         }
         popHud('g2048-score');
 
@@ -1001,7 +1043,7 @@
       // Redraw canvases with new theme bg
       setTimeout(() => {
         if (typeof drawTetris === 'function') drawTetris();
-        if (typeof drawSnake === 'function' && typeof snake !== 'undefined') drawSnake(0);
+        if (typeof drawSnake === 'function' && typeof snake !== 'undefined') drawSnake();
         if (typeof drawNextPiece === 'function' && typeof tNext !== 'undefined') drawNextPiece();
       }, 10);
     }
@@ -1017,10 +1059,16 @@
       } catch (e) { }
     })();
     // ── INIT ──
+    // tetris.ts läuft als <script type="module"> und wird daher erst NACH diesem
+    // Inline-Script ausgeführt (Module sind implizit "defer"). initTetris() darf
+    // also nicht hier direkt aufgerufen werden, sonst bricht der Rest dieses
+    // Scripts (initSnake/init2048/initPong/initTron) mit einem ReferenceError ab.
     initMinesweeper();
-    initTetris();
     initSnake();
     init2048();
+    function bootTetris() { if (typeof initTetris === 'function') initTetris(); }
+    if (typeof initTetris === 'function') bootTetris();
+    else document.getElementById('tetris-module').addEventListener('load', bootTetris);
     // initPong() wird unten nach der Pong-Deklaration aufgerufen
 
     // ════════════════════════════════════════════════
@@ -1383,28 +1431,45 @@
     const TRON_COLS = 80, TRON_ROWS = 60, TRON_CELL = 8;
     const TRON_TICK = 80; // ms pro Schritt
     const TRON_WIN = 5;
+    const TRON_BOOST_MAX = 100, TRON_BOOST_DRAIN = 5, TRON_BOOST_REGEN = 1;
+    const TRON_PHASE_TICKS = 35;
+    const TRON_MAX_SHIELD = 2;
+    const TRON_MAX_POWERUPS = 2;
+    const TRON_POWERUP_MIN_TICKS = 35, TRON_POWERUP_MAX_TICKS = 60;
+    const TRON_POWERUP_TYPES = ['boost', 'shield', 'phase'];
+    const TRON_POWERUP_ICON = { boost: '⚡', shield: '🛡', phase: '👻' };
 
     let tronSt = null;
     let tronIntervalId = null;
 
+    function tronNewPlayer(x, y, dx, dy) {
+      return {
+        x, y, dx, dy, dirQ: [], alive: true,
+        boost: TRON_BOOST_MAX, boostHeld: false, boosting: false,
+        shield: 0, phaseTicks: 0,
+      };
+    }
+
     function initTron() {
       clearInterval(tronIntervalId);
       tronIntervalId = null;
-      tronSt = { score1: 0, score2: 0, phase: 'idle', grid: null, p1: null, p2: null };
+      tronSt = { score1: 0, score2: 0, phase: 'idle', grid: null, p1: null, p2: null, powerups: [], powerupTimer: 0 };
       document.getElementById('tron-score-p1').textContent = '0';
       document.getElementById('tron-score-p2').textContent = '0';
+      tronUpdateHud();
       const ov = document.getElementById('tron-overlay');
       ov.innerHTML = `
         <h2 style="color:var(--cyan);text-shadow:var(--glow-cyan);">⚡ TRON</h2>
         <div class="sub">Erster bis <b style="font-family:'Press Start 2P',monospace;color:var(--yellow);text-shadow:var(--glow-yellow);">${TRON_WIN}</b> Siege gewinnt</div>
+        <div class="sub" style="font-size:9px;">Boost halten = doppeltes Tempo (verbraucht Meter)<br>⚡ Boost-Füllung · 🛡 Schild (blockt 1 Crash) · 👻 Phase (durch Spuren fahren)</div>
         <div class="key-summary">
           <div class="key-col">
             <b class="p1b">SPIELER 1</b>
-            <span style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 8px;font-size:9px;">W A S D</span>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--cyan);color:var(--cyan);padding:1px 8px;font-size:9px;">W A S D + Q</span>
           </div>
           <div class="key-col">
             <b class="p2b">SPIELER 2</b>
-            <span style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 8px;font-size:9px;">Pfeiltasten</span>
+            <span style="font-family:'Share Tech Mono';border:1px solid var(--pink);color:var(--pink);padding:1px 8px;font-size:9px;">Pfeiltasten + /</span>
           </div>
         </div>
         <button class="btn btn-cyan" onclick="tronStartRound()">▶ Spiel starten</button>
@@ -1417,14 +1482,60 @@
       clearInterval(tronIntervalId);
       const grid = Array.from({ length: TRON_ROWS }, () => Array(TRON_COLS).fill(0));
       const midY = Math.floor(TRON_ROWS / 2);
-      const p1 = { x: 10, y: midY, dx: 1, dy: 0, dirQ: [], alive: true };
-      const p2 = { x: TRON_COLS - 11, y: midY, dx: -1, dy: 0, dirQ: [], alive: true };
+      const p1 = tronNewPlayer(10, midY, 1, 0);
+      const p2 = tronNewPlayer(TRON_COLS - 11, midY, -1, 0);
       grid[p1.y][p1.x] = 1;
       grid[p2.y][p2.x] = 2;
-      tronSt = { ...tronSt, phase: 'playing', grid, p1, p2 };
+      tronSt = { ...tronSt, phase: 'playing', grid, p1, p2, powerups: [], powerupTimer: tronRandPowerupDelay() };
       document.getElementById('tron-overlay').style.display = 'none';
+      tronUpdateHud();
       tronDraw();
       tronIntervalId = setInterval(tronTick, TRON_TICK);
+    }
+
+    function tronRandPowerupDelay() {
+      return TRON_POWERUP_MIN_TICKS + Math.floor(Math.random() * (TRON_POWERUP_MAX_TICKS - TRON_POWERUP_MIN_TICKS));
+    }
+
+    function tronSpawnPowerup() {
+      const { grid, powerups } = tronSt;
+      if (powerups.length >= TRON_MAX_POWERUPS) return;
+      const free = [];
+      for (let r = 0; r < TRON_ROWS; r++) for (let c = 0; c < TRON_COLS; c++) {
+        if (grid[r][c] === 0 && !powerups.some(pu => pu.x === c && pu.y === r)) free.push({ x: c, y: r });
+      }
+      if (!free.length) return;
+      const pos = free[Math.floor(Math.random() * free.length)];
+      const type = TRON_POWERUP_TYPES[Math.floor(Math.random() * TRON_POWERUP_TYPES.length)];
+      powerups.push({ x: pos.x, y: pos.y, type });
+    }
+
+    function tronTryPickup(p) {
+      const { powerups } = tronSt;
+      const idx = powerups.findIndex(pu => pu.x === p.x && pu.y === p.y);
+      if (idx === -1) return;
+      const [pu] = powerups.splice(idx, 1);
+      if (pu.type === 'boost') p.boost = TRON_BOOST_MAX;
+      else if (pu.type === 'shield') p.shield = Math.min(TRON_MAX_SHIELD, p.shield + 1);
+      else if (pu.type === 'phase') p.phaseTicks = TRON_PHASE_TICKS;
+    }
+
+    // Bewegt p um eine Zelle in Richtung (p.dx,p.dy). Gibt false zurück, wenn der Spieler stirbt.
+    function tronApplyMove(p, grid, pid) {
+      const n = { x: p.x + p.dx, y: p.y + p.dy };
+      const outOfBounds = n.x < 0 || n.x >= TRON_COLS || n.y < 0 || n.y >= TRON_ROWS;
+      const blocked = outOfBounds || (grid[n.y] && grid[n.y][n.x] !== 0 && p.phaseTicks <= 0);
+
+      if (blocked) {
+        if (!outOfBounds && p.shield > 0) { p.shield--; return true; } // Schild blockt, Spieler bleibt stehen
+        p.alive = false;
+        return false;
+      }
+
+      p.x = n.x; p.y = n.y;
+      if (grid[n.y][n.x] === 0) grid[n.y][n.x] = pid;
+      tronTryPickup(p);
+      return true;
     }
 
     function tronTick() {
@@ -1438,24 +1549,63 @@
         }
       });
 
-      const n1 = { x: p1.x + p1.dx, y: p1.y + p1.dy };
-      const n2 = { x: p2.x + p2.dx, y: p2.y + p2.dy };
-      const hit = n => n.x < 0 || n.x >= TRON_COLS || n.y < 0 || n.y >= TRON_ROWS || grid[n.y][n.x] !== 0;
-      const h1 = hit(n1), h2 = hit(n2);
+      [p1, p2].forEach(p => {
+        p.boosting = p.boostHeld && p.boost > 0;
+        if (p.boosting) p.boost = Math.max(0, p.boost - TRON_BOOST_DRAIN);
+        else p.boost = Math.min(TRON_BOOST_MAX, p.boost + TRON_BOOST_REGEN);
+        if (p.phaseTicks > 0) p.phaseTicks--;
+      });
 
-      // Both head for same empty cell
-      if (!h1 && !h2 && n1.x === n2.x && n1.y === n2.y) {
-        tronDraw(); tronEndRound(0); return;
+      tronSt.powerupTimer--;
+      if (tronSt.powerupTimer <= 0) {
+        tronSpawnPowerup();
+        tronSt.powerupTimer = tronRandPowerupDelay();
       }
 
-      if (!h1) { p1.x = n1.x; p1.y = n1.y; grid[p1.y][p1.x] = 1; } else p1.alive = false;
-      if (!h2) { p2.x = n2.x; p2.y = n2.y; grid[p2.y][p2.x] = 2; } else p2.alive = false;
+      const steps1 = p1.boosting ? 2 : 1;
+      const steps2 = p2.boosting ? 2 : 1;
 
-      tronDraw();
+      for (let s = 0; s < 2; s++) {
+        const move1 = s < steps1 && p1.alive;
+        const move2 = s < steps2 && p2.alive;
+        if (!move1 && !move2) continue;
 
-      if (!p1.alive || !p2.alive) {
-        tronEndRound(!p1.alive && !p2.alive ? 0 : p1.alive ? 1 : 2);
+        // Kopf-an-Kopf: beide wollen in dieselbe leere Zelle
+        if (move1 && move2) {
+          const n1 = { x: p1.x + p1.dx, y: p1.y + p1.dy };
+          const n2 = { x: p2.x + p2.dx, y: p2.y + p2.dy };
+          if (n1.x === n2.x && n1.y === n2.y) {
+            tronDraw(); tronUpdateHud(); tronEndRound(0); return;
+          }
+        }
+
+        if (move1) tronApplyMove(p1, grid, 1);
+        if (move2) tronApplyMove(p2, grid, 2);
+
+        tronDraw();
+        tronUpdateHud();
+
+        if (!p1.alive || !p2.alive) {
+          tronEndRound(!p1.alive && !p2.alive ? 0 : p1.alive ? 1 : 2);
+          return;
+        }
       }
+    }
+
+    function tronUpdateHud() {
+      if (!tronSt) return;
+      [['p1', tronSt.p1], ['p2', tronSt.p2]].forEach(([key, p]) => {
+        const fill = document.getElementById(`tron-boost-${key}`);
+        const badges = document.getElementById(`tron-badges-${key}`);
+        if (fill) fill.style.width = `${p ? p.boost : TRON_BOOST_MAX}%`;
+        if (badges) {
+          if (!p) { badges.textContent = ''; return; }
+          let html = '';
+          if (p.shield > 0) html += `🛡${p.shield > 1 ? '×' + p.shield : ''} `;
+          if (p.phaseTicks > 0) html += '👻';
+          badges.textContent = html.trim();
+        }
+      });
     }
 
     function tronEndRound(winner) {
@@ -1521,13 +1671,30 @@
         if (grid[r][c] === 2) ctx.fillRect(c * TRON_CELL + 1, r * TRON_CELL + 1, TRON_CELL - 2, TRON_CELL - 2);
       }
 
+      if (tronSt.powerups && tronSt.powerups.length) {
+        ctx.font = `${TRON_CELL + 6}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const pulse = 0.85 + 0.15 * Math.sin(Date.now() / 200);
+        tronSt.powerups.forEach(pu => {
+          ctx.save();
+          ctx.globalAlpha = pulse;
+          ctx.shadowColor = getCssVar('--yellow') || '#ffd400';
+          ctx.shadowBlur = 10;
+          ctx.fillText(TRON_POWERUP_ICON[pu.type], pu.x * TRON_CELL + TRON_CELL / 2, pu.y * TRON_CELL + TRON_CELL / 2 + 1);
+          ctx.restore();
+        });
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+      }
+
       if (p1 && p1.alive) {
-        ctx.shadowColor = c1; ctx.shadowBlur = 18;
+        ctx.shadowColor = c1; ctx.shadowBlur = p1.boosting ? 28 : 18;
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(p1.x * TRON_CELL, p1.y * TRON_CELL, TRON_CELL, TRON_CELL);
       }
       if (p2 && p2.alive) {
-        ctx.shadowColor = c2; ctx.shadowBlur = 18;
+        ctx.shadowColor = c2; ctx.shadowBlur = p2.boosting ? 28 : 18;
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(p2.x * TRON_CELL, p2.y * TRON_CELL, TRON_CELL, TRON_CELL);
       }
@@ -1575,6 +1742,14 @@
       const d2 = { ArrowUp: { dx: 0, dy: -1 }, ArrowDown: { dx: 0, dy: 1 }, ArrowLeft: { dx: -1, dy: 0 }, ArrowRight: { dx: 1, dy: 0 } };
       if (d1[e.key]) { if (tronSt.p1.dirQ.length < 2) tronSt.p1.dirQ.push(d1[e.key]); e.preventDefault(); }
       if (d2[e.key]) { if (tronSt.p2.dirQ.length < 2) tronSt.p2.dirQ.push(d2[e.key]); e.preventDefault(); }
+      if (e.key === 'q' || e.key === 'Q') { tronSt.p1.boostHeld = true; e.preventDefault(); }
+      if (e.key === '/') { tronSt.p2.boostHeld = true; e.preventDefault(); }
+    });
+
+    document.addEventListener('keyup', e => {
+      if (activeGame !== 'tron' || !tronSt) return;
+      if ((e.key === 'q' || e.key === 'Q') && tronSt.p1) tronSt.p1.boostHeld = false;
+      if (e.key === '/' && tronSt.p2) tronSt.p2.boostHeld = false;
     });
 
     const _tronSetTheme = setTheme;

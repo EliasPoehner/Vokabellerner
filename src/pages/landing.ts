@@ -90,9 +90,9 @@ export function updateFerien(): void {
 }
 
 /* ── Stundenplan ── */
-interface Stunde { f: string; v: string; b: string }
+export interface Stunde { f: string; v: string; b: string }
 
-const SP: Record<number, Stunde[]> = {
+export const SP: Record<number, Stunde[]> = {
   1: [{ f: 'BwLog', v: '08:00', b: '08:45' }, { f: 'BwLog', v: '08:45', b: '09:30' },
       { f: 'Elektrotechnik', v: '13:45', b: '14:30' }, { f: 'Elektrotechnik', v: '14:45', b: '15:30' }],
   2: [{ f: 'Web', v: '08:00', b: '08:45' }, { f: 'Web', v: '08:45', b: '09:30' },
@@ -112,19 +112,19 @@ const SP: Record<number, Stunde[]> = {
       { f: 'Physik', v: '13:00', b: '13:45' }],
 };
 
-const FICON: Record<string, string> = {
+export const FICON: Record<string, string> = {
   BwLog: 'inventory', Elektrotechnik: 'bolt', Web: 'language', Sowe: 'groups',
   BwLohn: 'payments', Datenbank: 'database', BwFibu: 'receipt_long',
   Deutsch: 'g_translate', KOM: 'wifi', Java: 'code', DVT: 'developer_board',
   ABAP: 'terminal', WiPuG: 'business_center', Physik: 'science', BsWin: 'window',
 };
-const FCOL: Record<string, 'primary' | 'secondary' | 'tertiary'> = {
+export const FCOL: Record<string, 'primary' | 'secondary' | 'tertiary'> = {
   BwLog: 'tertiary', Elektrotechnik: 'primary', Web: 'secondary', Sowe: 'tertiary',
   BwLohn: 'primary', Datenbank: 'secondary', BwFibu: 'tertiary',
   Deutsch: 'primary', KOM: 'secondary', Java: 'tertiary', DVT: 'primary',
   ABAP: 'secondary', WiPuG: 'tertiary', Physik: 'primary', BsWin: 'secondary',
 };
-const CMAP = {
+export const CMAP = {
   primary:   { bg: 'rgba(221,183,255,.12)', text: '#ddb7ff', bdr: '#ddb7ff' },
   secondary: { bg: 'rgba(78,222,163,.12)',  text: '#4edea3', bdr: '#4edea3' },
   tertiary:  { bg: 'rgba(173,198,255,.12)', text: '#adc6ff', bdr: '#adc6ff' },
@@ -229,6 +229,18 @@ export function showFact(): void {
 export function nextFact(): void {
   factIdx = (factIdx + 1) % FACTS.length;
   showFact();
+}
+
+export function showInlineFact(): void {
+  const text = document.getElementById('inline-fact-text');
+  const emoji = document.getElementById('inline-fact-emoji');
+  if (text) text.textContent = FACTS[factIdx];
+  if (emoji) emoji.textContent = FACT_EMOJIS[factIdx % FACT_EMOJIS.length];
+}
+
+export function nextInlineFact(): void {
+  factIdx = (factIdx + 1) % FACTS.length;
+  showInlineFact();
 }
 
 export function openFactPopup(): void {

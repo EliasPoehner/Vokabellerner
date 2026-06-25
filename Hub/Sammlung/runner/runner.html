@@ -87,6 +87,7 @@ function selLvl(el,lvl){
 let hs={school:0,city:0,office:0};
 try{hs=JSON.parse(localStorage.getItem('rr_hs2')||'{"school":0,"city":0,"office":0}');}catch(e){}
 document.getElementById('bD').textContent=Math.max(hs.school,hs.city,hs.office);
+(async()=>{try{const r=await fetch('/api/saves/runner-hs');if(r.ok){const d=await r.json();if(d&&typeof d==='object'){hs=d;localStorage.setItem('rr_hs2',JSON.stringify(d));document.getElementById('bD').textContent=Math.max(hs.school,hs.city,hs.office);}}}catch{}})();
 
 let running=false,score=0,dist=0,t=0,wx=0,spd=4.2,shake=0;
 
@@ -326,7 +327,7 @@ function spawnParts(x,y,col,n){
 
 function caught(){
   if(!running)return;running=false;shake=28;
-  if(score>hs[chosenLvl]){hs[chosenLvl]=score;localStorage.setItem('rr_hs2',JSON.stringify(hs));}
+  if(score>hs[chosenLvl]){hs[chosenLvl]=score;localStorage.setItem('rr_hs2',JSON.stringify(hs));fetch('/api/saves/runner-hs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(hs)}).catch(()=>{});fetch('/api/highscores/runner-'+chosenLvl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score})}).catch(()=>{});}
   setTimeout(showGameOver,550);
 }
 

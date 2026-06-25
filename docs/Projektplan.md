@@ -57,8 +57,8 @@ Spiele bleiben Canvas-basiertes Vanilla JS/TS — kein React, kein Next.js.
 
 ## Phase 4: Weitere TS-Migration (parallel zum laufenden Betrieb)
 
-- [ ] `tetris.js` → `tetris.ts`
-- [ ] `Hub.html` Inline-Scripts extrahieren und typisieren
+- [x] `tetris.js` → `tetris.ts`
+- [x] `Hub.html` Inline-Scripts extrahieren und typisieren
 - [ ] `asteroid_blaster.html`, `solitaire.html` — später, niedrige Priorität
 
 ---

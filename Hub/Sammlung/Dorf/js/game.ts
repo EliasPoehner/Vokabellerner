@@ -183,7 +183,11 @@ function destroyBuildingOutermost() {
     const tx = target.inst.x, tz = target.inst.z;
     flashBuilding(target.id, target.idx, 0xff2020, 600);
     setTimeout(function() {
-      S.buildings[target.id].splice(target.idx, 1);
+      // Guard against a Prestige-Reset firing in between (S.buildings is a fresh object then)
+      const arr = S.buildings[target.id];
+      const idx = arr ? arr.indexOf(target.inst) : -1;
+      if (idx === -1) return;
+      arr.splice(idx, 1);
       if (target.id === 'wohnhaus') S.popTotal = Math.max(2, S.popTotal - 3);
       log('⚔️ ' + (b ? b.name : target.id) + ' wurde zerstört (Pos: ' + tx + ',' + tz + ')!', 'warning');
       notify((b ? b.name : target.id) + ' wurde zerstört!', 'warning');
@@ -814,11 +818,21 @@ function prestige() {
 
   S.prestige++; S.prestigeMult = 1.0;
   S.res = { holz: 10, stein: 6, nahrung: 20, gold: 15, eisen: 0, kohle: 0 };
-  S.buildings = { rathaus: [{ level: 1, x: 0, z: 0 }] }; S.research = {};
-  S.popTotal = 3; S.pop = 2; S.tier = 0;
+  S.buildings = { rathaus: [{ level: 1, x: 0, z: 0 }] };
+  S.research = {}; S.activeResearch = null;
+  S.popTotal = 3; S.pop = 2; S.popMax = 4; S.tier = 0; S.day = 0;
   S.moral = 80 + (savedSkills.gemeinschaftssinn ? 8 : 0);
   S.modifiers = { nahrungMult: 1, holzMult: 1, steinMult: 1, goldMult: 1, eisenMult: 1, defense: 0 };
-  S.nextEventTick = 0; S.rathausAlive = true; S.roads = []; delete S._belagerung;
+  S.nextEventTick = 0; S.rathausAlive = true; S.roads = [];
+  S._popBuf = 0; S._starveBuf = 0;
+  delete S._belagerung; delete S._seuche;
+  delete S._nahrungReduceFactor; delete S._gewaechshaus; delete S._banken;
+  S.obstacles = [
+    { id: 'tree_pine', x: -5, z: 3 }, { id: 'tree_pine', x: 3, z: -5 },
+    { id: 'tree_pine', x: -3, z: -4 }, { id: 'tree_pine', x: 5, z: 2 },
+    { id: 'tree_pine', x: -4, z: 5 }, { id: 'tree_pine', x: 2, z: 6 },
+    { id: 'boulder_mossy', x: 5, z: -3 }, { id: 'boulder_mossy', x: -2, z: 5 }
+  ];
 
   // Restore skill-tree state
   S.prestigePoints = savedPoints;
@@ -827,6 +841,7 @@ function prestige() {
   calcDefense(); calcLager(); S.popMax = calcPopMax();
   rebuild3D();
   document.getElementById('tier-badge').textContent = 'Weiler';
+  document.getElementById('clock').textContent = 'Tag 0';
   document.getElementById('prestige-btn').style.display = 'none';
   log('Prestige #' + S.prestige + '! +3 Fähigkeitenpunkte (Gesamt: ' + savedPoints + '✦)', 'important');
   notify('Prestige #' + S.prestige + '! +3 Punkte für Fähigkeiten!');

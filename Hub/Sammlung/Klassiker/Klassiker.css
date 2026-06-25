@@ -37,9 +37,9 @@
     }
 
     [data-theme="light"] {
-      --bg: #f0ede8;
-      --panel: #fafaf8;
-      --border: #d8d4cc;
+      --bg: #e8e4de;
+      --panel: #c0bbb4;
+      --border: #b0aba4;
       --cyan: #1a7fa0;
       --pink: #c03060;
       --yellow: #b07a10;
@@ -108,7 +108,13 @@
       content: '';
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.02) 3px, rgba(0, 0, 0, 0.02) 4px);
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.09) 2px,
+        rgba(0, 0, 0, 0.09) 4px
+      );
       pointer-events: none;
       z-index: 9999;
     }
@@ -124,29 +130,49 @@
 
     header {
       text-align: center;
-      padding: 28px 20px 12px;
+      padding: 32px 20px 0;
+      position: relative;
+    }
+
+    header::before {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--cyan) 35%, var(--pink) 65%, transparent 100%);
+      opacity: 0.4;
+      margin-bottom: 32px;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--dim) 50%, transparent 100%);
+      margin-top: 18px;
+      margin-bottom: 4px;
+      opacity: 0.5;
     }
 
     .logo {
       font-family: 'Press Start 2P', monospace;
       font-size: clamp(18px, 4.5vw, 38px);
       color: var(--cyan);
-      text-shadow: var(--glow-cyan);
-      letter-spacing: 6px;
+      text-shadow: var(--glow-cyan), 0 0 40px rgba(0, 245, 255, 0.15);
+      letter-spacing: 8px;
       animation: flicker 6s infinite;
       display: inline-block;
     }
 
     .logo span {
       color: var(--pink);
-      text-shadow: var(--glow-pink);
+      text-shadow: var(--glow-pink), 0 0 40px rgba(255, 0, 110, 0.15);
     }
 
     header p {
       color: var(--dim);
-      font-size: 10px;
-      margin-top: 8px;
-      letter-spacing: 4px;
+      font-size: 9px;
+      margin-top: 10px;
+      letter-spacing: 3px;
       text-transform: uppercase;
     }
 
@@ -173,11 +199,48 @@
       }
     }
 
+    .arcade-cabinet {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px;
+      position: relative;
+    }
+
+    .arcade-cabinet::before,
+    .arcade-cabinet::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: var(--cyan);
+      border-style: solid;
+      opacity: 0.25;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .arcade-cabinet:hover::before,
+    .arcade-cabinet:hover::after {
+      opacity: 0.5;
+    }
+
+    .arcade-cabinet::before {
+      top: 12px;
+      left: 16px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .arcade-cabinet::after {
+      top: 12px;
+      right: 16px;
+      border-width: 2px 2px 0 0;
+    }
+
     .game-nav {
       display: flex;
       justify-content: center;
       gap: 6px;
-      padding: 20px 20px 8px;
+      padding: 24px 4px 8px;
       flex-wrap: wrap;
     }
 
@@ -185,49 +248,62 @@
       font-family: 'Press Start 2P', monospace;
       font-size: 8px;
       padding: 10px 18px;
-      border: 2px solid var(--dim);
-      background: transparent;
+      border: 1px solid var(--dim);
+      background: var(--border);
       color: var(--dim);
       cursor: pointer;
       letter-spacing: 1px;
-      transition: color .2s, border-color .2s, box-shadow .2s;
+      transition: color .15s, border-color .15s, box-shadow .15s, transform .08s, background .15s;
       position: relative;
       text-transform: uppercase;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 0, 0, 0.3);
     }
 
     .game-btn:hover {
       border-color: #555577;
       color: var(--text);
+      background: #2a2a42;
+    }
+
+    .game-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
     }
 
     .game-btn.active {
       border-color: var(--cyan);
       color: var(--cyan);
       text-shadow: var(--glow-cyan);
-      box-shadow: var(--glow-cyan), inset 0 0 18px rgba(0, 245, 255, 0.06);
+      background: rgba(0, 245, 255, 0.06);
+      box-shadow: var(--glow-cyan), 0 3px 0 rgba(0, 245, 255, 0.25), inset 0 0 14px rgba(0, 245, 255, 0.05);
     }
 
     .game-btn.active::after {
       content: '▼';
       position: absolute;
-      bottom: -16px;
+      bottom: -17px;
       left: 50%;
       transform: translateX(-50%);
       color: var(--cyan);
       font-size: 7px;
+      text-shadow: var(--glow-cyan);
     }
 
     .game-wrapper {
-      max-width: 860px;
-      margin: 28px auto 0;
-      padding: 0 16px 40px;
+      margin-top: 28px;
+      padding-bottom: 40px;
     }
 
     .game-screen {
       display: none;
-      border: 2px solid var(--cyan);
-      box-shadow: var(--glow-cyan), inset 0 0 50px rgba(0, 245, 255, 0.02);
-      padding: 22px;
+      border: 1px solid var(--cyan);
+      box-shadow:
+        var(--glow-cyan),
+        inset 0 0 80px rgba(0, 0, 0, 0.6),
+        inset 0 0 30px rgba(0, 245, 255, 0.025),
+        inset 4px 4px 12px rgba(0, 0, 0, 0.4),
+        inset -4px -4px 12px rgba(0, 0, 0, 0.4);
+      padding: 24px;
       background: var(--panel);
       position: relative;
       animation: screenIn .25s ease;
@@ -671,10 +747,12 @@
 
     footer {
       text-align: center;
-      padding: 16px;
+      padding: 20px 16px;
       color: var(--dim);
       font-size: 8px;
       letter-spacing: 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      margin-top: 8px;
     }
 
     /* 2048 */
@@ -901,12 +979,22 @@
     }
 
     /* ── THEME SWITCHER UI ── */
-    [data-theme="light"] body::before {
-      background: none;
+    [data-theme="light"] body::before,
+    [data-theme="light"] body::after {
+      display: none;
     }
 
-    [data-theme="light"] body::after {
-      background: none;
+    [data-theme="neon"] .game-screen {
+      box-shadow:
+        var(--glow-cyan),
+        inset 0 0 20px rgba(0, 0, 0, 0.25),
+        inset 0 0 10px rgba(0, 245, 255, 0.03);
+    }
+
+    [data-theme="light"] .game-screen {
+      box-shadow:
+        0 0 6px rgba(26, 127, 160, 0.25),
+        inset 0 0 12px rgba(0, 0, 0, 0.06);
     }
 
     [data-theme="light"] .mine-cell {
@@ -932,11 +1020,11 @@
     }
 
     [data-theme="light"] #g2048-board {
-      background: #e0dbd4 !important;
+      background: #b0aba4 !important;
     }
 
     [data-theme="light"] .g2048-bg-cell {
-      background: #ccc8c0 !important;
+      background: #a09b94 !important;
     }
 
     [data-theme="light"] .t2 {
@@ -1018,7 +1106,7 @@
     }
 
     [data-theme="light"] #next-canvas {
-      background: #e0dbd4;
+      background: #b8b4ac;
     }
 
     [data-theme="light"] .dpad-btn {
@@ -1026,13 +1114,12 @@
       border-color: var(--dim);
     }
 
-    /* Theme switcher bar */
+    /* Theme switcher bar (now nested in hub-back-bar) */
     .theme-bar {
       display: flex;
-      justify-content: center;
       align-items: center;
       gap: 6px;
-      padding: 8px 20px 0;
+      flex-wrap: wrap;
     }
 
     .theme-bar-label {
@@ -1239,11 +1326,15 @@
       animation: pulse .9s infinite;
     }
 
-    /* ── HUB BACK BUTTON ── */
+    /* ── HUB BACK BUTTON / TOP BAR ── */
     .hub-back-bar {
       display: flex;
       align-items: center;
-      padding: 10px 20px 0;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .hub-back-btn {
@@ -1302,6 +1393,38 @@
       font-size: 9px;
       color: var(--dim);
       padding: 0 16px;
+    }
+
+    .tron-meter-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tron-boost-meter {
+      width: 70px;
+      height: 6px;
+      border: 1px solid var(--dim);
+      border-radius: 3px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tron-boost-fill {
+      height: 100%;
+      width: 100%;
+      transition: width 0.08s linear;
+    }
+
+    .p1-meter .tron-boost-fill { background: var(--cyan); box-shadow: var(--glow-cyan); }
+    .p2-meter .tron-boost-fill { background: var(--pink); box-shadow: var(--glow-pink); }
+
+    .tron-badges {
+      font-size: 11px;
+      min-height: 1em;
+      letter-spacing: 1px;
     }
 
     #tron-controls-hint {

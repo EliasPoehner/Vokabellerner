@@ -98,6 +98,7 @@ document.addEventListener('pointerlockchange',()=>{
 let perks={speedBoost:0,extraBomb:0,comboExtend:0,bulletPierce:false};
 // Timed active powerups (from drops)
 let activePU={shield:0,rapid:0,triple:0};
+const SHIELD_MAX=900; // hard cap so stacked shield drops can't grant permanent invincibility
 // Permanent perk stacks from perk screen
 let permPerks={rapidFire:0,tripleShot:false,spreadBurst:false,ghostMode:false,piercing:false};
 let isSpreadBurst=false,isGhostMode=false;
@@ -154,7 +155,7 @@ function applyPerk(id){
   else if(id==='spreadBurst'){permPerks.spreadBurst=true;synergyActive='spreadBurst';}
   else if(id==='ghostMode')  {permPerks.ghostMode=true;synergyActive='ghostMode';}
   // shield still applies as temporary from perk
-  else if(id==='shield'){ship.invincible+=900;}
+  else if(id==='shield'){ship.invincible=Math.min(ship.invincible+900,SHIELD_MAX);}
   checkSynergies();
   perkScreen.style.display='none';
   lockPointer();
@@ -230,7 +231,9 @@ const PU_TYPES=[
   {type:'bomb',col:'#D85A30',label:'B'},
 ];
 
+const MAX_POWERUPS_ON_SCREEN=6;
 function maybeDrop(x,y){
+  if(powerups.length>=MAX_POWERUPS_ON_SCREEN) return;
   if(Math.random()<.13){
     const t=PU_TYPES[Math.floor(Math.random()*PU_TYPES.length)];
     powerups.push({x,y,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,type:t.type,col:t.col,label:t.label,life:420,r:11});
@@ -266,7 +269,7 @@ function updateHUD(){
   document.getElementById('cb').textContent=combo>1?`x${combo}`:'x1';
   const puh=document.getElementById('pu-hud');
   const badges=[];
-  const maxShield=900, maxRapid=360, maxTriple=300;
+  const maxShield=SHIELD_MAX, maxRapid=360, maxTriple=300;
   if(ship&&ship.invincible>60){
     const pct=Math.min(100,Math.round(ship.invincible/maxShield*100));
     badges.push(`<span class="pu-badge pu-shield">SCHILD<span class="pu-timer-bar" style="width:${pct}%"></span></span>`);
@@ -503,7 +506,7 @@ function update(dt){
 }
 
 function collectPowerup(type){
-  if(type==='shield') ship.invincible+=600;
+  if(type==='shield') ship.invincible=Math.min(ship.invincible+600,SHIELD_MAX);
   else if(type==='rapid'){
     activePU.rapid=360; // 6 seconds at 60fps
     // check if this triggers spread burst synergy
@@ -695,6 +698,8 @@ function endGame(){
     highscores.sort((a,b)=>b.s-a.s);
     highscores=highscores.slice(0,5);
     localStorage.setItem('ab_hs',JSON.stringify(highscores));
+    fetch('/api/saves/asteroid-hs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(highscores)}).catch(()=>{});
+    fetch('/api/highscores/asteroid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score})}).catch(()=>{});
   }
   ol.innerHTML=buildGameOverHTML();
   ol.style.display='flex';
@@ -735,6 +740,7 @@ function buildStartHTML(){
 // Build start screen hs
 document.getElementById('hs-section').innerHTML=buildStartHTML();
 document.getElementById('startBtn').onclick=startGame;
+(async()=>{try{const r=await fetch('/api/saves/asteroid-hs');if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length){highscores=d;localStorage.setItem('ab_hs',JSON.stringify(d));document.getElementById('hs-section').innerHTML=buildStartHTML();}}}catch{}})();
 
 // Input
 document.addEventListener('keydown',e=>{
